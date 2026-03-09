@@ -1,0 +1,191 @@
+:root {
+  font-family: 'Roboto';
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--text-color);
+  background-color: var(--main-color);
+  --text-color: #fffefe;
+  --main-color: #242424;
+  --action-color: #f08214;
+  --dark-color: #161616;
+  --light-color: #333333;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-color: #161616;
+    --main-color: #eee2db;
+    --dark-color: #d9cec5;
+    --light-color: #f4e9e3;
+  }
+}
+
+[data-theme="light"] {
+  --text-color: #161616;
+  --main-color: #eee2db;
+  --dark-color: #d9cec5;
+  --light-color: #f4e9e3;
+}
+
+[data-theme="dark"] {
+  --text-color: #fffefe;
+  --main-color: #242424;
+  --action-color: #f08214;
+  --dark-color: #161616;
+  --light-color: #333333;
+}
+
+@media screen and (max-width: 650px) {
+  #app {
+    padding: 0.5rem !important;
+  }
+}
+
+
+#app {
+  padding: 2rem;
+  text-align: center;
+  width: 100vw;
+  height: 90vh;
+  max-width: 1200px;
+  margin: 50px auto;
+}
+
+
+a {
+  text-decoration: none;
+  color: var(--text-color);
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+a:hover {
+  color: var(--action-color);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--dark-color) !important;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  border: transparent 2px solid !important;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+button:hover {
+  border: var(--action-color) 2px solid !important;
+}
+
+button:disabled,
+button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.buttonOutside {
+  border: var(--dark-color) 2px solid !important;
+  background-color: transparent !important;
+}
+
+.buttonOutsideInverted {
+  background-color: transparent !important;
+  border: var(--action-color) 2px solid !important;
+}
+.buttonOutsideInverted:hover {
+  border: var(--dark-color) 2px solid !important;
+}
+
+.buttonColor {
+  background-color: var(--action-color) !important;
+}
+
+.buttonColor:hover {
+  background-color: transparent !important;
+}
+
+.buttonColorInverted {
+  background-color: var(--dark-color) !important;
+}
+
+.buttonColorInverted:hover {
+  background-color: var(--action-color) !important;
+  opacity: 0.8;
+}
+
+.action-border:hover {
+  border: var(--action-color) 2px solid !important;
+  cursor: pointer;
+}
+
+.action-text:hover {
+  color: var(--action-color) !important;
+  cursor: pointer;
+}
+
+.action-text-inverted {
+  color: var(--action-color) !important;
+  cursor: pointer;
+}
+
+.action-text-inverted:hover {
+  color: var(--text-color) !important;
+}
+
+.action-border-outside {
+  border: var(--action-color) 2px solid !important;
+}
+
+.tiles {
+  background-color: var(--dark-color);
+  border: 2px solid var(--dark-color);
+  border-radius: 5px;
+  padding: 10px;
+  display: block;
+  max-width: 175px;
+  min-width: 175px;
+}
+
+.tiles:hover {
+  border: 2px solid var(--action-color) !important;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.v-text-field .v-field {
+  background-color: var(--dark-color);
+  color: var(--text-color);
+}
+
+.disable-text-select {
+  /*Empecher la sélection du texte*/
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

@@ -1,0 +1,178 @@
+<script setup lang="ts">
+import ShopMenu from '../Menu/ShopMenu.vue';
+import Footer from '../Footer/Footer.vue';
+import Searchbar from '../Custom/Searchbar.vue';
+import Tiles from './Tiles.vue';
+
+import { data } from '../../data/shopData';
+import { ref } from 'vue';
+import { Category } from '../../enum/category';
+import type { Product } from '../../model/product';
+
+const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
+
+const productsFilter = data.products;
+const getFilteredProducts = () => {
+    return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
+};
+
+const getNewProducts = () => {
+    return getFilteredProducts().slice(-5);
+};
+const getAmigurumiProducts = () => {
+    return getFilteredProducts().filter(item => item.category == Category.Amigurumi).slice(0, 10);
+};
+const getClotheProducts = () => {
+    return getFilteredProducts().filter(item => item.category == Category.Clothes).slice(0, 10);
+};
+const getAccessoriesProducts = () => {
+    return getFilteredProducts().filter(item => item.category == Category.Accessoires || item.category == Category.AccessoiresAmigurumi).slice(0, 10);
+};
+
+const dynamicUrl = (item: Product) => {
+    switch (item.category) {
+        case 'Amigurumi':
+        case 'Accessoires Amigurumi':
+            return `/shop/amigurumi/${item.id}`;
+        case 'Vêtements':
+        case 'Accessoires':
+            return `/shop/clothe/${item.id}`;
+    }
+
+    return '/shop';
+};
+</script>
+
+
+<template>
+    <ShopMenu />
+    <Searchbar :items="productsFilter" ref="searchRef" />
+
+    <section>
+        <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px;">
+            Aucun produit disponible pour le moment.
+        </div>
+        <div v-else>
+            <div class="sectionBox disable-text-select">
+                <div class="sectionSubtitle">
+                    <p style="text-align: left;">Nouvelle arrivage</p>
+                </div>
+                <hr style="margin: 10px 0 10px 0;" />
+                <div class="sectionTiles">
+                    <router-link v-if="getNewProducts().length != 0" v-for="item in getNewProducts()" :key="item.id"
+                        :to="dynamicUrl(item)" class="slide">
+                        <Tiles :item="item" class="tiles" />
+                    </router-link>
+                    <div v-else style="margin: auto;">
+                        Aucun produit disponible.
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectionBox disable-text-select">
+                <div class="sectionSubtitle">
+                    <p style="text-align: left;">Amigurumi</p>
+                    <a class="showMore" href="/shop/amigurumi">Afficher plus</a>
+                </div>
+                <hr style="margin: 10px 0 10px 0;" />
+                <div class="sectionTiles">
+                    <router-link v-if="getAmigurumiProducts().length != 0" v-for="item in getAmigurumiProducts()"
+                        :key="item.id" :to="dynamicUrl(item)" class="slide">
+                        <Tiles :item="item" class="tiles" />
+                    </router-link>
+                    <div v-else style="margin: auto;">
+                        Aucun produit disponible.
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectionBox disable-text-select">
+                <div class="sectionSubtitle">
+                    <p style="text-align: left;">Vêtement</p>
+                    <a class="showMore" href="/shop/clothe">Afficher plus</a>
+                </div>
+                <hr style="margin: 10px 0 10px 0;" />
+                <div class="sectionTiles">
+                    <router-link v-if="getClotheProducts().length != 0" v-for="item in getClotheProducts()"
+                        :key="item.id" :to="dynamicUrl(item)" class="slide">
+                        <Tiles :item="item" class="tiles" />
+                    </router-link>
+                    <div v-else style="margin: auto;">
+                        Aucun produit disponible.
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectionBox disable-text-select">
+                <div class="sectionSubtitle">
+                    <p style="text-align: left;">Accessoires</p>
+                    <a class="showMore" href="/shop/clothe">Afficher plus</a>
+                </div>
+                <hr style="margin: 10px 0 10px 0;" />
+                <div class="sectionTiles">
+                    <router-link v-if="getAccessoriesProducts().length != 0" v-for="item in getAccessoriesProducts()"
+                        :key="item.id" :to="dynamicUrl(item)" class="slide">
+                        <Tiles :item="item" class="tiles" />
+                    </router-link>
+                    <div v-else style="margin: auto;">
+                        Aucun produit disponible.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <Footer />
+</template>
+
+<style scoped lang="css">
+.sectionBox {
+    margin-bottom: 80px;
+}
+
+.sectionTiles {
+    margin-left: 50px !important;
+    margin-right: 50px !important;
+    margin: auto;
+    display: flex;
+    gap: 15px;
+    height: 265px;
+    align-content: flex-start;
+
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+}
+.slide {
+  flex: 0 0 calc(23.333% - 14px);
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+  margin: auto 0;
+}
+
+.slide:hover {
+  transform: translateY(-5px);
+}
+
+
+@media (max-width: 650px) {
+  .sectionTiles {
+    margin-left: 10px !important;
+    margin-right: 10px !important;
+    height: 250px;
+  }
+}
+
+.sectionSubtitle {
+    display: flex;
+}
+
+.showMore {
+    margin-left: auto;
+    margin-right: 50px;
+}
+
+p {
+    font-weight: 600;
+}
+</style>
