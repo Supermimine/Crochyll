@@ -279,10 +279,8 @@ watchEffect(() => {
       <div v-if="uploadSectionShow" class="importSection" :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
         <p style="margin-bottom: 10px">Importer un fichier PDF ou autres formats</p>
         <button class="buttonColor" @click="importFile()">Importer</button>
-
-        <br />
-
       </div>
+      <br />
       <div v-if="uploadSectionShow" style="opacity: 0.3;">
         <p>**La traduction et transposition des informations sont réalisé automatiquement donc certaines erreurs peuvent arriver.</p>
         <p>Communiquer les nous au: info.crochyll@gmail.com</p>

@@ -1,4 +1,7 @@
 <script setup type="ts">
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
 const setHomePageShop = () => {
     localStorage.setItem('menuIndex', 0);
 }
@@ -8,22 +11,24 @@ const setHomePageShop = () => {
     <div class="disable-text-select section">
         <router-link to="/shop" class="box" style="margin-left: auto;" @click="setHomePageShop()">
             <img class="backgroundBox" src="/img/icon-noBG.png" alt="Magasin" title="Magasin" draggable="false" />
-            Magasin
+            {{ t('category.shop') }}
         </router-link>
 
         <router-link to="/reader" class="box" style="margin-right: auto;">
-            <img class="backgroundBox" src="/img/icon-noBG.png" alt="Lecteur de patron" title="Lecteur de patron" draggable="false" />
-            Lecteur de patron
+            <img class="backgroundBox" src="/img/icon-noBG.png" alt="Lecteur de patron" title="Lecteur de patron"
+                draggable="false" />
+            {{ t('category.read') }}
         </router-link>
 
         <router-link to="/maker" class="box" style="margin-right: auto;">
-            <img class="backgroundBox" src="/img/icon-noBG.png" alt="PatternMaker" title="PatternMaker" draggable="false" />
-            PatternMaker
+            <img class="backgroundBox" src="/img/icon-noBG.png" alt="PatternMaker" title="PatternMaker"
+                draggable="false" />
+            {{ t('category.maker') }}
         </router-link>
 
         <router-link to="/learn" class="box" style="margin-right: auto;">
             <img class="backgroundBox" src="/img/icon-noBG.png" alt="Apprendre" title="Apprendre" draggable="false" />
-            Apprendre
+            {{ t('category.learn') }}
         </router-link>
     </div>
 </template>

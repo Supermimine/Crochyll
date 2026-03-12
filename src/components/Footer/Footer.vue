@@ -1,13 +1,15 @@
-<script lang="ts">
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 </script>
 
 <template>
     <footer class="footer disable-text-select">
-        <p>© {{ new Date().getFullYear() }} Crochyll. Tous droits réservés.</p>
+        <p>© {{ new Date().getFullYear() }} Crochyll. {{ t('footer.right') }}</p>
 
-        <router-link to="/faq" class="link">FAQ</router-link>
+        <router-link to="/faq" class="link">{{ t('footer.faq') }}</router-link>
          - 
-        <router-link to="/policy" class="link">Politique</router-link>
+        <router-link to="/policy" class="link">{{ t('footer.policy') }}</router-link>
     </footer>
 </template>
 

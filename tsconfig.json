@@ -3,6 +3,9 @@
   "compilerOptions": {
     "types": ["vite/client"],
 
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]

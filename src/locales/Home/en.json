@@ -1,0 +1,11 @@
+{
+    "home": {
+        "whereGo": "Où allons-nous ?"
+    },
+    "category": {
+        "shop": "Shop",
+        "read": "Pattern reader",
+        "maker": "Pattern maker",
+        "learn": "Learn"
+    }
+}

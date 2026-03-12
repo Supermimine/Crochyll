@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useScreen } from '@/tools/appTools';
+import { useI18n } from 'vue-i18n'
 import logo from '../Custom/Logo.vue';
 import theme from '../Custom/Theme.vue';
 
+const { t } = useI18n()
 const { isMobile } = useScreen();
 
 const mobileDetailShow = ref(false);
@@ -14,9 +16,9 @@ import { useCart } from '@/service/useCart';
 const { carts } = useCart();
 
 const menus = [
-  { name: 'Offres', link: '/shop' },
-  { name: 'Amigurumi', link: '/shop/amigurumi' },
-  { name: 'Vêtement', link: '/shop/clothe' },
+  { name: 'offert', link: '/shop' },
+  { name: 'amigurumi', link: '/shop/amigurumi' },
+  { name: 'clothe', link: '/shop/clothe' },
 ];
 
 const changeSelectedIndex = (index: number) => {
@@ -34,7 +36,7 @@ const changeSelectedIndex = (index: number) => {
       </li>
       <li v-for="(menu, index) in menus" :key="index" style="width: 100%;">
         <router-link :to="menu.link" :class="{ selected: selectedIndex === index }" @click="changeSelectedIndex(index)">
-          {{ menu.name }}
+          {{ t(`menu.${menu.name}`) }}
         </router-link>
       </li>
     </ul>
@@ -69,14 +71,14 @@ const changeSelectedIndex = (index: number) => {
 
       <li v-for="(menu, index) in menus" :key="index">
         <router-link :to="menu.link" :class="{ selected: selectedIndex === index }" @click="changeSelectedIndex(index)">
-          {{ menu.name }}
+          {{ t(`menu.${menu.name}`) }}
         </router-link>
       </li>
 
       <li style="float: right;">
         <router-link to="/cart" :class="{ selected: selectedIndex === menus.length }"
           @click="changeSelectedIndex(menus.length)">
-          Panier ({{ carts.length }})
+          {{ t('menu.cart') }} ({{ carts.length }})
         </router-link>
       </li>
 
