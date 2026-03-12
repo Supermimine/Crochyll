@@ -10,6 +10,7 @@ import CustomItemView from '../views/CustomItemView.vue'
 import ReaderView from '../views/ReaderView.vue'
 import FaqView from '../views/FaqView.vue'
 import PolicyView from '../views/PolicyView.vue'
+import LearnView from '../views/LearnView.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
@@ -24,6 +25,7 @@ const routes = [
   { path: '/reader', name: 'Reader', component: ReaderView },
   { path: '/faq', name: 'Faq', component: FaqView },
   { path: '/policy', name: 'Policy', component: PolicyView },
+  { path: '/learn', name: 'Learn', component: LearnView },
 ]
 
 export const router = createRouter({

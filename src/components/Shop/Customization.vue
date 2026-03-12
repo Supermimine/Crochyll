@@ -82,8 +82,9 @@ watch(isOpen, (val) => {
       <h2 style="margin-bottom: 50px;">Accessoire(s)</h2>
 
       <div class="sectionTiles">
-        <div v-for="item in productsFilter" :key="item.id">
+        <p v-if="productsFilter.length == 0" >Aucun accessoire disponible...</p>
 
+        <div v-else v-for="item in productsFilter" :key="item.id">
           <TilesAccessoires :item="item" @click="selectItem(item)"
             :class="itemsList.some(i => i.id === item?.id) ? 'action-border-outside' : ''" />
         </div>

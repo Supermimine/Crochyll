@@ -11,14 +11,19 @@ const setHomePageShop = () => {
             Magasin
         </router-link>
 
+        <router-link to="/reader" class="box" style="margin-right: auto;">
+            <img class="backgroundBox" src="/img/icon-noBG.png" alt="Lecteur de patron" title="Lecteur de patron" draggable="false" />
+            Lecteur de patron
+        </router-link>
+
         <router-link to="/maker" class="box" style="margin-right: auto;">
             <img class="backgroundBox" src="/img/icon-noBG.png" alt="PatternMaker" title="PatternMaker" draggable="false" />
             PatternMaker
         </router-link>
 
-        <router-link to="/reader" class="box" style="margin-right: auto;">
-            <img class="backgroundBox" src="/img/icon-noBG.png" alt="Lecteur de patron" title="Lecteur de patron" draggable="false" />
-            Lecteur de patron
+        <router-link to="/learn" class="box" style="margin-right: auto;">
+            <img class="backgroundBox" src="/img/icon-noBG.png" alt="Apprendre" title="Apprendre" draggable="false" />
+            Apprendre
         </router-link>
     </div>
 </template>

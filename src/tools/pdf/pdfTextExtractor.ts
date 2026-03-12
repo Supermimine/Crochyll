@@ -26,35 +26,27 @@ export async function extractAdvancedPdfText(file: File): Promise<string> {
   return allLines.join("");
 }
 
-function isSubtitle(text: string): boolean {
-  const clean = text.trim();
+function isSubtitle(line: string): boolean {
+  const forbidden = ["Lion Brand", "Pittsburgh", "New York", "White", "Yellow"];
+  if (forbidden.some(k => line.includes(k))) return false;
 
+  const clean = line.trim();
   if (!clean) return false;
-  if (clean.length > 80) return false;
-  if (clean.includes("http")) return false;
-  if (clean.includes("@")) return false;
 
   const words = clean.split(/\s+/);
-  if (words.length > 10) return false;
-
-  const letters = clean.replace(/[^\p{L}]/gu, "");
+  const letters = clean.replace(/[^\p{L}'-]/gu, "");
   if (!letters) return false;
 
   const upperRatio =
-    [...letters].filter(c => c === c.toUpperCase()).length /
-    letters.length;
-
-  if (upperRatio > 0.9) return true;
+    [...letters].filter(c => c === c.toUpperCase()).length / letters.length;
+  if (upperRatio > 0.9 && letters.length > 3) return true;
 
   if (clean.endsWith(":")) return true;
 
   const titleCaseRatio =
-    words.filter(word => /^[A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ]*:?$/u.test(word)).length /
+    words.filter(word => /^[A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ'’\-]*:?$/u.test(word)).length /
     words.length;
-
-  if (titleCaseRatio > 0.8) return true;
-
-  return false;
+  return titleCaseRatio > 0.8;
 }
 
 async function extractLinesFromPage(page: any): Promise<string[]> {

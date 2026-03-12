@@ -59,7 +59,6 @@ const addCart = async (
     });
   }
 
-  console.log('cart: ', cart);
   localStorage.setItem('cart', JSON.stringify(cart));
   setCarts();
 }

@@ -1,9 +1,7 @@
 import translate from "translate";
 
 const translateText = async (text: string, from: string, to: string) => {
-
-    // Check for the presence of an "Abbreviations" section in the text and translate manually
-    const keywords = [
+    const keywordsAbbreviation = [
         "abbreviation",
         "abbreviations",
         "abréviation",
@@ -11,11 +9,22 @@ const translateText = async (text: string, from: string, to: string) => {
         "abreviación",
         "abreviaciones"
     ];
+    const keywordsMaterial = [
+        "matériaux",
+        "matériel",
+        "material",
+        "materials",
+        "material",
+        "materiales"
+    ];
 
-    const pattern = new RegExp(`<h3>\\s*<b>\\s*(${keywords.join("|")})`, "i");
+    const patternAbbreviation = new RegExp(`<h3>\\s*<b>\\s*(${keywordsAbbreviation.join("|")})`, "i");
+    const patternMaterial = new RegExp(`<h3>\\s*<b>\\s*(${keywordsMaterial.join("|")})`, "i");
 
-    const match = text.match(pattern);
-    if (match) {
+    const matchAbbreviation = text.toLowerCase().match(patternAbbreviation);
+    const matchMaterial = text.toLowerCase().match(patternMaterial);
+
+    if (matchAbbreviation) {
         let abbreviationArray: string[] = [];
 
         const abbreviationWords: Record<string, string[]> = {
@@ -122,6 +131,128 @@ const translateText = async (text: string, from: string, to: string) => {
             translateText += "\n";
         });
 
+        return translateText;
+    }
+    else if (matchMaterial) {
+        let translateText = `<h3><b>${await translate("MATERIALS", { to })}:</b></h3>\n`;
+
+        const translated = await translate(text, { to: 'fr' }); // tout texte traduit
+
+        // Crochet
+        if (/crochet/i.test(translated)) {
+            const crochetMatch = translated.match(/crochet/i);
+
+            if (crochetMatch && crochetMatch.index !== undefined) {
+                const crochetIndex = crochetMatch.index;
+                const mmRegex = /(\d+(?:[.,]\d+)?)\s*mm/gi;
+
+                let match;
+                let closestSize: string | null = null;
+                let closestDistance = Infinity;
+
+                while ((match = mmRegex.exec(translated)) !== null) {
+                    const number = match[1];
+                    const index = match.index;
+
+                    const distance = Math.abs(index - crochetIndex);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestSize = number.replace(',', '.');
+                    }
+                }
+
+                if (closestSize) {
+                    translateText += `Crochet: ${closestSize}mm\n`;
+                } else {
+                    console.error('Aucune taille en mm trouvée');
+                }
+            }
+        }
+        else {
+            translateText += `${text}\n`;
+        }
+
+        // Laine
+        // =============================
+        // Configuration
+        // =============================
+
+        // Regex pour blocs multi-lignes et inline
+        const yarnRegexMultiLine = /^[\s•●▪\-*·]*([^\n<]*(?:laine|fil|pelote|yarn)[^\n<]*\n[^\n<]*)/gim;
+        const yarnRegexInline = /[–\-]\s*(fil|laine|pelote|yarn)[^–\n<]*/gi;
+
+        // Liste de mots qui indiquent des commentaires
+        const commentKeywords = [
+            'sample made with', 'échantillon réalisé', 'instructions', 'used', 'utilisé'
+        ];
+
+        // =============================
+        // Extraction des blocs
+        // =============================
+
+        const blocks: { block: string, start: number, end: number }[] = [];
+
+        let match: RegExpExecArray | null;
+
+        // 1️⃣ Multi-lignes
+        while ((match = yarnRegexMultiLine.exec(text)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+            let block = match[1].trim().replace(/^[\s•●▪\-*·]+/gm, '');
+
+            // Couper après mots-clés commentaire
+            for (const keyword of commentKeywords) {
+                const idx = block.toLowerCase().indexOf(keyword.toLowerCase());
+                if (idx !== -1) {
+                    block = block.slice(0, idx).trim();
+                }
+            }
+
+            blocks.push({ block, start, end });
+        }
+
+        // 2️⃣ Inline
+        while ((match = yarnRegexInline.exec(text)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+            let block = match[0].replace(/^[–\-]\s*/, '').trim();
+
+            // Couper après mots-clés commentaire
+            for (const keyword of commentKeywords) {
+                const idx = block.toLowerCase().indexOf(keyword.toLowerCase());
+                if (idx !== -1) {
+                    block = block.slice(0, idx).trim();
+                }
+            }
+
+            blocks.push({ block, start, end });
+        }
+
+        // =============================
+        // Sélection du meilleur bloc
+        // =============================
+        for (const b of blocks) {
+            // =============================
+            // Récupérer le bloc dans le texte original
+            // =============================
+            let originalBlock = text.slice(b.start, b.end)
+            .replace(/^[\s•●▪\-*·–]+/gm, '')
+            .trim();
+            
+            // Couper après mots-clés commentaire dans l’original
+            for (const keyword of commentKeywords) {
+                const idx = originalBlock.toLowerCase().indexOf(keyword.toLowerCase());
+                if (idx !== -1) {
+                    originalBlock = originalBlock.slice(0, idx).trim();
+                }
+            }
+            
+            // Supprimer virgule finale éventuelle
+            originalBlock = originalBlock.replace(/[\s,]+$/g, '');
+            
+            translateText += `Laines: ${originalBlock}\n`;
+        }
         return translateText;
     }
     else {
