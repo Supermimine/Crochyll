@@ -29,8 +29,8 @@ const vuetify = createVuetify({
   },
 })
 
-const defaultLocale = language();
-setLocale(defaultLocale);
+const savedLang = (localStorage.getItem("language") as "fr" | "en") || "fr"
+await setLocale(savedLang)
 
 const app = createApp(App)
 const head = createHead()
