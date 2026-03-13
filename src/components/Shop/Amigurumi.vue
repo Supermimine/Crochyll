@@ -20,11 +20,11 @@ const getFilteredProducts = () => {
     <ShopMenu />
     <Searchbar :items="productsFilter" ref="searchRef" />
 
-    <section v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px;">
-        Aucun produit disponible pour le moment.
-    </section>
-    <section v-else class="sectionTiles">
-        <router-link v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
+    <section class="sectionTiles">
+        <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px; width: 100%;">
+            Aucun produit disponible pour le moment.
+        </div>
+        <router-link v-else v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
             <Tiles :item="item" class="tiles" />
         </router-link>
 
@@ -32,7 +32,6 @@ const getFilteredProducts = () => {
             <p>Personnaliser</p>
         </router-link>
     </section>
-
 </template>
 
 <style scoped lang="css">
@@ -46,8 +45,8 @@ const getFilteredProducts = () => {
 }
 
 @media (max-width: 650px) {
-  .sectionTiles {
-    gap: 10px 5px;
-  }
+    .sectionTiles {
+        gap: 10px 5px;
+    }
 }
 </style>

@@ -8,7 +8,7 @@ import { Category } from '../../enum/category';
 import { ref } from 'vue';
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
-const productsFilter = data.products.filter(item => item.category === Category.Accessoires || item.category === Category.Clothes);
+const productsFilter = data.products.filter(item => item.category === Category.Pattern);
 
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
@@ -26,6 +26,10 @@ const getFilteredProducts = () => {
         </div>
         <router-link v-else v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
             <Tiles :item="item" class="tiles" />
+        </router-link>
+
+        <router-link class="tiles" style="width: 185px; height: 230px;" :to="`/shop/custom`">
+            <p>Personnaliser</p>
         </router-link>
     </section>
 </template>

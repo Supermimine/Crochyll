@@ -20,6 +20,7 @@ const menus = [
   { name: 'offert', link: '/shop' },
   { name: 'amigurumi', link: '/shop/amigurumi' },
   { name: 'clothe', link: '/shop/clothe' },
+  { name: 'pattern', link: '/shop/pattern' }
 ];
 
 const changeSelectedIndex = (index: number) => {

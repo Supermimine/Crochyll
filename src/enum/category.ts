@@ -3,4 +3,5 @@ export enum Category {
   AccessoiresAmigurumi = "Accessoires Amigurumi",
   Clothes = "Vêtements",
   Accessoires = "Accessoires",
+  Pattern = "Patron"
 }

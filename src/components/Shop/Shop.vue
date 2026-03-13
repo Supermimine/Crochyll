@@ -20,26 +20,35 @@ const getNewProducts = () => {
     return getFilteredProducts().slice(-5);
 };
 const getAmigurumiProducts = () => {
-    return getFilteredProducts().filter(item => item.category == Category.Amigurumi).slice(0, 10);
+    return getFilteredProducts().filter(item => item.category == Category.Amigurumi || item.category == Category.AccessoiresAmigurumi).slice(0, 10);
 };
 const getClotheProducts = () => {
     return getFilteredProducts().filter(item => item.category == Category.Clothes).slice(0, 10);
 };
 const getAccessoriesProducts = () => {
-    return getFilteredProducts().filter(item => item.category == Category.Accessoires || item.category == Category.AccessoiresAmigurumi).slice(0, 10);
+    return getFilteredProducts().filter(item => item.category == Category.Accessoires).slice(0, 10);
+};
+const getPatternProducts = () => {
+    return getFilteredProducts().filter(item => item.category == Category.Pattern).slice(0, 10);
 };
 
 const dynamicUrl = (item: Product) => {
     switch (item.category) {
-        case 'Amigurumi':
-        case 'Accessoires Amigurumi':
+        case Category.Amigurumi:
+        case Category.AccessoiresAmigurumi:
             return `/shop/amigurumi/${item.id}`;
-        case 'Vêtements':
-        case 'Accessoires':
+        case Category.Clothes:
+        case Category.Accessoires:
             return `/shop/clothe/${item.id}`;
+        case Category.Pattern:
+            return `/shop/pattern/${item.id}`;
+        default:
+            return '/shop';
     }
+};
 
-    return '/shop';
+const changeSelectedIndex = (index: number) => {
+  localStorage.setItem('menuIndex', index.toString());
 };
 </script>
 
@@ -72,7 +81,7 @@ const dynamicUrl = (item: Product) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">Amigurumi</p>
-                    <a class="showMore" href="/shop/amigurumi">Afficher plus</a>
+                    <a class="showMore" href="/shop/amigurumi" @click="changeSelectedIndex(1)">Afficher plus</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -89,7 +98,7 @@ const dynamicUrl = (item: Product) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">Vêtement</p>
-                    <a class="showMore" href="/shop/clothe">Afficher plus</a>
+                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">Afficher plus</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -106,11 +115,28 @@ const dynamicUrl = (item: Product) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">Accessoires</p>
-                    <a class="showMore" href="/shop/clothe">Afficher plus</a>
+                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">Afficher plus</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
                     <router-link v-if="getAccessoriesProducts().length != 0" v-for="item in getAccessoriesProducts()"
+                        :key="item.id" :to="dynamicUrl(item)" class="slide">
+                        <Tiles :item="item" class="tiles" />
+                    </router-link>
+                    <div v-else style="margin: auto;">
+                        Aucun produit disponible.
+                    </div>
+                </div>
+            </div>
+
+            <div class="sectionBox disable-text-select">
+                <div class="sectionSubtitle">
+                    <p style="text-align: left;">Patrons</p>
+                    <a class="showMore" href="/shop/pattern" @click="changeSelectedIndex(3)">Afficher plus</a>
+                </div>
+                <hr style="margin: 10px 0 10px 0;" />
+                <div class="sectionTiles">
+                    <router-link v-if="getPatternProducts().length != 0" v-for="item in getPatternProducts()"
                         :key="item.id" :to="dynamicUrl(item)" class="slide">
                         <Tiles :item="item" class="tiles" />
                     </router-link>
@@ -143,24 +169,25 @@ const dynamicUrl = (item: Product) => {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
 }
+
 .slide {
-  flex: 0 0 calc(23.333% - 14px);
-  scroll-snap-align: start;
-  transition: transform 0.3s ease;
-  margin: auto 0;
+    flex: 0 0 calc(23.333% - 14px);
+    scroll-snap-align: start;
+    transition: transform 0.3s ease;
+    margin: auto 0;
 }
 
 .slide:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
 }
 
 
 @media (max-width: 650px) {
-  .sectionTiles {
-    margin-left: 10px !important;
-    margin-right: 10px !important;
-    height: 250px;
-  }
+    .sectionTiles {
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+        height: 250px;
+    }
 }
 
 .sectionSubtitle {
