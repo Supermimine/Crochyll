@@ -4,6 +4,7 @@ import { useScreen } from '@/tools/appTools';
 import { useI18n } from 'vue-i18n'
 import logo from '../Custom/Logo.vue';
 import theme from '../Custom/Theme.vue';
+import language from '../Custom/Language.vue';
 
 const { t } = useI18n()
 const { isMobile } = useScreen();
@@ -32,6 +33,7 @@ const changeSelectedIndex = (index: number) => {
   <div v-if="mobileDetailShow" class="subShopMenu">
     <ul>
       <li style="float: right; margin: 0 10px 10px 0;">
+        <language />
         <theme />
       </li>
       <li v-for="(menu, index) in menus" :key="index" style="width: 100%;">
@@ -83,6 +85,7 @@ const changeSelectedIndex = (index: number) => {
       </li>
 
       <li style="float: right; padding: 12px 6px 12px 16px;">
+        <language />
         <theme />
       </li>
     </div>

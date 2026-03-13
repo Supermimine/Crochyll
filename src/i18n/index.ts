@@ -10,7 +10,7 @@ export const i18n = createI18n<[MessageSchema], string>({
   fallbackLocale: 'en',
   messages: {},
   missing(locale, key) {
-    console.warn(`Clé manquante: ${locale}.${key}`)
+    console.warn(`Clé manquante: locale(${locale}) key(${key})`)
     return `??${key}??`
   }
 })
@@ -33,7 +33,6 @@ async function loadLocaleMessages(locale: string) {
 }
 
 export async function setLocale(locale: string) {
-  
   if (!i18n.global.availableLocales.includes(locale)) {
     const messages = await loadLocaleMessages(locale)
     i18n.global.setLocaleMessage(locale, messages as MessageSchema)

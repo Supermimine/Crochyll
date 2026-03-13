@@ -1,6 +1,7 @@
 <script setup type="ts">
 import logo from '../Custom/Logo.vue';
 import theme from '../Custom/Theme.vue';
+import language from '../Custom/Language.vue';
 
 </script>
 
@@ -12,7 +13,8 @@ import theme from '../Custom/Theme.vue';
             </a>
         </li>
 
-        <li style="float: right; padding: 12px 16px;">
+        <li style="float: right; padding: 12px 16px; display: flex; justify-content: center;">
+            <language />
             <theme />
         </li>
 

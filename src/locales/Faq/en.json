@@ -1,0 +1,16 @@
+{
+    "faq": {
+        "title": "FAQ",
+        "description": "Here are some frequently asked questions about Crochyll:",
+        "question1": "What is Crochyll?",
+        "reponse1": "Crochyll is a platform for selling handmade products as well as a platform for reading and creating crochet patterns.",
+        "question2": "What is the delivery time for my order?",
+        "reponse2": "Delivery time depends on your location and the time required to prepare your order. You will receive a confirmation email once your order has been started, with a more precise delivery time, and another shipping confirmation email containing tracking information.",
+        "question3": "Can I return an item?",
+        "reponse3": "Yes, you can return an item within 7 days of receiving your order, provided the item is in the same condition as when you received it. Please contact our customer support for return instructions.",
+        "question4": "Do I need a PayPal account?",
+        "reponse4": "No, this is not mandatory; card payment works. To do so, you must select the 'credit card' option during checkout.",
+        "question5": "How can I contact Crochyll customer support?",
+        "reponse5": "You can contact our customer support by sending an email to ."
+    }
+}
