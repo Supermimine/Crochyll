@@ -1,0 +1,53 @@
+{
+    "policy": {
+        "title": "Politique",
+        "lastUpdate": "La dernière modification: ",
+
+        "summary": "Résumé",
+        "text1": "Cette politique de confidentialité décrit nos politiques et procédures sur la collecte, l'utilisation et la divulgation de vos informations lorsque vous utilisez le service et vous informe sur vos droits en matière de confidentialité et sur la manière dont la loi vous protège.",
+        "text2": "Nous utilisons vos données personnelles pour fournir et améliorer le service. En utilisant le Service, Vous acceptez la collecte et l'utilisation d'informations conformément à la présente Politique de confidentialité.",
+
+        "interpretation": "Interprétation",
+        "text3": "Les mots dont la lettre initiale est en majuscule ont des significations définies dans les conditions suivantes. Les définitions suivantes auront la même signification qu'elles apparaissent au singulier ou au pluriel.",
+
+        "definitions": "Définitions",
+        "you": "Vous",
+        "text4": "désigne la personne accédant ou utilisant le Service, ou la société ou toute autre entité juridique au nom de laquelle cette personne accède ou utilise le Service, selon le cas.",
+        "company": "Compagnie",
+        "text5": "(appelé soit 'l'entreprise', 'Nous' ou 'Notre' dans le présent Contrat) - fait référence à Crochyll",
+        "personalData": "Données personnelles",
+        "text6": "désigne toute information relative à une personne identifiée ou identifiable.",
+        "service": "Service",
+        "text7": "fait référence au Site Web.",
+        "webSite": "Site Internet",
+        "text8": "fait référence à Crochyll, accessible depuis https://www.crochyll.ca",
+        "device": "Dispositif",
+        "text9": "désigne tout appareil pouvant accéder au Service tel qu'un ordinateur, un téléphone portable ou une tablette numérique.",
+
+        "text10": "Lors de l'utilisation de notre service, nous pouvons vous demander de nous fournir certaines informations personnellement identifiables qui peuvent être utilisées pour vous contacter ou vous identifier. Les informations personnellement identifiables peuvent inclure, mais sans s'y limiter :",
+        "email": "Adresse e-mail",
+        "postalCode": "Adresse postale",
+
+        "use": "Utilisation des données personnelles",
+        "text11": "La Société peut utiliser les Données Personnelles aux fins suivantes :",
+
+        "contact": "Te contacter:",
+        "text12": "Pour vous contacter par e-mail, telles que les notifications push d'une application mobile concernant les mises à jour ou les communications informatives liées aux fonctionnalités, produits ou services sous contrat, y compris les mises à jour de sécurité, lorsque cela est nécessaire ou raisonnable pour leur mise en œuvre.",
+        "manage": "Pour gérer Vos demandes:",
+        "text13": "Pour assister et gérer vos demandes envers nous.",
+
+        "conservation": "Conservation de vos données personnelles",
+        "text14": "Nous ne conservons aucune données personnelles.",
+
+        "children": "Confidentialité des enfants",
+        "text15": "Notre service ne s'adresse pas aux personnes de moins de 13 ans. Nous ne collectons pas sciemment d'informations personnellement identifiables auprès de personnes de moins de 13 ans. Si vous êtes un parent ou un tuteur et que vous savez que votre enfant nous a fourni des données personnelles, veuillez Nous contacter.",
+
+        "update": "Modifications de cette politique de confidentialité",
+        "text16": "Nous pouvons mettre à jour notre politique de confidentialité de temps à autre. Nous vous informerons de tout changement en publiant la nouvelle politique de confidentialité sur cette page.",
+        "text17": "Nous vous informerons par e-mail et/ou par un avis visible sur notre service, avant que le changement ne devienne effectif et mettrons à jour la 'Dernière mise à jour' date en haut de cette politique de confidentialité.",
+        "text18": "Il vous est conseillé de consulter périodiquement cette politique de confidentialité pour tout changement. Les modifications apportées à cette politique de confidentialité entrent en vigueur lorsqu'elles sont publiées sur cette page.",
+
+        "contactUs": "Nous contacter",
+        "text19": "Si vous avez des questions concernant cette politique de confidentialité, vous pouvez nous contacter:"
+    }
+}

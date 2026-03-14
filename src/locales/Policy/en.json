@@ -1,0 +1,53 @@
+{
+    "policy": {
+        "title": "Policy",
+        "lastUpdate": "The latest edit: ",
+
+        "summary": "Summary",
+        "text1": "This privacy policy describes our policies and procedures regarding the collection, use, and disclosure of your information when you use the service and informs you of your privacy rights and how the law protects you.",
+        "text2": "We use your personal data to provide and improve the service. By using the Service, you agree to the collection and use of information in accordance with this Privacy Policy.",
+
+        "interpretation": "Interpretation",
+        "text3": "Words beginning with a capital letter have definite meanings under the following conditions. The following definitions will have the same meaning whether they appear in the singular or plural.",
+
+        "definitions": "Definitions",
+        "you": "You",
+        "text4": "refers to the person accessing or using the Service, or the company or other legal entity on whose behalf that person is accessing or using the Service, as the case may be.",
+        "company": "Company",
+        "text5": "(referred to as either 'the Company', 'We' or 'Us' in this Agreement) - refers to Crochyll",
+        "personalData": "Personal data",
+        "text6": "refers to any information relating to an identified or identifiable person.",
+        "service": "Service",
+        "text7": "refers to the Website.",
+        "webSite": "Website",
+        "text8": "refers to Crochyll, accessible from https://www.crochyll.ca",
+        "device": "Device",
+        "text9": "refers to any device that can access the Service, such as a computer, mobile phone, or digital tablet.",
+
+        "text10": "When using our service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you. Personally identifiable information may include, but is not limited to:",
+        "email": "E-mail address",
+        "postalCode": "Mailing address",
+
+        "use": "Use of personal data",
+        "text11": "The Company may use Personal Data for the following purposes:",
+
+        "contact": "Contact you:",
+        "text12": "To contact you by email, such as push notifications from a mobile application regarding updates or informational communications related to features, products or services under contract, including security updates, when necessary or reasonable for their implementation.",
+        "manage": "To manage your requests:",
+        "text13": "To assist and manage your requests to us.",
+
+        "conservation": "Storage of your personal data",
+        "text14": "We do not store any personal data.",
+
+        "children": "Children's privacy",
+        "text15": "Our service is not intended for individuals under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If you are a parent or guardian and are aware that your child has provided us with personal data, please contact us.",
+
+        "update": "Changes to this privacy policy",
+        "text16": "We may update our privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page.",
+        "text17": "We will notify you by email and/or a prominent notice on our service before the change becomes effective and will update the 'Last Updated' date at the top of this privacy policy.",
+        "text18": "You are advised to periodically review this privacy policy for any changes. Changes to this privacy policy become effective when they are posted on this page.",
+
+        "contactUs": "Contact us",
+        "text19": "If you have any questions regarding this privacy policy, you can contact us:"
+    }
+}

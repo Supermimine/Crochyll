@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { sleep } from "@/tools/appTools";
 import { onMounted, onUnmounted, ref } from "vue";
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 const props = defineProps<{
     id: number,
@@ -51,7 +53,7 @@ onUnmounted(() => {
             <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
         </a>
 
-        <h4 style="margin: 15px 0;">Compteur</h4>
+        <h4 style="margin: 15px 0;">{{ t('reader.counter.title') }}</h4>
         <hr />
         <p style="font-size: 1.8em; margin: 20px 0;">{{ counter }}</p>
         <hr />

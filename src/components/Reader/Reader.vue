@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 import translate from "@/tools/translate";
 import { language } from "../../tools/appTools";
@@ -249,7 +251,7 @@ watchEffect(() => {
         :icon="filesSectionOpen ? 'mdi-chevron-double-left' : 'mdi-chevron-double-right'" size="25"
         class="ml-1 action-text" @click="filesSectionOpen = !filesSectionOpen"></v-icon>
 
-      <h3 style="margin-bottom: 10px; margin-left: 10px">Fichiers importés</h3>
+      <h3 style="margin-bottom: 10px; margin-left: 10px">{{ t('reader.import.file') }}</h3>
       <ul class="listFilesSection"
         :style="[filesSectionOpen ? 'opacity: 1;' : 'opacity: 0; pointer-events: none; cursor: default;']">
         <li v-for="(file, index) in filesList" :key="index" class="fileBox"
@@ -277,13 +279,13 @@ watchEffect(() => {
       marginLeft: filesSectionShow ? '32px' : '0'
     }">
       <div v-if="uploadSectionShow" class="importSection" :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
-        <p style="margin-bottom: 10px">Importer un fichier PDF ou autres formats</p>
-        <button class="buttonColor" @click="importFile()">Importer</button>
+        <p style="margin-bottom: 10px">{{ t('reader.import.description') }}</p>
+        <button class="buttonColor" @click="importFile()">{{ t('button.import') }}</button>
       </div>
       <br />
       <div v-if="uploadSectionShow" style="opacity: 0.3;">
-        <p>**La traduction et transposition des informations sont réalisé automatiquement donc certaines erreurs peuvent arriver.</p>
-        <p>Communiquer les nous au: info.crochyll@gmail.com</p>
+        <p>**{{ t('reader.import.warning1') }}</p>
+        <p>{{ t('reader.import.warning2') }} info.crochyll@gmail.com</p>
       </div>
 
       <div v-else style="margin-left: 20px; position: relative">

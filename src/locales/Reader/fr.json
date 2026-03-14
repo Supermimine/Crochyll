@@ -1,0 +1,13 @@
+{
+    "reader": {
+        "import": {
+            "file": "Fichier importé(s)",
+            "description": "Importer un fichier PDF ou autres formats",
+            "warning1": "La traduction et transposition des informations sont réalisé automatiquement donc certaines erreurs peuvent arriver.",
+            "warning2": "Communiquer les nous au: "
+        },
+        "counter": {
+            "title": "Compteur"
+        }
+    }
+}

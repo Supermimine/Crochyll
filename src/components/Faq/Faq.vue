@@ -37,7 +37,7 @@ const { t } = useI18n()
 
         <v-expansion-panels>
             <v-expansion-panel :title="t('faq.question5')"
-                :text="t('faq.reponse5')">
+                :text="t('faq.reponse5') + 'info.crochyll@gmail.com.'">
             </v-expansion-panel>
         </v-expansion-panels>
     </div>
