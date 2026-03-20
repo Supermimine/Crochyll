@@ -1,6 +1,9 @@
 {
     "button": {
-        "import": "Import"
+        "import": "Import",
+        "add": "Add",
+        "edit": "Edit",
+        "save": "Save"
     },
     "searchBar": {
         "label": "Search for products..."

@@ -1,0 +1,10 @@
+{
+    "cart": {
+        "title": "Panier",
+        "summary": "Sommaire",
+        "delivery": "Livraison",
+        "totalPrice": "Prix Total",
+        "placeOrder": "Passer la commande",
+        "item": "items"
+    }
+}

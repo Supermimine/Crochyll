@@ -1,0 +1,11 @@
+{
+    "address": {
+        "title": "Address",
+        "country": "Country",
+        "address": "Address",
+        "address2": "Unit",
+        "city": "City",
+        "state": "Province/State",
+        "postalCode": "Postale Code"
+    }
+}

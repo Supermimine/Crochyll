@@ -4,6 +4,10 @@ import ShopMenu from '../Menu/ShopMenu.vue';
 import CartItem from './CartItem.vue';
 import Paypal from '@/components/Custom/Paypal.vue';
 import AddressVue from '@/components/Cart/Address.vue';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 import type { Address } from '@/model/address';
 
 import { calculateShipping } from '@/service/useShipping';
@@ -49,7 +53,6 @@ const shipping = computed(() => {
             )
 
             for (let i = 1; i <= cart.quantity; i++) {
-
                 if (i === 1) {
                     price += subPrice
                 }
@@ -59,7 +62,6 @@ const shipping = computed(() => {
                 else {
                     price += subPrice * 0.25
                 }
-
             }
         });
 
@@ -78,8 +80,8 @@ const shipping = computed(() => {
     <div class="mainSection">
         <div class="cartSection">
             <div style="display: flex; margin-bottom: 30px;">
-                <p style="font-size: 28px; margin-right: auto;">Panier</p>
-                <p style="margin-top: 16px;">{{ carts.length }} items</p>
+                <p style="font-size: 28px; margin-right: auto;">{{ t('cart.title') }}</p>
+                <p style="margin-top: 16px;">{{ carts.length }} {{ t('cart.item') }}</p>
             </div>
 
             <hr />
@@ -90,37 +92,35 @@ const shipping = computed(() => {
         </div>
 
         <div class="summarySection">
-            <p style="font-size: 20px; font-weight: bold; margin-top: 25px;">Sommaire</p>
+            <p style="font-size: 20px; font-weight: bold; margin-top: 25px;">{{ t('cart.summary') }}</p>
             <hr style="margin: 10px 0 15px 0;" />
             <div style="display: flex;">
-                <p style="margin-right: auto;">items ({{ carts.length }})</p>
+                <p style="margin-right: auto;">{{ t('cart.item') }} ({{ carts.length }})</p>
                 <p>${{ totalPrice }}</p>
             </div>
 
             <div style="display: flex; margin-top: 10px;">
-                <p style="margin-right: auto;">Livraison</p>
+                <p style="margin-right: auto;">{{ t('cart.delivery') }}</p>
                 <p>${{ shipping }}</p>
             </div>
             <a v-if="addressSelected == null" class="action-text-inverted" style="font-size: 12px;"
-                @click="addressRef?.open()">Ajouter</a>
+                @click="addressRef?.open()">{{ t('button.add') }}</a>
             <div v-else>
                 <span style="font-size: 12px;">({{ addressSelected.address2 }}<span
                         v-if="addressSelected.address2 != ''">-</span>{{ addressSelected.address1 }} {{
                             addressSelected.city }}) </span>
-                <a class="action-text-inverted" style="font-size: 12px;" @click="addressRef?.open()">Modifier</a>
+                <a class="action-text-inverted" style="font-size: 12px;" @click="addressRef?.open()">{{ t('button.edit') }}</a>
             </div>
-            <!--TODO connecter API poste canada pour livraison 
-            https://www.canadapost-postescanada.ca/information/app/drc/home?execution=e2s1 -->
 
             <hr style="margin: 30px 0 10px 0;" />
             <div style="display: flex;">
-                <p style="margin-right: auto;">Prix Total</p>
+                <p style="margin-right: auto;">{{ t('cart.totalPrice') }}</p>
                 <p>${{ totalPriceCart }}</p>
             </div>
 
             <button :disabled="carts.length === 0 || addressSelected == null" class="buttonColor"
                 style="width: 100%; margin: 2px; margin-top: 50px;" @click="paypalRef?.open()">
-                Passer la commande
+                {{ t('cart.placeOrder') }}
             </button>
         </div>
     </div>

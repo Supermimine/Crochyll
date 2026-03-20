@@ -1,6 +1,9 @@
 {
     "button": {
-        "import": "Importer"
+        "import": "Importer",
+        "add": "Ajouter",
+        "edit": "Modifier",
+        "save": "Sauvegarder"
     },
     "searchBar": {
         "label": "Rechercher des produits..."

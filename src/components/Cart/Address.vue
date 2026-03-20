@@ -2,6 +2,9 @@
 import { ref, computed } from "vue"
 import type { Address } from '@/model/address';
 import { countries } from "@/tools/country";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isOpen = ref(false)
 
@@ -68,33 +71,33 @@ const checkForm = () => {
           <v-icon icon="mdi-close" size="30"></v-icon>
         </div>
 
-        <p class="title">Adresse</p>
+        <p class="title">{{ t('address.title') }}</p>
         <!-- Country -->
-        <v-select v-model="addressModel.country" :items="countries" item-title="name" item-value="code" label="Pays"
+        <v-select v-model="addressModel.country" :items="countries" item-title="name" item-value="code" :label="t('address.country')"
           variant="outlined" />
 
         <!-- Address -->
-        <v-text-field v-model="addressModel.address1" label="Adresse" variant="outlined" />
+        <v-text-field v-model="addressModel.address1" :label="t('address.address')" variant="outlined" />
 
-        <v-text-field v-model="addressModel.address2" label="Apartment / Unit" variant="outlined" />
+        <v-text-field v-model="addressModel.address2" :label="t('address.address2')" variant="outlined" />
 
         <!-- City State -->
         <v-row>
           <v-col cols="6">
-            <v-text-field v-model="addressModel.city" label="Ville" variant="outlined" />
+            <v-text-field v-model="addressModel.city" :label="t('address.city')" variant="outlined" />
           </v-col>
 
           <v-col cols="6">
-            <v-text-field v-model="addressModel.state" label="State / Province" variant="outlined" />
+            <v-text-field v-model="addressModel.state" :label="t('address.state')" variant="outlined" />
           </v-col>
         </v-row>
 
         <!-- Postal -->
-        <v-text-field v-model="addressModel.postalCode" label="Code Postale" variant="outlined"
+        <v-text-field v-model="addressModel.postalCode" :label="t('address.postalCode')" variant="outlined"
           :color="postalValid ? '' : 'error'" />
 
         <button style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
-          Savegarder
+          {{ t('button.save') }}
         </button>
 
       </div>

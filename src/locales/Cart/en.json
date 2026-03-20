@@ -1,0 +1,10 @@
+{
+    "cart": {
+        "title": "Cart",
+        "summary": "Summary",
+        "delivery": "Delivery",
+        "totalPrice": "Total Price",
+        "placeOrder": "Place order",
+        "item": "items"
+    }
+}
