@@ -4,7 +4,8 @@
         "add": "Add",
         "edit": "Edit",
         "save": "Save",
-        "share": "Share"
+        "share": "Share",
+        "remove": "Remove"
     },
     "searchBar": {
         "label": "Search for products..."

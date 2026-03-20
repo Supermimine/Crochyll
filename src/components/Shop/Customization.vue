@@ -2,6 +2,9 @@
 import { ref, watch } from 'vue'
 import TilesAccessoires from './TilesAccessoires.vue';
 import type { Product } from '@/model/product';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 import { data } from '../../data/shopData';
 import getItem from '../../data/shopData';
@@ -79,10 +82,10 @@ watch(isOpen, (val) => {
     <a class="closeBtn action-text" @click="close"><v-icon icon="mdi-close" size="30" /></a>
 
     <div v-if="isTilesPage">
-      <h2 style="margin-bottom: 50px;">Accessoire(s)</h2>
+      <h2 style="margin-bottom: 50px;">{{ t('customization.title') }}</h2>
 
       <div class="sectionTiles">
-        <p v-if="productsFilter.length == 0" >Aucun accessoire disponible...</p>
+        <p v-if="productsFilter.length == 0" >{{ t('customization.noProduct') }}</p>
 
         <div v-else v-for="item in productsFilter" :key="item.id">
           <TilesAccessoires :item="item" @click="selectItem(item)"
@@ -92,7 +95,7 @@ watch(isOpen, (val) => {
     </div>
 
     <div v-else>
-      <h2 style="margin-bottom: 50px;">Détails de l'accessoire</h2>
+      <h2 style="margin-bottom: 50px;">{{ t('customization.detailAccessories') }}</h2>
       <div class="mainSection">
         <div class="backgroundImg">
           <div class="imgList">
@@ -107,7 +110,7 @@ watch(isOpen, (val) => {
           <p style="font-size: 30px;">+ ${{ itemSelected?.price.toFixed(2) }}</p>
 
           <div v-if="itemSelected?.shade?.length != 0" style="margin-bottom: 20px;">
-            <p style="margin-top: 20px;"><strong>Couleur</strong></p>
+            <p style="margin-top: 20px;"><strong>{{ t('customization.color') }}</strong></p>
             <div style="display: flex;">
               <div v-for="shade in itemSelected?.shade" :key="shade">
                 <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
@@ -117,26 +120,26 @@ watch(isOpen, (val) => {
           </div>
 
           <button v-if="!itemsList.some(i => i.id === itemSelected?.id)"
-            style="width: 100%; margin: 2px; margin-top: 50px;" class="buttonColor" @click="addCart">Ajouter</button>
-          <button v-else style="width: 100%; margin: 2px; margin-top: 50px;" @click="removeCart">Retirer</button>
+            style="width: 100%; margin: 2px; margin-top: 50px;" class="buttonColor" @click="addCart">{{ t('button.add') }}</button>
+          <button v-else style="width: 100%; margin: 2px; margin-top: 50px;" @click="removeCart">{{ t('button.remove') }}</button>
 
           <div style="margin-top: 30px;">
-            <p style="margin-top: 20px;"><strong>Description</strong></p>
+            <p style="margin-top: 20px;"><strong>{{ t('customization.description') }}</strong></p>
             <span>{{ itemSelected?.description }}</span>
           </div>
         </div>
       </div>
 
       <div class="secondSection">
-        <p style="font-size: 25px; margin-bottom: 20px;"><strong>Details</strong></p>
+        <p style="font-size: 25px; margin-bottom: 20px;"><strong>{{ t('customization.detail') }}</strong></p>
         <div style="display: flex;">
           <div style="width: 50%;">
-            <p><strong>Type: </strong> {{ itemSelected?.typeMaking }}</p>
-            <p><strong>Concepteur: </strong> {{ itemSelected?.creator }}</p>
-            <p><strong>Mesure: </strong> {{ itemSelected?.measure }}</p>
+            <p><strong>{{ t('customization.type') }}: </strong> {{ itemSelected?.typeMaking }}</p>
+            <p><strong>{{ t('customization.creator') }}: </strong> {{ itemSelected?.creator }}</p>
+            <p><strong>{{ t('customization.measure') }}: </strong> {{ itemSelected?.measure }}</p>
             <br />
-            <p><strong>Matière: </strong> {{itemSelected?.matter.map(m => m).join(', ')}}</p>
-            <p style="display: flex;"><strong>Entretien: </strong>
+            <p><strong>{{ t('customization.matter') }}: </strong> {{itemSelected?.matter.map(m => m).join(', ')}}</p>
+            <p style="display: flex;"><strong>{{ t('customization.maintenance') }}: </strong>
             <div v-for="maintenance in itemSelected?.maintenance" :key="maintenance">
               <v-icon :icon="maintenance" size="20" class="ml-1"></v-icon>
             </div>
@@ -144,14 +147,14 @@ watch(isOpen, (val) => {
           </div>
 
           <div style="width: 50%;">
-            <strong>Laine: </strong>
+            <strong>{{ t('customization.wool') }}: </strong>
             <br />
             <div style="margin-left: 10px;">
               <div v-for="wool in itemSelected?.wool" :key="wool.compagny">
                 <p><strong>{{ wool.compagny }} - {{ wool.name }}</strong></p>
-                <p>Taille: {{ wool.size }}</p>
-                <p>Couleur: {{ wool.color }}</p>
-                <p>Composition: {{wool.matter.map(m => `${m.type} (${m.percentage}%)`).join(', ')}}</p>
+                <p>{{ t('customization.size') }}: {{ wool.size }}</p>
+                <p>{{ t('customization.color') }}: {{ wool.color }}</p>
+                <p>{{ t('customization.composition') }}: {{wool.matter.map(m => `${m.type} (${m.percentage}%)`).join(', ')}}</p>
                 <br />
               </div>
             </div>

@@ -1,0 +1,18 @@
+{
+    "customization": {
+        "title": "Accessoire(s)",
+        "noProduct": "Aucun accessoire disponible...",
+        "detailAccessories": "Détails de l'accessoire",
+        "color": "Couleur",
+        "size": "Taille",
+        "description": "Description",
+        "detail": "Details",
+        "type": "Type",
+        "creator": "Concepteur",
+        "measure": "Mesure",
+        "matter": "Matière",
+        "maintenance": "Entretien",
+        "wool": "Laine",
+        "composition": "Composition"
+    }
+}
