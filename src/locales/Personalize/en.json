@@ -1,0 +1,14 @@
+{
+    "personalize": {
+        "title": "Custom Order",
+        "name": "Project name",
+        "creator": "Creator",
+        "category": "Category",
+        "matter": "Desired wool",
+        "size": "Size (L x H x W)",
+        "email": "Your email",
+        "description": "Description",
+        "send": "Send request",
+        "sucess": "Your customization request has been successfully sent!"
+    }
+}

@@ -6,16 +6,19 @@ import { Matter } from '../../enum/matter';
 import { Category } from '../../enum/category';
 import type { Custom } from '@/model/custom';
 import { sendEmail } from '@/tools/email'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const validationRules = [
-    (v: string) => !!v || 'Ce champ est requis',
+    (v: string) => !!v || t('rule.required'),
     (v: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
         if (emailRegex.test(v)) {
             return true
         }
-        return 'Veuillez entrer un courriel valide'
+        return t('rule.email')
     }
 ];
 
@@ -62,7 +65,7 @@ const SendRequest = async () => {
         console.error('Erreur:', err)
     }
 
-    alert("Votre demande de personnalisation a été envoyée avec succès !");
+    alert(t('personalize.sucess'));
 }
 
 
@@ -91,38 +94,38 @@ const checkForm = () => {
 <template>
     <ShopMenu />
 
-    <h2>Commande Personnalisée</h2>
+    <h2>{{ t('personalize.title') }}</h2>
 
     <div class="mainSection">
         <div class="leftSection">
             <v-row>
                 <v-col cols="12">
-                    <v-text-field label="Nom projet" density="compact" variant="solo" maxlength="30" hide-details="auto"
+                    <v-text-field :label="t('personalize.name')" density="compact" variant="solo" maxlength="30" hide-details="auto"
                         v-model="customItem.name" />
                 </v-col>
 
                 <v-col cols="12">
-                    <v-select label="Créateur" density="compact" variant="solo" :items="creatorList" hide-details="auto"
+                    <v-select :label="t('personalize.creator')" density="compact" variant="solo" :items="creatorList" hide-details="auto"
                         v-model="customItem.creator" />
                 </v-col>
 
                 <v-col cols="12">
-                    <v-select label="Catégorie" density="compact" variant="solo" :items="categoryList"
+                    <v-select :label="t('personalize.category')" density="compact" variant="solo" :items="categoryList"
                         hide-details="auto" v-model="customItem.category" />
                 </v-col>
 
                 <v-col cols="12">
-                    <v-select label="Laine souhaité" density="compact" variant="solo" multiple :items="matterList"
+                    <v-select :label="t('personalize.matter')" density="compact" variant="solo" multiple :items="matterList"
                         hide-details="auto" v-model="customItem.matter" />
                 </v-col>
 
                 <v-col cols="12">
-                    <v-text-field label="Taille (L x H x l)" density="compact" variant="solo" hide-details="auto"
+                    <v-text-field :label="t('personalize.size')" density="compact" variant="solo" hide-details="auto"
                         v-model="customItem.size" />
                 </v-col>
 
                 <v-col cols="12" class="email">
-                    <v-text-field label="Votre courriel" density="compact" variant="solo" hide-details="auto"
+                    <v-text-field :label="t('personalize.email')" density="compact" variant="solo" hide-details="auto"
                         v-model="customItem.contact" type="email" :rules="validationRules" />
                 </v-col>
             </v-row>
@@ -131,7 +134,7 @@ const checkForm = () => {
         <div class="rightSection">
             <v-row>
                 <v-col cols="12">
-                    <v-textarea label="Description" density="compact" variant="solo" maxlength="800" rows="17"
+                    <v-textarea :label="t('personalize.description')" density="compact" variant="solo" maxlength="800" rows="17"
                         hide-details="auto" v-model="customItem.description" />
                 </v-col>
             </v-row>
@@ -140,7 +143,7 @@ const checkForm = () => {
 
     <div>
         <button style="padding-left: 100px; padding-right: 100px; margin-bottom: 150px;" class="buttonColor"
-            @click="SendRequest()" :disabled="!checkForm()">Envoyer la demande</button>
+            @click="SendRequest()" :disabled="!checkForm()">{{ t('personalize.send') }}</button>
     </div>
 </template>
 

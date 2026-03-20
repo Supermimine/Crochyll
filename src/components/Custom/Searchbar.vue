@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { Product } from '@/model/product';
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const searchQuery = ref('');
 
@@ -25,7 +28,7 @@ defineExpose({
 
 <template>
     <div style="margin-bottom: 50px; max-width: 500px; margin-left: auto; margin-right: auto;">
-        <v-text-field class="search" label="Rechercher des produits..." density="compact" variant="solo" maxlength="100"
+        <v-text-field class="search" :label="t('searchBar.label')" density="compact" variant="solo" maxlength="100"
             hide-details="auto" v-model="searchQuery" append-inner-icon="mdi-magnify" />
     </div>
 </template>

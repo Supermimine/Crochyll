@@ -1,5 +1,12 @@
 {
     "button": {
         "import": "Importer"
+    },
+    "searchBar": {
+        "label": "Rechercher des produits..."
+    },
+    "rule": {
+        "required": "Ce champ est requis",
+        "email": "Veuillez entrer un courriel valide"
     }
 }

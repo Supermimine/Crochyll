@@ -3,7 +3,9 @@ import ShopMenu from '../Menu/ShopMenu.vue';
 import Footer from '../Footer/Footer.vue';
 import Searchbar from '../Custom/Searchbar.vue';
 import Tiles from './Tiles.vue';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 import { data } from '../../data/shopData';
 import { ref } from 'vue';
 import { Category } from '../../enum/category';
@@ -59,12 +61,12 @@ const changeSelectedIndex = (index: number) => {
 
     <section>
         <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px;">
-            Aucun produit disponible pour le moment.
+            {{ t('offert.allNoProduct') }}
         </div>
         <div v-else>
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
-                    <p style="text-align: left;">Nouvelle arrivage</p>
+                    <p style="text-align: left;">{{ t('offert.newArrival') }}</p>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -73,15 +75,15 @@ const changeSelectedIndex = (index: number) => {
                         <Tiles :item="item" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
-                        Aucun produit disponible.
+                        {{ t('offert.noProduct') }}
                     </div>
                 </div>
             </div>
 
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
-                    <p style="text-align: left;">Amigurumi</p>
-                    <a class="showMore" href="/shop/amigurumi" @click="changeSelectedIndex(1)">Afficher plus</a>
+                    <p style="text-align: left;">{{ t('offert.amigurumi') }}</p>
+                    <a class="showMore" href="/shop/amigurumi" @click="changeSelectedIndex(1)">{{ t('offert.showMore') }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -90,15 +92,15 @@ const changeSelectedIndex = (index: number) => {
                         <Tiles :item="item" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
-                        Aucun produit disponible.
+                        {{ t('offert.noProduct') }}
                     </div>
                 </div>
             </div>
 
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
-                    <p style="text-align: left;">Vêtement</p>
-                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">Afficher plus</a>
+                    <p style="text-align: left;">{{ t('offert.clothe') }}</p>
+                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">{{ t('offert.showMore') }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -107,15 +109,15 @@ const changeSelectedIndex = (index: number) => {
                         <Tiles :item="item" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
-                        Aucun produit disponible.
+                        {{ t('offert.noProduct') }}
                     </div>
                 </div>
             </div>
 
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
-                    <p style="text-align: left;">Accessoires</p>
-                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">Afficher plus</a>
+                    <p style="text-align: left;">{{ t('offert.accessories') }}</p>
+                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">{{ t('offert.showMore') }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -124,15 +126,15 @@ const changeSelectedIndex = (index: number) => {
                         <Tiles :item="item" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
-                        Aucun produit disponible.
+                        {{ t('offert.noProduct') }}
                     </div>
                 </div>
             </div>
 
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
-                    <p style="text-align: left;">Patrons</p>
-                    <a class="showMore" href="/shop/pattern" @click="changeSelectedIndex(3)">Afficher plus</a>
+                    <p style="text-align: left;">{{ t('offert.pattern') }}</p>
+                    <a class="showMore" href="/shop/pattern" @click="changeSelectedIndex(3)">{{ t('offert.showMore') }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
@@ -141,7 +143,7 @@ const changeSelectedIndex = (index: number) => {
                         <Tiles :item="item" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
-                        Aucun produit disponible.
+                        {{ t('offert.noProduct') }}
                     </div>
                 </div>
             </div>

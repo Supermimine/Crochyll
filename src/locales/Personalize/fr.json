@@ -1,0 +1,14 @@
+{
+    "personalize": {
+        "title": "Commande Personnalisée",
+        "name": "Nom projet",
+        "creator": "Créateur",
+        "category": "Catégorie",
+        "matter": "Laine souhaité",
+        "size": "Taille (L x H x l)",
+        "email": "Votre courriel",
+        "description": "Description",
+        "send": "Envoyer la demande",
+        "sucess": "Votre demande de personnalisation a été envoyée avec succès !"
+    }
+}

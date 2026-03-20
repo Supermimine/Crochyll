@@ -1,0 +1,13 @@
+{
+    "offert": {
+        "newArrival": "Nouvelle arrivage",
+        "amigurumi": "Amigurumi",
+        "clothe": "Vêtement",
+        "accessories": "Accessoires",
+        "pattern": "Patrons",
+        "showMore": "Afficher plus",
+        "noProduct": "Aucun produit disponible.",
+        "allNoProduct": "Aucun produit disponible pour le moment.",
+        "personalize": "Personnaliser"
+    }
+}

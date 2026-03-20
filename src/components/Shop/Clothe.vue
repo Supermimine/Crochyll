@@ -6,6 +6,9 @@ import Searchbar from '../Custom/Searchbar.vue';
 import { data } from '../../data/shopData';
 import { Category } from '../../enum/category';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
 const productsFilter = data.products.filter(item => item.category === Category.Accessoires || item.category === Category.Clothes);
@@ -22,7 +25,7 @@ const getFilteredProducts = () => {
 
     <section class="sectionTiles">
         <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px; width: 100%;">
-            Aucun produit disponible pour le moment.
+            {{ t('offert.allNoProduct') }}
         </div>
         <router-link v-else v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
             <Tiles :item="item" class="tiles" />

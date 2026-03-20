@@ -2,7 +2,9 @@
 import ShopMenu from '../Menu/ShopMenu.vue';
 import Tiles from './Tiles.vue';
 import Searchbar from '../Custom/Searchbar.vue';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 import { data } from '../../data/shopData';
 import { Category } from '../../enum/category';
 import { ref } from 'vue';
@@ -21,15 +23,12 @@ const getFilteredProducts = () => {
     <Searchbar :items="productsFilter" ref="searchRef" />
 
     <section class="sectionTiles">
-        <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px; width: 100%;">
-            Aucun produit disponible pour le moment.
-        </div>
-        <router-link v-else v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
+        <router-link v-if="getFilteredProducts().length > 0" v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
             <Tiles :item="item" class="tiles" />
         </router-link>
 
         <router-link class="tiles" style="width: 185px; height: 230px;" :to="`/shop/custom`">
-            <p>Personnaliser</p>
+            <p>{{ t('offert.personalize') }}</p>
         </router-link>
     </section>
 </template>
