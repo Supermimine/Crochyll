@@ -1,0 +1,20 @@
+{
+    "detail": {
+        "addAccessory": "Add accessory(ies)",
+        "quantity": "Quantity",
+        "description": "Description",
+        "title": "Details",
+        "addToCart": "Add to cart",
+        "addAccessoryToCart": "Add only accessory to cart",
+        "personalize": "Personalize",
+        "size": "Size",
+        "color": "Color",
+        "type": "Type",
+        "creator": "Designer",
+        "measure": "Measure",
+        "matter": "Matter",
+        "maintenance": "Maintenance",
+        "composition": "Composition",
+        "wool": "Wool"
+    }
+}

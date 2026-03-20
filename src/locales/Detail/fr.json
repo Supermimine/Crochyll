@@ -1,0 +1,20 @@
+{
+    "detail": {
+        "addAccessory": "Ajouter des accessoire(s)",
+        "quantity": "Quantité",
+        "description": "Description",
+        "title": "Details",
+        "addToCart": "Ajouter au panier",
+        "addAccessoryToCart": "Ajouter uniquement accessoire au panier",
+        "personalize": "Personnaliser",
+        "size": "Taille",
+        "color": "Couleur",
+        "type": "Type",
+        "creator": "Concepteur",
+        "measure": "Mesure",
+        "matter": "Matière",
+        "maintenance": "Entretien",
+        "composition": "Composition",
+        "wool": "Laine"
+    }
+}

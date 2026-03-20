@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isOpen = ref(false)
 
@@ -57,10 +60,10 @@ defineExpose({
                 <a class="closeBtn action-text" @click="close">
                     <v-icon icon="mdi-close" size="30" class="ml-1"></v-icon>
                 </a>
-                <p style="font-size: 30px;">Partage</p>
+                <p style="font-size: 30px;">{{ t('share.title') }}</p>
 
                 <button style="width: 100%; margin: 5px;" @click="shareLink">
-                    <span>Lien</span>
+                    <span>{{ t('share.link') }}</span>
                     <v-icon size="20" class="ml-1" icon="mdi-link-variant"></v-icon>
                 </button>
 

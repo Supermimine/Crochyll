@@ -3,7 +3,8 @@
         "import": "Importer",
         "add": "Ajouter",
         "edit": "Modifier",
-        "save": "Sauvegarder"
+        "save": "Sauvegarder",
+        "share": "Partager"
     },
     "searchBar": {
         "label": "Rechercher des produits..."

@@ -5,6 +5,9 @@ import Customization from './Customization.vue';
 import Share from './Share.vue';
 import ShopMenu from '../Menu/ShopMenu.vue';
 import getItem from '../../data/shopData';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 import { Category } from '../../enum/category';
 import { Size } from '../../enum/size';
@@ -85,8 +88,8 @@ useHead({
 
 
         <div v-if="item?.category == Category.Amigurumi">
-          <p><strong>Ajouter des accessoire(s)</strong></p>
-          <button @click="customRef?.open()">Personnaliser</button>
+          <p><strong>{{ t('detail.addAccessory') }}</strong></p>
+          <button @click="customRef?.open()">{{ t('detail.personalize') }}</button>
           <div style="display: flex;">
             <div v-for="miniItem in customRef?.itemsList" class="miniImg">
               <img style="width: inherit; border-radius: 5px;" :src="`/img/${miniItem.image[0]}`" :alt="miniItem.image[0]" :title="miniItem.image[0]" />
@@ -95,14 +98,14 @@ useHead({
         </div>
 
         <div v-if="item?.size?.length != 0" style="margin-bottom: 20px;">
-          <p><strong>Taille</strong></p>
+          <p><strong>{{ t('detail.size') }}</strong></p>
           <button v-for="size in item?.size" :key="size" style="font-size: 12px; margin: 2px;"
             :class="sizeSelected === size ? 'action-border-outside' : ''" @click="sizeSelected = size">{{ size
             }}</button>
         </div>
 
         <div v-if="item?.shade?.length != 0" style="margin-bottom: 20px;">
-          <p><strong>Couleur</strong></p>
+          <p><strong>{{ t('detail.color') }}</strong></p>
           <div style="display: flex;">
             <div v-for="shade in item?.shade" :key="shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
@@ -111,9 +114,9 @@ useHead({
           </div>
         </div>
 
-        <p style="margin-top: 50px;"><strong>Quantité</strong></p>
+        <p style="margin-top: 50px;"><strong>{{ t('detail.quantity') }}</strong></p>
         <div style="margin: auto; display: flex;">
-          <button class="btnQuantity" @click="quantity = Math.max(1, quantity - 1)">-</button>
+          <button class="btnQuantity" @click="quantity = Math.max(1, quantity - 1)" :disabled="quantity == 1">-</button>
           <span style="margin: 10px;">{{ quantity }}</span>
           <button class="btnQuantity" @click="quantity++">+</button>
         </div>
@@ -122,34 +125,34 @@ useHead({
           <span v-if="loading">
             <v-progress-circular color="var(--action-color)" indeterminate></v-progress-circular>
           </span>
-          <span v-else>Ajouter au panier</span>
+          <span v-else>{{ t('detail.addToCart') }}</span>
         </button>
         <button v-if="customRef?.itemsList && customRef.itemsList.length > 0" class="buttonOutsideInverted"
           style="width: 100%; margin: 2px;" @click="addCartItem(false)">
           <span v-if="loading">
             <v-progress-circular color="var(--action-color)" indeterminate></v-progress-circular>
           </span>
-          <span v-else>Ajouter uniquement accessoire au panier</span>
+          <span v-else>{{ t('detail.addAccessoryToCart') }}</span>
         </button>
-        <button class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">Partager</button>
+        <button class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">{{ t('button.share') }}</button>
 
         <div style="margin-top: 30px;">
-          <p style="margin-top: 20px;"><strong>Description</strong></p>
+          <p style="margin-top: 20px;"><strong>{{ t('detail.description') }}</strong></p>
           <span>{{ item?.description }}</span>
         </div>
       </div>
     </div>
 
     <div class="secondSection">
-      <p style="font-size: 25px; margin-bottom: 20px;"><strong>Details</strong></p>
+      <p style="font-size: 25px; margin-bottom: 20px;"><strong>{{ t('detail.title') }}</strong></p>
       <div style="display: flex;">
         <div style="width: 50%;">
-          <p><strong>Type: </strong> {{ item?.typeMaking }}</p>
-          <p><strong>Concepteur: </strong> {{ item?.creator }}</p>
-          <p><strong>Mesure: </strong> {{ item?.measure }}</p>
+          <p><strong>{{ t('detail.type') }}: </strong> {{ item?.typeMaking }}</p>
+          <p><strong>{{ t('detail.creator') }}: </strong> {{ item?.creator }}</p>
+          <p><strong>{{ t('detail.measure') }}: </strong> {{ item?.measure }}</p>
           <br />
-          <p><strong>Matière: </strong> {{item?.matter.map(m => m).join(', ')}}</p>
-          <p style="display: flex;"><strong>Entretien: </strong>
+          <p><strong>{{ t('detail.matter') }}: </strong> {{item?.matter.map(m => m).join(', ')}}</p>
+          <p style="display: flex;"><strong>{{ t('detail.maintenance') }}: </strong>
           <div v-for="maintenance in item?.maintenance" :key="maintenance">
             <v-icon :icon="maintenance" size="20" class="ml-1"></v-icon>
           </div>
@@ -157,14 +160,14 @@ useHead({
         </div>
 
         <div style="width: 50%;">
-          <strong>Laine: </strong>
+          <strong>{{ t('detail.wool') }}: </strong>
           <br />
           <div style="margin-left: 10px;">
             <div v-for="wool in item?.wool" :key="wool.compagny">
               <p><strong>{{ wool.compagny }} - {{ wool.name }}</strong></p>
-              <p>Taille: {{ wool.size }}</p>
-              <p>Couleur: {{ wool.color }}</p>
-              <p>Composition: {{wool.matter.map(m => `${m.type} (${m.percentage}%)`).join(', ')}}</p>
+              <p>{{ t('detail.size') }}: {{ wool.size }}</p>
+              <p>{{ t('detail.color') }}: {{ wool.color }}</p>
+              <p>{{ t('detail.composition') }}: {{wool.matter.map(m => `${m.type} (${m.percentage}%)`).join(', ')}}</p>
               <br />
             </div>
           </div>
