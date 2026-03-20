@@ -16,7 +16,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Châle douceur",
             price: 45.00,
             category: Category.Clothes,
-            description: "TODO",
+            description: {
+                fr:"TODO",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.WolfSoph,
             size: [Size.XS, Size.S, Size.M, Size.L],
@@ -72,7 +75,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Tortue",
             price: 16.00,
             category: Category.Amigurumi,
-            description: "Quoi de plus mignon qu'une petite tortue en peluche ? Cette adorable créature en crochet est parfaite pour les enfants et les amateurs de peluches. Fabriquée avec soin, elle est douce au toucher et idéale pour les câlins. Offrez cette tortue comme cadeau unique et charmant qui apportera un sourire à tous ceux qui la recevront ou pour vous même ;D.",
+            description: {
+                fr:"Quoi de plus mignon qu'une petite tortue en peluche ? Cette adorable créature en crochet est parfaite pour les enfants et les amateurs de peluches. Fabriquée avec soin, elle est douce au toucher et idéale pour les câlins. Offrez cette tortue comme cadeau unique et charmant qui apportera un sourire à tous ceux qui la recevront ou pour vous même ;D.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -118,7 +124,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Koala",
             price: 25.00,
             category: Category.Amigurumi,
-            description: "Ce koala en peluche est un compagnon idéale pour les enfants et amateurs d'animaux en peluche. Ce super animal d'origine d'australie est frabriqué avec soin au crochet.",
+            description: {
+                fr:"Ce koala en peluche est un compagnon idéale pour les enfants et amateurs d'animaux en peluche. Ce super animal d'origine d'australie est frabriqué avec soin au crochet.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -176,7 +185,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Lapin",
             price: 30.00,
             category: Category.Amigurumi,
-            description: "Ce lapin en peluche est un compagnon idéal pour les enfants et les amateurs de peluches. Un adorable petit lapin à oreille tombante en crochet.",
+            description: {
+                fr: "Ce lapin en peluche est un compagnon idéal pour les enfants et les amateurs de peluches. Un adorable petit lapin à oreille tombante en crochet.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -210,7 +222,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Serpent",
             price: 30.00,
             category: Category.Amigurumi,
-            description: "TODO",
+            description: {
+                fr:"TODO",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -244,7 +259,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Arraignée",
             price: 10.00,
             category: Category.Amigurumi,
-            description: "Découvrez notre adorable petite d'araignée en crochet, parfaite pour les décorations d'halloween ou pour les amateurs d'araignées en peluche. Cette petite créature à huit pattes est fabriquée avec soin.",
+            description: {
+                fr: "Découvrez notre adorable petite d'araignée en crochet, parfaite pour les décorations d'halloween ou pour les amateurs d'araignées en peluche. Cette petite créature à huit pattes est fabriquée avec soin.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -278,7 +296,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Arraignée géante",
             price: 80.00,
             category: Category.Amigurumi,
-            description: "Découvrez notre impressionnante grande d'araignée en crochet, parfaite pour les décorations d'halloween ou pour les amateurs d'araignées en peluche. Cette créature à huit pattes est fabriquée avec soin et mesure 120 cm de long, ce qui en fait une pièce maîtresse pour votre collection de peluches ou une décoration unique pour les fêtes d'halloween ou comme oreiller a forme particulière.",
+            description: {
+                fr: "Découvrez notre impressionnante grande d'araignée en crochet, parfaite pour les décorations d'halloween ou pour les amateurs d'araignées en peluche. Cette créature à huit pattes est fabriquée avec soin et mesure 120 cm de long, ce qui en fait une pièce maîtresse pour votre collection de peluches ou une décoration unique pour les fêtes d'halloween ou comme oreiller a forme particulière.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -325,7 +346,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Vachette",
             price: 15.00,
             category: Category.Amigurumi,
-            description: "Cette adorable petite vache poilu en peluche représente une vachette Highland. Avec son pelage doux et son caractère charmant, elle est parfaite pour les tous.",
+            description: {
+                fr: "Cette adorable petite vache poilu en peluche représente une vachette Highland. Avec son pelage doux et son caractère charmant, elle est parfaite pour les tous.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -383,7 +407,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Chèvre",
             price: 15.00,
             category: Category.Amigurumi,
-            description: "Cette adorable petite chèvre assise et avec sa longue barbe est parfaite et simple comme peluche pour tout les ages.",
+            description: {
+                fr: "Cette adorable petite chèvre assise et avec sa longue barbe est parfaite et simple comme peluche pour tout les ages.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -441,7 +468,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Renard",
             price: 50.00,
             category: Category.Amigurumi,
-            description: "Ce renard sur 2 pattes en peluche est un compagnon idéal pour les enfants et les amateurs de peluches. Avec son pelage doux et ses détails soignés il sera le compagnon idéal pour les câlins et les aventures imaginaires.",
+            description: {
+                fr: "Ce renard sur 2 pattes en peluche est un compagnon idéal pour les enfants et les amateurs de peluches. Avec son pelage doux et ses détails soignés il sera le compagnon idéal pour les câlins et les aventures imaginaires.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -499,7 +529,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Pinguin",
             price: 15.00,
             category: Category.Amigurumi,
-            description: "Ce bébé pinguin assis en peluche est un compagnon mignon et adorable qui ce tiens parfaitement dans les mains.",
+            description: {
+                fr: "Ce bébé pinguin assis en peluche est un compagnon mignon et adorable qui ce tiens parfaitement dans les mains.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -569,7 +602,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Souris",
             price: 15.00,
             category: Category.Amigurumi,
-            description: "Cette petit souris sur 2 pattes avec sa long queue, peut prendre plusieurs position et est parfaites pour les situations comiques ou pour les câlins.",
+            description: {
+                fr: "Cette petit souris sur 2 pattes avec sa long queue, peut prendre plusieurs position et est parfaites pour les situations comiques ou pour les câlins.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -615,7 +651,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Raie manta",
             price: 15.00,
             category: Category.Amigurumi,
-            description: "Cette raie manta en peluche est parfaite pour les amateurs d'animaux marins et les collectionneurs d'amigurumi.",
+            description: {
+                fr: "Cette raie manta en peluche est parfaite pour les amateurs d'animaux marins et les collectionneurs d'amigurumi.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -661,7 +700,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Requin baleine",
             price: 35.00,
             category: Category.Amigurumi,
-            description: "TODO",
+            description: {
+                fr:"TODO",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -695,7 +737,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Gnome",
             price: 40.00,
             category: Category.Amigurumi,
-            description: "TODO",
+            description: {
+                fr:"TODO",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -754,7 +799,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Couverture",
             price: 5.00,
             category: Category.AccessoiresAmigurumi,
-            description: "Petite couverture qui pourra accompagner vos peluche partout, ainsi que les abbriller la nuit. Cette accessoire est parfait pour les amigurumies qui ont les mains jointes.",
+            description: {
+                fr: "Petite couverture qui pourra accompagner vos peluche partout, ainsi que les abbriller la nuit. Cette accessoire est parfait pour les amigurumies qui ont les mains jointes.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [Size.XS, Size.S],
@@ -776,7 +824,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Bambou",
             price: 7.00,
             category: Category.AccessoiresAmigurumi,
-            description: "3 petite tige de bambou qui pourrais ressortir et accompagner vos animamaux en crochet. Cette assesoire naturel est idéal pour rendre une peluche unique et avec un air réaliste.",
+            description: {
+                fr: "3 petite tige de bambou qui pourrais ressortir et accompagner vos animamaux en crochet. Cette assesoire naturel est idéal pour rendre une peluche unique et avec un air réaliste.",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
@@ -798,7 +849,10 @@ export const data: { shopName: string; location: string; products: Product[] } =
             name: "Fromage",
             price: 15.00,
             category: Category.AccessoiresAmigurumi,
-            description: "TODO",
+            description: {
+                fr:"TODO",
+                en: "TODO"
+            },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],

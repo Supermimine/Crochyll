@@ -10,7 +10,10 @@ export interface Product {
     name: string;
     price: number;
     category: Category;
-    description: string;
+    description: {
+        fr: string,
+        en: string
+    };
     typeMaking: TypeMaking;
     creator: Creator;
     size: Size[];

@@ -7,7 +7,7 @@ import ShopMenu from '../Menu/ShopMenu.vue';
 import getItem from '../../data/shopData';
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 import { Category } from '../../enum/category';
 import { Size } from '../../enum/size';
@@ -42,12 +42,18 @@ const saveItem = (items: Product[]) => {
   itemsList.value = items;
 }
 
+const description = computed(() =>
+  item?.description?.[locale.value as 'fr' | 'en']
+  ?? item?.description?.fr
+  ?? ''
+)
+
 const schemaOrg = computed(() => ({
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": item!.name,
   "image": [item!.image[0]],
-  "description": item!.description,
+  "description": item!.description.fr,
   "offers": {
     "@type": "Offer",
     "price": item!.price,
@@ -138,7 +144,7 @@ useHead({
 
         <div style="margin-top: 30px;">
           <p style="margin-top: 20px;"><strong>{{ t('detail.description') }}</strong></p>
-          <span>{{ item?.description }}</span>
+          <span>{{ description }}</span>
         </div>
       </div>
     </div>

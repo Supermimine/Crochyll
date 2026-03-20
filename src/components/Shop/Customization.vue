@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import TilesAccessoires from './TilesAccessoires.vue';
 import type { Product } from '@/model/product';
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 import { data } from '../../data/shopData';
 import getItem from '../../data/shopData';
@@ -22,6 +22,12 @@ const colorSelected = ref<string | null>(null);
 const imgSelected = ref<string | undefined>(undefined);
 
 const itemsList = ref<Product[]>([]);
+
+const description = computed(() =>
+  itemSelected.value?.description?.[locale.value as 'fr' | 'en']
+  ?? itemSelected.value?.description?.fr
+  ?? ''
+)
 
 const open = () => {
   isOpen.value = true;
@@ -85,7 +91,7 @@ watch(isOpen, (val) => {
       <h2 style="margin-bottom: 50px;">{{ t('customization.title') }}</h2>
 
       <div class="sectionTiles">
-        <p v-if="productsFilter.length == 0" >{{ t('customization.noProduct') }}</p>
+        <p v-if="productsFilter.length == 0">{{ t('customization.noProduct') }}</p>
 
         <div v-else v-for="item in productsFilter" :key="item.id">
           <TilesAccessoires :item="item" @click="selectItem(item)"
@@ -120,12 +126,14 @@ watch(isOpen, (val) => {
           </div>
 
           <button v-if="!itemsList.some(i => i.id === itemSelected?.id)"
-            style="width: 100%; margin: 2px; margin-top: 50px;" class="buttonColor" @click="addCart">{{ t('button.add') }}</button>
-          <button v-else style="width: 100%; margin: 2px; margin-top: 50px;" @click="removeCart">{{ t('button.remove') }}</button>
+            style="width: 100%; margin: 2px; margin-top: 50px;" class="buttonColor" @click="addCart">{{ t('button.add')
+            }}</button>
+          <button v-else style="width: 100%; margin: 2px; margin-top: 50px;" @click="removeCart">{{ t('button.remove')
+          }}</button>
 
           <div style="margin-top: 30px;">
             <p style="margin-top: 20px;"><strong>{{ t('customization.description') }}</strong></p>
-            <span>{{ itemSelected?.description }}</span>
+            <span>{{ description}}</span>
           </div>
         </div>
       </div>
@@ -154,7 +162,8 @@ watch(isOpen, (val) => {
                 <p><strong>{{ wool.compagny }} - {{ wool.name }}</strong></p>
                 <p>{{ t('customization.size') }}: {{ wool.size }}</p>
                 <p>{{ t('customization.color') }}: {{ wool.color }}</p>
-                <p>{{ t('customization.composition') }}: {{wool.matter.map(m => `${m.type} (${m.percentage}%)`).join(', ')}}</p>
+                <p>{{ t('customization.composition') }}: {{wool.matter.map(m => `${m.type}
+                  (${m.percentage}%)`).join(',')}}</p>
                 <br />
               </div>
             </div>
