@@ -253,42 +253,45 @@ const getStitchColor = (type: StitchType) => {
     }
 };
 
-// Fonction pour obtenir le symbole d'une maille (visu 2D)
+// Fonction SVG pour la prévisualisation 2D
 const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, action: StitchAction, nbTime: number) => {
-    let symbol = '';
+    let base = '';
 
-    // 1. Symbole de base selon le type
     switch (type) {
-        case StitchType.CH: symbol = '○'; break;
-        case StitchType.SC: symbol = '+'; break;
-        case StitchType.HDC: symbol = '⊥'; break;
-        case StitchType.DC: symbol = 'T'; break;
-        case StitchType.TR: symbol = 'Ŧ'; break;
-        case StitchType.TDR: symbol = 'ŧ'; break;
-        case StitchType.SL_ST: symbol = '—'; break;
-        case StitchType.MC: symbol = '◎'; break;
-        case StitchType.SK: symbol = ' '; break;
-        case StitchType.CLOSE: symbol = '◉'; break;
-        default: symbol = '·';
+        case StitchType.CH: base = '○'; break;
+        case StitchType.SC: base = '+'; break;
+        case StitchType.HDC: base = '⊥'; break;
+        case StitchType.DC: base = 'T'; break;
+        case StitchType.TR: base = 'Ŧ'; break;
+        case StitchType.TDR: base = 'ŧ'; break;
+        case StitchType.SL_ST: base = '—'; break;
+        case StitchType.MC: base = '◎'; break;
+        case StitchType.SK: base = ' '; break;
+        case StitchType.CLOSE: base = '◉'; break;
+        default: base = '·';
     }
 
-    // 2. Notation d'action si applicable
-    let notation = '';
-    switch (action) {
-        case StitchAction.INC: notation = `↑${nbTime}`; break;
-        case StitchAction.DEC: notation = `↓${nbTime}`; break;
-        case StitchAction.NULL: notation = ''; break;
+    let content = base;
+    let suffix = '';
+    if (orientation === StitchOrientation.BL) suffix = ' [BL]';
+    if (orientation === StitchOrientation.FL) suffix = ' [FL]';
+
+    if (action !== StitchAction.NULL && nbTime > 0) {
+        const head = action === StitchAction.INC ? 'V' : 'Ʌ';
+        if (type === StitchType.SC) {
+            // SC: V(+...+) ou Ʌ(+...+)
+            content = `${head}(${base.repeat(nbTime)})`;
+        } else {
+            // Autres: VTT...TV ou ɅTT...TɅ
+            content = `${head}${base.repeat(nbTime)}${head}`;
+        }
     }
 
-    // 3. Notation d'orientation si ce n'est pas ALL
-    let orientationSuffix = '';
-    switch (orientation) {
-        case StitchOrientation.BL: orientationSuffix = '[BL]'; break;
-        case StitchOrientation.FL: orientationSuffix = '[FL]'; break;
-        case StitchOrientation.AL: orientationSuffix = ''; break;
-    }
+    const svg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-family="monospace" fill="black">${content}${suffix}</text>
+    </svg>`;
 
-    return `${symbol}${notation}${orientationSuffix}`;
+    return svg;
 };
 
 // Fonction pour obtenir les mailles individuelles d'un rang
@@ -442,9 +445,8 @@ const exportPattern = () => {
                                     class="stitch-circle"
                                     :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
                                     :style="{ backgroundColor: getStitchColor(stitchInfo.type), color: '#000' }"
-                                    :title="`${stitchInfo.type} (${stitchInfo.localIndex + 1}/${stitchInfo.count})`">
-                                    {{ getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action,
-                                    stitchInfo.nbTime) }}
+                                    :title="`${stitchInfo.type} (${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
+                                    v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
                                 </div>
                             </div>
                         </div>
@@ -659,8 +661,8 @@ const exportPattern = () => {
 }
 
 .stitch-circle {
-    width: 22px;
-    height: 22px;
+    min-width: 28px;
+    height: 28px;
     cursor: pointer;
     transition: transform 0.2s;
     display: flex;
