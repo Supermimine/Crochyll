@@ -1,86 +1,49 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import BasicMenu from '../Menu/BasicMenu.vue';
 import Pattern3D from './Pattern3D.vue';
 
-// Enums et interfaces pour les modèles
-enum StitchType {
-    MC = 'mc', // magic circle
-    CH = 'ch', // chain
-    SC = 'sc', // single crochet
-    HDC = 'hdc', // half double crochet
-    DC = 'dc', // double crochet
-    TR = 'tr', // treble crochet
-    TDR = 'tdr', // double treble crochet
-    SL_ST = 'sl st', // slip stitch
-    SK = 'sk', // skip
-    CLOSE = 'close', // maille de fermeture
-}
+import { StitchType } from '@/enum/stitchType';
+import { StitchOrientation } from '@/enum/stitchOrientation';
+import { StitchAction } from '@/enum/stitchAction';
+import type { Row } from '@/model/maker/row';
+import type { Pattern } from '@/model/maker/pattern';
 
-enum StitchOrientation {
-    AL = 'al', // all loop
-    BL = 'bl', // back loop
-    FL = 'fl', // front loop
-}
+const { t } = useI18n();
 
-enum StitchAction {
-    NULL = '',
-    INC = 'inc',
-    DEC = 'dec'
-}
-
-interface Stitch {
-    type: StitchType;
-    orientation: StitchOrientation;
-    action: StitchAction;
-    nbTime: number;
-    count: number;
-}
-
-interface Row {
-    stitches: Stitch[];
-    isCircular?: boolean; // Indique si le rang doit être fermé en cercle
-}
-
-interface Pattern {
-    rows: Row[];
-    yarnSize: string;
-    projectSize: string;
-}
-
-// Données réactives
 const pattern = ref<Pattern>({
     rows: [],
-    yarnSize: '3mm',
-    projectSize: '10cm x 10cm' // Exemple, à calculer plus tard
+    yarnSize: '',
+    projectSize: ''
 });
 
-const yarnSizes = ['2mm', '2.5mm', '3mm', '3.5mm', '4mm', '5mm'];
+const yarnSizes = ['0', '1', '2', '3', '4', '5', '6', '7'];
 
-const stitchTypes = [
-    { value: StitchType.MC, label: 'MC (magic circle)' },
-    { value: StitchType.CH, label: 'CH (chain)' },
-    { value: StitchType.SC, label: 'SC (single crochet)' },
-    { value: StitchType.HDC, label: 'HDC (half double crochet)' },
-    { value: StitchType.DC, label: 'DC (double crochet)' },
-    { value: StitchType.TR, label: 'TR (treble crochet)' },
-    { value: StitchType.TDR, label: 'TDR (double treble crochet)' },
-    { value: StitchType.SL_ST, label: 'SL ST (slip stitch)' },
-    { value: StitchType.SK, label: 'SK (skip)' },
-    { value: StitchType.CLOSE, label: 'CLOSE (maille de fermeture)' },
-];
+const stitchTypes = computed(() => [
+    { value: StitchType.MC, label: t('stitchType.MC') },
+    { value: StitchType.CH, label: t('stitchType.CH') },
+    { value: StitchType.SC, label: t('stitchType.SC') },
+    { value: StitchType.HDC, label: t('stitchType.HDC') },
+    { value: StitchType.DC, label: t('stitchType.DC') },
+    { value: StitchType.TR, label: t('stitchType.TR') },
+    { value: StitchType.TDR, label: t('stitchType.TDR') },
+    { value: StitchType.SL_ST, label: t('stitchType.SL_ST') },
+    { value: StitchType.SK, label: t('stitchType.SK') },
+    { value: StitchType.CLOSE, label: t('stitchType.CLOSE') },
+]);
 
-const stitchOrientations = [
-    { value: StitchOrientation.AL, label: 'AL (all loop) [default]' },
-    { value: StitchOrientation.FL, label: 'FL (front loop)' },
-    { value: StitchOrientation.BL, label: 'BL (back loop)' }
-]
+const stitchOrientations = computed(() => [
+    { value: StitchOrientation.AL, label: t('stitchOrientation.AL') },
+    { value: StitchOrientation.FL, label: t('stitchOrientation.FL') },
+    { value: StitchOrientation.BL, label: t('stitchOrientation.BL') }
+]);
 
-const stitchActions = [
-    { value: StitchAction.NULL, label: '' },
-    { value: StitchAction.INC, label: 'INC (increase)' },
-    { value: StitchAction.DEC, label: 'DEC (decrease)' },
-]
+const stitchActions = computed(() => [
+    { value: StitchAction.NULL, label: t('stitchAction.NULL') },
+    { value: StitchAction.INC, label: t('stitchAction.INC') },
+    { value: StitchAction.DEC, label: t('stitchAction.DEC') },
+]);
 
 // Variables pour les outils
 const selectedRow = ref<number>(0);
@@ -89,7 +52,7 @@ const selectedStitchOritentation = ref<StitchOrientation>(StitchOrientation.AL);
 const selectedStitchAction = ref<StitchAction>(StitchAction.NULL);
 const stitchCount = ref<number>(1);
 const stitchInStitchCount = ref<number>(2);
-const viewMode = ref<'2d' | '3d'>('2d');
+const viewMode = ref<'2d' | '3d' | null>(null);
 
 // Gestion des raccourcis clavier
 const handleKeydown = (event: KeyboardEvent) => {
@@ -114,7 +77,12 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 // Fonctions pour manipuler le patron
 const addRow = () => {
-    pattern.value.rows.push({ stitches: [], isCircular: false });
+    let isCircular = false;
+    if (pattern.value.rows.length - 1 != -1) {
+        isCircular = pattern.value.rows[pattern.value.rows.length - 1].isCircular || false;
+    }
+
+    pattern.value.rows.push({ stitches: [], isCircular: isCircular });
     selectedRow.value = pattern.value.rows.length - 1;
 };
 
@@ -124,7 +92,7 @@ const insertRowBefore = (index: number) => {
 };
 
 const insertRowAfter = (index: number) => {
-    pattern.value.rows.splice(index + 1, 0, { stitches: [], isCircular: false });
+    pattern.value.rows.splice(index + 1, 0, { stitches: [], isCircular: pattern.value.rows[index].isCircular });
     selectedRow.value = index + 1;
 };
 
@@ -140,14 +108,25 @@ const addStitch = () => {
         if (selectedStitchType.value === StitchType.MC) {
             row.isCircular = true; // MC force les rangs circulaires
         }
-        pattern.value.rows[selectedRow.value].stitches.push(
-            {
-                type: selectedStitchType.value,
-                orientation: selectedStitchOritentation.value,
-                action: selectedStitchAction.value,
-                nbTime: stitchInStitchCount.value,
-                count: stitchCount.value
-            });
+
+        const newStitch = {
+            type: selectedStitchType.value,
+            orientation: selectedStitchOritentation.value,
+            action: selectedStitchAction.value,
+            nbTime: stitchInStitchCount.value,
+            count: stitchCount.value
+        };
+        const lastStitch = row.stitches[row.stitches.length - 1] ? JSON.parse(JSON.stringify(row.stitches[row.stitches.length - 1])) : null;
+
+        if (lastStitch &&
+            lastStitch.type === newStitch.type &&
+            lastStitch.orientation === newStitch.orientation &&
+            lastStitch.action === newStitch.action &&
+            lastStitch.nbTime === newStitch.nbTime) {
+            row.stitches[row.stitches.length - 1].count += stitchCount.value;
+        } else {
+            pattern.value.rows[selectedRow.value].stitches.push(newStitch);
+        }
     }
 };
 
@@ -226,17 +205,65 @@ const toggleCircular = (rowIndex: number) => {
     row.isCircular = !row.isCircular;
 };
 
-// Calcul de la taille du projet (simple exemple)
 const calculateProjectSize = computed(() => {
-    // Logique simple : nombre de rangs * 1cm, etc.
-    const rowCount = pattern.value.rows.length;
-    const totalStitches = pattern.value.rows.reduce((sum, row) => sum + row.stitches.reduce((s, stitch) => s + stitch.count, 0), 0);
-    const yarnSizeNum = parseFloat(pattern.value.yarnSize);
-    // Approximation : chaque maille fait environ 0.5 * taille du crochet
-    const width = Math.sqrt(totalStitches) * yarnSizeNum * 0.5;
-    const height = rowCount * yarnSizeNum * 0.5;
+    const yarnSizeNum = getYarnHeight(parseFloat(pattern.value.yarnSize)) / 10;
+
+    let totalHeight = 0;
+    let maxWidthStitches = 0;
+
+    for (const row of pattern.value.rows) {
+        let rowHeight = 0;
+        for (const stitch of row.stitches) {
+            const h = getStitchHeight(stitch.type);
+            if (h > rowHeight) rowHeight = h;
+        }
+        totalHeight += rowHeight;
+
+        let effectiveStitches = 0;
+        for (const stitch of row.stitches) {
+            effectiveStitches += stitch.count;
+            if (stitch.action === StitchAction.INC) {
+                effectiveStitches += (stitch.nbTime - 1) * stitch.count;
+            } else if (stitch.action === StitchAction.DEC) {
+                effectiveStitches -= (stitch.nbTime - 1) * stitch.count;
+            }
+        }
+        if (effectiveStitches > maxWidthStitches) maxWidthStitches = effectiveStitches;
+    }
+    const stitchWidth = 0.5 * yarnSizeNum;
+    const width = maxWidthStitches * stitchWidth;
+    const height = totalHeight;
+
     return `${width.toFixed(1)}cm x ${height.toFixed(1)}cm`;
 });
+
+const getYarnHeight = (size: number): number => {
+    switch (size) {
+        case 0: return 2;
+        case 1: return 2.75;
+        case 2: return 3.5;
+        case 3: return 4.13;
+        case 4: return 5;
+        case 5: return 6.75;
+        case 6: return 10.38;
+        case 7: return 13;
+        default: return 0;
+    }
+};
+
+const getStitchHeight = (type: StitchType) => {
+    switch (type) {
+        case StitchType.CH: return 0.5;
+        case StitchType.SC: return 1;
+        case StitchType.HDC: return 1.5;
+        case StitchType.DC: return 2;
+        case StitchType.TR: return 2.5;
+        case StitchType.TDR: return 3;
+        case StitchType.SL_ST: return 0.5;
+        case StitchType.MC: return 1;
+        default: return 1;
+    }
+};
 
 // Fonction pour obtenir la couleur d'une maille
 const getStitchColor = (type: StitchType) => {
@@ -279,17 +306,25 @@ const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, actio
     if (action !== StitchAction.NULL && nbTime > 0) {
         const head = action === StitchAction.INC ? 'V' : 'Ʌ';
         if (type === StitchType.SC) {
-            // SC: V(+...+) ou Ʌ(+...+)
-            content = `${head}(${base.repeat(nbTime)})`;
+            // SC avec INC: afficher le symbole personnalisé
+            if (action === StitchAction.INC) {
+                content = `V`;
+            } else {
+                content = `${head}(${base.repeat(nbTime)})`;
+            }
         } else {
             // Autres: VTT...TV ou ɅTT...TɅ
             content = `${head}${base.repeat(nbTime)}${head}`;
         }
     }
 
-    const svg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-family="monospace" fill="black">${content}${suffix}</text>
-    </svg>`;
+    const svg = action === StitchAction.INC && type === StitchType.SC ? 
+        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <image href="/img/maker/aug.png" width="24" height="24" />
+        </svg>` :
+        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-family="monospace" fill="black">${content}${suffix}</text>
+        </svg>`;
 
     return svg;
 };
@@ -305,12 +340,10 @@ const getIndividualStitches = (row: Row) => {
     return result;
 };
 
-// Fonction pour générer
 const generatePattern = () => {
     console.log('Patron généré :', pattern.value);
 };
 
-// Lifecycle hooks
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
 });
@@ -319,7 +352,6 @@ onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown);
 });
 
-// Fonction pour exporter le patron en texte
 const exportPattern = () => {
     let text = `Patron de crochet\nTaille du fil: ${pattern.value.yarnSize}\nTaille estimée: ${calculateProjectSize.value}\n\n`;
 
@@ -354,7 +386,7 @@ const exportPattern = () => {
 
         <div class="maker-content">
             <!-- Menu d'outils -->
-            <aside class="tools-menu">
+            <aside v-if="viewMode !== null" class="tools-menu">
                 <h3>Outils de création</h3>
                 <div class="shortcuts">
                     <small>Raccourcis: ALT+A (nouveau rang), ALT+S (exporter), ALT+R (supprimer rang)</small>
@@ -363,7 +395,8 @@ const exportPattern = () => {
                     <small><strong>💡 Conseils:</strong></small><br />
                     <small>• <strong>Cercle (🔄):</strong> Cliquez pour fermer le rang en cercle (joint première et
                         dernière maille)</small><br />
-                    <small>• <strong>Déplacement de mailles:</strong> Cliquer et déplacer pour reclasser les mailles</small><br />
+                    <small>• <strong>Déplacement de mailles:</strong> Cliquer et déplacer pour reclasser les
+                        mailles</small><br />
                     <small>• <strong>Modifier quantité:</strong> Utilisez les flèches ◀▶ dans chaque maille pour
                         modifier leurs quantité</small><br />
                     <small>• <strong>Sélection:</strong> Cliquez sur un rang pour ajouter des mailles dedans</small>
@@ -405,9 +438,10 @@ const exportPattern = () => {
                     <v-text-field v-model.number="stitchCount" type="number" min="1" density="compact" variant="solo"
                         hide-details="auto" />
 
-                    <button class="buttonOutsideInverted" @click="addStitch"
-                        :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0">Ajouter
-                        maille</button>
+                    <button :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0"
+                        class="buttonOutsideInverted" @click="addStitch">
+                        Ajouter maille
+                    </button>
                 </div>
                 <div class="yarn-size">
                     <label>Taille du fil :</label>
@@ -422,21 +456,22 @@ const exportPattern = () => {
             </aside>
 
             <!-- Section principale : visualisation du patron -->
-            <main class="pattern-view">
-                <h2>Patron de crochet</h2>
-                <div class="view-toggle">
+            <main class="pattern-view" :style="{ marginLeft: viewMode !== null ? '300px' : '0' }">
+                <h2>Patron de crochet <span v-if="viewMode !== null">{{ viewMode.toUpperCase() }}</span></h2>
+                <div v-if="viewMode === null" class="view-toggle">
+                    <div>Veuillez choisir une vue pour commencer à créer votre patron :</div>
                     <button class="buttonOutsideInverted" @click="viewMode = '2d'"
                         :class="{ active: viewMode === '2d' }">Vue 2D</button>
                     <button class="buttonOutsideInverted" @click="viewMode = '3d'"
                         :class="{ active: viewMode === '3d' }">Vue 3D</button>
                 </div>
-                <div v-if="pattern.rows.length === 0" class="empty-pattern">
+                <div v-if="pattern.rows.length === 0 && viewMode !== null" class="empty-pattern">
                     Aucun rang ajouté. Utilisez les outils pour commencer.
                 </div>
                 <div v-else>
                     <!-- Prévisualisation visuelle -->
                     <div v-if="viewMode === '2d'" class="preview-section">
-                        <h3>Prévisualisation 2D</h3>
+                        <h3>Prévisualisation</h3>
                         <div class="stitch-grid">
                             <div v-for="(row, rowIndex) in pattern.rows.slice().reverse()"
                                 :key="`grid-row-${pattern.rows.length - 1 - rowIndex}`"
@@ -444,15 +479,14 @@ const exportPattern = () => {
                                 <div v-for="(stitchInfo, index) in getIndividualStitches(row)" :key="index"
                                     class="stitch-circle"
                                     :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
-                                    :style="{ backgroundColor: getStitchColor(stitchInfo.type), color: '#000' }"
-                                    :title="`${stitchInfo.type} (${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
+                                    :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type} (${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
                                     v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div v-else-if="viewMode === '3d'" class="preview-section">
-                        <h3>Prévisualisation 3D</h3>
+                        <h3>Prévisualisation</h3>
                         <Pattern3D :pattern="pattern" />
                     </div>
 
@@ -480,7 +514,8 @@ const exportPattern = () => {
                                     @drop="onDrop($event, rowIndex, stitchIndex)">
                                     <button class="stitch-move" :disabled="stitch.count <= 1"
                                         @click="decreaseStitchCount(rowIndex, stitchIndex)">◀</button>
-                                    <strong>{{ stitch.type }} x{{ stitch.count }}</strong>
+                                    <strong>{{ t(`stitchType.${stitch.type}`).split("(")[0] || stitch.type }} x{{
+                                        stitch.count }}</strong>
                                     <small v-if="stitch.orientation !== StitchOrientation.AL" style="opacity:0.7">[{{
                                         stitch.orientation }}]</small>
                                     <small v-if="stitch.action !== StitchAction.NULL"
@@ -518,6 +553,9 @@ const exportPattern = () => {
     padding: 20px;
     background-color: var(--dark-color);
     border-right: 1px solid #ccc;
+    left: 0;
+    position: absolute;
+    top: 45px;
 }
 
 .tools-menu h3,
@@ -541,7 +579,6 @@ const exportPattern = () => {
 .tools-menu button {
     margin: 5px 0;
     padding: 8px 12px;
-    cursor: pointer;
 }
 
 .stitch-tools {
@@ -628,7 +665,6 @@ const exportPattern = () => {
 .stitch-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
 }
 
 .grid-row {

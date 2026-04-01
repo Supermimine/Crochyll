@@ -173,6 +173,7 @@ const changeSelectedIndex = (index: number) => {
 }
 
 .slide {
+    color: var(--text-color) !important;
     flex: 0 0 calc(23.333% - 14px);
     scroll-snap-align: start;
     transition: transform 0.3s ease;

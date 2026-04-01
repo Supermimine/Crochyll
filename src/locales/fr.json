@@ -13,5 +13,27 @@
     "rule": {
         "required": "Ce champ est requis",
         "email": "Veuillez entrer un courriel valide"
+    },
+    "stitchType": {
+        "MC": "CM (cercle magique)",
+        "CH": "ML (chaînette)",
+        "SC": "MS (maille serrée)",
+        "HDC": "DB (demi-bride)",
+        "DC": "B (bride)",
+        "TR": "DB (double bride)",
+        "TDR": "TDR (triple bride)",
+        "SL_ST": "MC (maille coulée)",
+        "SK": "VIDE (sauter)",
+        "CLOSE": "FERMER (maille de fermeture)"
+    },
+    "stitchOrientation": {
+        "AL": "AL (toutes les boucles) [défaut]",
+        "BL": "BL (boucle arrière)",
+        "FL": "FL (boucle avant)"
+    },
+    "stitchAction": {
+        "NULL": "",
+        "INC": "AUG (augmenter)",
+        "DEC": "DIM (diminuer)"
     }
 }

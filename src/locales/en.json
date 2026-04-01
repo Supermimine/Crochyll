@@ -13,5 +13,27 @@
     "rule": {
         "required": "This field is required",
         "email": "Please enter a valid email address"
+    },
+    "stitchType": {
+        "MC": "MC (magic circle)",
+        "CH": "CH (chain)",
+        "SC": "SC (single crochet)",
+        "HDC": "HDC (half double crochet)",
+        "DC": "DC (double crochet)",
+        "TR": "TR (treble crochet)",
+        "TDR": "TDR (double treble crochet)",
+        "SL_ST": "SL ST (slip stitch)",
+        "SK": "SK (skip)",
+        "CLOSE": "CLOSE (maille de fermeture)"
+    },
+    "stitchOrientation": {
+        "AL": "AL (all loop) [default]",
+        "BL": "BL (back loop)",
+        "FL": "FL (front loop)"
+    },
+    "stitchAction": {
+        "NULL": "",
+        "INC": "INC (increase)",
+        "DEC": "DEC (decrease)"
     }
 }
