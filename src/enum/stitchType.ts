@@ -6,7 +6,7 @@ export enum StitchType {
     DC = 'DC', // double crochet
     TR = 'TR', // treble crochet
     TDR = 'TDR', // double treble crochet
-    SL_ST = 'SL ST', // slip stitch
+    SL_ST = 'SL_ST', // slip stitch
     SK = 'SK', // skip
     CLOSE = 'CLOSE', // maille de fermeture
 }

@@ -280,50 +280,190 @@ const getStitchColor = (type: StitchType) => {
     }
 };
 
-// Fonction SVG pour la prévisualisation 2D
 const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, action: StitchAction, nbTime: number) => {
     let base = '';
 
     switch (type) {
-        case StitchType.CH: base = '○'; break;
-        case StitchType.SC: base = '+'; break;
-        case StitchType.HDC: base = '⊥'; break;
-        case StitchType.DC: base = 'T'; break;
-        case StitchType.TR: base = 'Ŧ'; break;
-        case StitchType.TDR: base = 'ŧ'; break;
-        case StitchType.SL_ST: base = '—'; break;
-        case StitchType.MC: base = '◎'; break;
-        case StitchType.SK: base = ' '; break;
-        case StitchType.CLOSE: base = '◉'; break;
+        case StitchType.CH:
+            base = '<image href="/img/maker/CH.png" width="24" height="24" />';
+            break;
+        case StitchType.SC:
+            if (action === StitchAction.INC) {
+                switch (nbTime) {
+                    case 2: base = '<image href="/img/maker/SC_Aug.png" width="24" height="24" />'; break;
+                    case 3: base = '<image href="/img/maker/SC_Aug3.png" width="24" height="24" />'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = '<image href="/img/maker/SC_Aug.png" width="24" height="24" />'; break;
+                }
+            } else if (action === StitchAction.DEC) {
+                switch (nbTime) {
+                    case 2: base = '<image href="/img/maker/SC_Dim.png" width="24" height="24" />'; break;
+                    case 3: base = '<image href="/img/maker/SC_Dim3.png" width="24" height="24" />'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = '<image href="/img/maker/SC_Dim.png" width="24" height="24" />'; break;
+                }
+            } else {
+                base = '<image href="/img/maker/SC.png" width="24" height="24" />';
+            }
+            break;
+        case StitchType.HDC:
+            if (action === StitchAction.INC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else if (action === StitchAction.DEC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else {
+                base = '<image href="/img/maker/HDC.png" width="24" height="24" />';
+            }
+            break;
+        case StitchType.DC:
+            if (action === StitchAction.INC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else if (action === StitchAction.DEC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else {
+                base = '<image href="/img/maker/DC.png" width="24" height="24" />';
+            }
+            break;
+        case StitchType.TR:
+            if (action === StitchAction.INC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else if (action === StitchAction.DEC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else {
+                base = '<image href="/img/maker/TR.png" width="24" height="24" />';
+            }
+            break;
+        case StitchType.TDR:
+            if (action === StitchAction.INC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else if (action === StitchAction.DEC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else {
+                base = '<text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-family="monospace" fill="black">ŧ</text>';
+            }
+            break;
+        case StitchType.SL_ST:
+            if (action === StitchAction.INC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else if (action === StitchAction.DEC) {
+                switch (nbTime) {
+                    case 2: base = 'TODO'; break;
+                    case 3: base = 'TODO'; break;
+                    case 4: base = 'TODO'; break;
+                    case 5: base = 'TODO'; break;
+                    case 6: base = 'TODO'; break;
+                    case 7: base = 'TODO'; break;
+                    case 8: base = 'TODO'; break;
+                    default: base = 'TODO'; break;
+                }
+            } else {
+                base = '<image href="/img/maker/SL_ST.png" width="24" height="24" />';
+            }
+            break;
+        case StitchType.MC:
+            base = '<image href="/img/maker/MC.png" width="24" height="24" />';
+            break;
+        case StitchType.SK:
+            base = ' ';
+            break;
+        case StitchType.CLOSE:
+            base = '<text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-family="monospace" fill="black">◉</text>';
+            break;
         default: base = '·';
     }
 
-    let content = base;
-    let suffix = '';
-    if (orientation === StitchOrientation.BL) suffix = ' [BL]';
-    if (orientation === StitchOrientation.FL) suffix = ' [FL]';
-
-    if (action !== StitchAction.NULL && nbTime > 0) {
-        const head = action === StitchAction.INC ? 'V' : 'Ʌ';
-        if (type === StitchType.SC) {
-            // SC avec INC: afficher le symbole personnalisé
-            if (action === StitchAction.INC) {
-                content = `V`;
-            } else {
-                content = `${head}(${base.repeat(nbTime)})`;
-            }
-        } else {
-            // Autres: VTT...TV ou ɅTT...TɅ
-            content = `${head}${base.repeat(nbTime)}${head}`;
-        }
-    }
-
-    const svg = action === StitchAction.INC && type === StitchType.SC ? 
+    const svg =
         `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-            <image href="/img/maker/aug.png" width="24" height="24" />
-        </svg>` :
-        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-family="monospace" fill="black">${content}${suffix}</text>
+            ${base}
         </svg>`;
 
     return svg;
@@ -479,7 +619,7 @@ const exportPattern = () => {
                                 <div v-for="(stitchInfo, index) in getIndividualStitches(row)" :key="index"
                                     class="stitch-circle"
                                     :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
-                                    :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type} (${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
+                                    :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
                                     v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
                                 </div>
                             </div>
