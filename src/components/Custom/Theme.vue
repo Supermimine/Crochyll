@@ -5,15 +5,17 @@ import { getTheme } from "@/tools/appTools";
 
 const theme = useTheme();
 
-theme.global.name.value = getTheme();
-document.documentElement.setAttribute("data-theme", theme.global.name.value);
+// Initialize theme
+const initialTheme = getTheme();
+theme.change(initialTheme);
+document.documentElement.setAttribute("data-theme", initialTheme);
 
 const isDark = computed(() => theme.global.current.value.dark);
 
 const toggleTheme = () => {
   const newTheme = isDark.value ? "light" : "dark";
 
-  theme.global.name.value = newTheme;
+  theme.change(newTheme);
   localStorage.setItem("theme", newTheme);
 
   document.documentElement.setAttribute("data-theme", newTheme);
