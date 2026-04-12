@@ -12,6 +12,7 @@ import ReaderView from '../views/ReaderView.vue'
 import FaqView from '../views/FaqView.vue'
 import PolicyView from '../views/PolicyView.vue'
 import LearnView from '../views/LearnView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
@@ -29,7 +30,7 @@ const routes = [
   { path: '/faq', name: 'Faq', component: FaqView },
   { path: '/policy', name: 'Policy', component: PolicyView },
   { path: '/learn', name: 'Learn', component: LearnView },
-  
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView }
 ]
 
 export const router = createRouter({
