@@ -48,21 +48,33 @@ const description = computed(() =>
   ?? ''
 )
 
-const schemaOrg = computed(() => ({
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": item!.name,
-  "image": [item!.image[0]],
-  "description": item!.description.fr,
-  "offers": {
-    "@type": "Offer",
-    "price": item!.price,
-    "priceCurrency": "CAD",
-    "availability": true 
-      ? "https://schema.org/InStock" 
-      : "https://schema.org"
+const schemaOrg = computed(() => {
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+  return {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": item!.name,
+    "image": item!.image.map((img) => `${origin}/img/${img}`),
+    "description": item?.description?.[locale.value as 'fr' | 'en'] ?? item!.description.fr,
+    "sku": item!.id,
+    "category": item!.category,
+    "keywords": item!.keywords.join(', '),
+    "brand": {
+      "@type": "Brand",
+      "name": item!.creator
+    },
+    "url": pageUrl,
+    "offers": {
+      "@type": "Offer",
+      "url": pageUrl,
+      "price": item!.price,
+      "priceCurrency": "CAD",
+      "availability": "https://schema.org/InStock"
+    }
   }
-}))
+})
 
 useHead({
   script: [
