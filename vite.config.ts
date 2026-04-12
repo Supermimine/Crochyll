@@ -19,7 +19,7 @@ export default defineConfig({
         "font-src 'self' https://*.gstatic.com;",
         "frame-src https://*.google.com;",
         "frame-ancestors 'self';",
-        "connect-src 'self' https://*.google.com https://*.gstatic.com ws://localhost:*;",
+        "connect-src 'self' https://*.google.com https://*.gstatic.com https://*.googleapis.com ws://localhost:*;",
         "img-src 'self' data: https:;",
         "base-uri 'self';"
       ].join(' '),

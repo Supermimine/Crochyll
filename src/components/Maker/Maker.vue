@@ -285,33 +285,33 @@ const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, actio
 
     switch (type) {
         case StitchType.CH:
-            base = '<image href="/img/maker/CH.png" width="24" height="24" />';
+            base = '<image href="/img/maker/CH.png" x="0" y="0" width="24" height="24" />';
             break;
         case StitchType.SC:
             if (action === StitchAction.INC) {
                 switch (nbTime) {
-                    case 2: base = '<image href="/img/maker/SC_Aug.png" width="24" height="24" />'; break;
-                    case 3: base = '<image href="/img/maker/SC_Aug3.png" width="24" height="24" />'; break;
+                    case 2: base = '<image href="/img/maker/SC_Aug.png" x="0" y="0" width="24" height="24" />'; break;
+                    case 3: base = '<image href="/img/maker/SC_Aug3.png" x="0" y="0" width="24" height="24" />'; break;
                     case 4: base = 'TODO'; break;
                     case 5: base = 'TODO'; break;
                     case 6: base = 'TODO'; break;
                     case 7: base = 'TODO'; break;
                     case 8: base = 'TODO'; break;
-                    default: base = '<image href="/img/maker/SC_Aug.png" width="24" height="24" />'; break;
+                    default: base = '<image href="/img/maker/SC_Aug.png" x="0" y="0" width="24" height="24" />'; break;
                 }
             } else if (action === StitchAction.DEC) {
                 switch (nbTime) {
-                    case 2: base = '<image href="/img/maker/SC_Dim.png" width="24" height="24" />'; break;
-                    case 3: base = '<image href="/img/maker/SC_Dim3.png" width="24" height="24" />'; break;
+                    case 2: base = '<image href="/img/maker/SC_Dim.png" x="0" y="0" width="24" height="24" />'; break;
+                    case 3: base = '<image href="/img/maker/SC_Dim3.png" x="0" y="0" width="24" height="24" />'; break;
                     case 4: base = 'TODO'; break;
                     case 5: base = 'TODO'; break;
                     case 6: base = 'TODO'; break;
                     case 7: base = 'TODO'; break;
                     case 8: base = 'TODO'; break;
-                    default: base = '<image href="/img/maker/SC_Dim.png" width="24" height="24" />'; break;
+                    default: base = '<image href="/img/maker/SC_Dim.png" x="0" y="0" width="24" height="24" />'; break;
                 }
             } else {
-                base = '<image href="/img/maker/SC.png" width="24" height="24" />';
+                base = '<image href="/img/maker/SC.png" x="0" y="0" width="24" height="24" />';
             }
             break;
         case StitchType.HDC:
@@ -338,7 +338,7 @@ const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, actio
                     default: base = 'TODO'; break;
                 }
             } else {
-                base = '<image href="/img/maker/HDC.png" width="24" height="24" />';
+                base = '<image href="/img/maker/HDC.png" x="0" y="0" width="24" height="24" />';
             }
             break;
         case StitchType.DC:
@@ -365,7 +365,7 @@ const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, actio
                     default: base = 'TODO'; break;
                 }
             } else {
-                base = '<image href="/img/maker/DC.png" width="24" height="24" />';
+                base = '<image href="/img/maker/DC.png" x="0" y="0" width="24" height="24" />';
             }
             break;
         case StitchType.TR:
@@ -392,7 +392,7 @@ const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, actio
                     default: base = 'TODO'; break;
                 }
             } else {
-                base = '<image href="/img/maker/TR.png" width="24" height="24" />';
+                base = '<image href="/img/maker/TR.png" x="0" y="0" width="24" height="24" />';
             }
             break;
         case StitchType.TDR:
@@ -446,11 +446,11 @@ const getStitchSymbol = (type: StitchType, orientation: StitchOrientation, actio
                     default: base = 'TODO'; break;
                 }
             } else {
-                base = '<image href="/img/maker/SL_ST.png" width="24" height="24" />';
+                base = '<image href="/img/maker/SL_ST.png" x="0" y="0" width="24" height="24" />';
             }
             break;
         case StitchType.MC:
-            base = '<image href="/img/maker/MC.png" width="24" height="24" />';
+            base = '<image href="/img/maker/MC.png" x="0" y="0" width="24" height="24" />';
             break;
         case StitchType.SK:
             base = ' ';

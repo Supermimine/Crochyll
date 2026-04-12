@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 import translate from "@/tools/translate";
 import { language } from "../../tools/appTools";
 import { importPdfFile } from "@/tools/pdf/fileImport.service";
+import { sanitizeHtml } from "@/tools/sanitizer";
+import { validatePdfFile } from "@/tools/pdfValidator";
 
 import BasicMenu from "../Menu/BasicMenu.vue";
 import Counter from "./Counter.vue";
@@ -21,6 +23,7 @@ const selectedFile = ref<FilePattern | null>(null);
 const uploadSectionShow = ref(selectedFileIndex.value == null ? true : false);
 
 const loadingImport = ref(false);
+const uploadError = ref<string | null>(null);
 
 const keywordsByConcept: Record<string, Record<string, string[]>> = {
   material: {
@@ -62,14 +65,28 @@ const importFile = async () => {
   input.onchange = async (e) => {
     try {
       loadingImport.value = true;
+      uploadError.value = null;
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
+      // Valider le fichier PDF
+      const validation = await validatePdfFile(file);
+      if (!validation.valid) {
+        uploadError.value = validation.error || 'Erreur de validation du fichier';
+        return;
+      }
+
       const pattern = await importPdfFile(file);
-      if (!pattern) return;
+      if (!pattern) {
+        uploadError.value = 'Erreur lors de la lecture du PDF. Vérifiez que le fichier est valide.';
+        return;
+      }
 
       addFile(pattern);
       filesSectionShow.value = true;
+    } catch (error) {
+      uploadError.value = `Erreur lors de l'import: ${error instanceof Error ? error.message : 'Erreur inconnue'}`;
+      console.error('Erreur import PDF:', error);
     } finally {
       loadingImport.value = false;
     }
@@ -138,6 +155,9 @@ const changeState = (state: number) => {
 
 const translatedSection = ref<string>("");
 const loadingTranslate = ref<boolean>(false);
+
+const sanitizedSection = computed(() => sanitizeHtml(translatedSection.value));
+
 type Concept = keyof typeof keywordsByConcept;
 
 const showSection = async () => {
@@ -281,6 +301,9 @@ watchEffect(() => {
       <div v-if="uploadSectionShow" class="importSection" :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
         <p style="margin-bottom: 10px">{{ t('reader.import.description') }}</p>
         <button class="buttonColor" @click="importFile()">{{ t('button.import') }}</button>
+        <div v-if="uploadError" style="color: #d32f2f; font-weight: bold; margin-top: 10px;">
+          {{ uploadError }}
+        </div>
       </div>
       <br />
       <div v-if="uploadSectionShow" style="opacity: 0.3;">
@@ -303,7 +326,7 @@ watchEffect(() => {
             <a style="right: 30px; position: absolute; cursor: pointer" @click="unSelectedFile()">
               <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
             </a>
-            <div style="text-align: left; white-space: pre-line;" v-html="translatedSection"></div>
+            <div style="text-align: left; white-space: pre-line;" v-html="sanitizedSection"></div>
 
             <div style="display: flex; margin-top: 50px">
               <button class="buttonOutside arrow" style="margin-left: auto; margin-right: 5px" @click="changeState(-1)"
