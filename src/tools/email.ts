@@ -16,6 +16,82 @@ declare global {
   }
 }
 
+const EMAIL_RATE_LIMIT = 3
+const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000
+const RATE_LIMIT_STORAGE_KEY = 'crochyll-email-rate-limit'
+
+interface RateLimitRecord {
+  count: number
+  firstSendAt: number
+}
+
+type RateLimitStore = Record<string, RateLimitRecord>
+
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase()
+}
+
+function getRateLimitStore(): RateLimitStore {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return {}
+  }
+
+  try {
+    const raw = window.localStorage.getItem(RATE_LIMIT_STORAGE_KEY)
+    return raw ? (JSON.parse(raw) as RateLimitStore) : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveRateLimitStore(store: RateLimitStore) {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return
+  }
+
+  window.localStorage.setItem(RATE_LIMIT_STORAGE_KEY, JSON.stringify(store))
+}
+
+function clearExpiredRateLimitEntries(store: RateLimitStore): RateLimitStore {
+  const now = Date.now()
+  Object.keys(store).forEach((key) => {
+    if (now - store[key].firstSendAt > RATE_LIMIT_WINDOW_MS) {
+      delete store[key]
+    }
+  })
+  return store
+}
+
+function checkEmailRateLimit(email: string): string {
+  const normalizedEmail = normalizeEmail(email)
+  const store = clearExpiredRateLimitEntries(getRateLimitStore())
+  const record = store[normalizedEmail]
+
+  if (record && record.count >= EMAIL_RATE_LIMIT) {
+    throw new Error(
+      'Vous avez atteint la limite de 3 emails pour cette adresse sur 24 heures. Réessayez plus tard.'
+    )
+  }
+
+  return normalizedEmail
+}
+
+function incrementEmailRateLimit(normalizedEmail: string) {
+  const store = clearExpiredRateLimitEntries(getRateLimitStore())
+  const now = Date.now()
+  const record = store[normalizedEmail] ?? { count: 0, firstSendAt: now }
+
+  if (now - record.firstSendAt > RATE_LIMIT_WINDOW_MS) {
+    record.count = 0
+    record.firstSendAt = now
+  }
+
+  record.count += 1
+  record.firstSendAt = record.firstSendAt || now
+  store[normalizedEmail] = record
+  saveRateLimitStore(store)
+}
+
 async function executeRecaptcha(): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!recaptchaSiteKey) {
@@ -54,6 +130,8 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
     throw new Error('Adresse email invalide.')
   }
 
+  const normalizedEmail = checkEmailRateLimit(email)
+
   // 1️⃣ Obtenir token reCAPTCHA
   const recaptchaToken = await executeRecaptcha()
 
@@ -68,4 +146,6 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
     },
     publicKey
   )
+
+  incrementEmailRateLimit(normalizedEmail)
 }
