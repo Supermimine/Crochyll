@@ -18,6 +18,11 @@ declare global {
 
 async function executeRecaptcha(): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (!recaptchaSiteKey) {
+      reject('reCAPTCHA Site Key non configurée')
+      return
+    }
+
     if (!window.grecaptcha) {
       reject('reCAPTCHA non chargé')
       return
@@ -34,6 +39,10 @@ async function executeRecaptcha(): Promise<string> {
 
 export async function sendEmail(params: SendEmailParams): Promise<void> {
   const { template, email, message } = params
+
+  if (!serviceId || !publicKey) {
+    throw new Error('Les variables d\'environnement EmailJS ne sont pas configurées')
+  }
 
   if (!template || !email || !message) {
     throw new Error('Tous les champs sont requis.')
@@ -54,8 +63,8 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
     template,
     {
       message: message,
-      email: email
-      //'g-recaptcha-response': recaptchaToken
+      email: email,
+      'g-recaptcha-response': recaptchaToken
     },
     publicKey
   )
