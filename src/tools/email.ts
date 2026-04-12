@@ -1,7 +1,7 @@
 import emailjs from '@emailjs/browser'
 
-const serviceId = 'service_n1ghhyh'
-const publicKey = 'ZCGiw0MyKKSgvlhfr'
+const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
 export interface SendEmailParams {
@@ -39,8 +39,14 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
     throw new Error('Tous les champs sont requis.')
   }
 
+  // Validation de l'email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    throw new Error('Adresse email invalide.')
+  }
+
   // 1️⃣ Obtenir token reCAPTCHA
-  //const recaptchaToken = await executeRecaptcha()
+  const recaptchaToken = await executeRecaptcha()
 
   // 2️⃣ Envoyer email via EmailJS
   await emailjs.send(

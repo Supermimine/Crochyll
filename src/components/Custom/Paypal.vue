@@ -13,8 +13,7 @@ const props = defineProps<{
     totalPrice: number;
 }>();
 
-const CLIENT_ID = 'sb'
-//const CLIENT_ID = 'AbjNOWWB4QMBKXT_KnUqV5ddF08Tpr5jeRXcXaAIt8bnoVomNT-G_D4yGOHE8MmlBUNg17vE4Pf8IJ1X'
+const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'sb'
 let paypal: PayPalNamespace | null = null
 let buttonsRendered = false
 

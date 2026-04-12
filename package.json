@@ -12,7 +12,6 @@
     "@emailjs/browser": "4.4.1",
     "@mdi/font": "7.4.47",
     "@paypal/paypal-js": "9.6.0",
-    "@paypal/paypal-server-sdk": "2.3.0",
     "@types/three": "0.183.1",
     "@unhead/vue": "3.0.2",
     "franc-min": "6.2.0",
