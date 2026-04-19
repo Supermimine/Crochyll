@@ -14,7 +14,7 @@ const { t } = useI18n();
 
 const pattern = ref<Pattern>({
     rows: [],
-    yarnSize: '',
+    yarnSize: '4',
     projectSize: ''
 });
 
@@ -253,13 +253,13 @@ const getYarnHeight = (size: number): number => {
 
 const getStitchHeight = (type: StitchType) => {
     switch (type) {
-        case StitchType.CH: return 0.5;
-        case StitchType.SC: return 1;
-        case StitchType.HDC: return 1.5;
-        case StitchType.DC: return 2;
-        case StitchType.TR: return 2.5;
-        case StitchType.TDR: return 3;
-        case StitchType.SL_ST: return 0.5;
+        case StitchType.CH: return 0.1;
+        case StitchType.SC: return 0.25;
+        case StitchType.HDC: return 0.5;
+        case StitchType.DC: return 0.75;
+        case StitchType.TR: return 1;
+        case StitchType.TDR: return 1.25;
+        case StitchType.SL_ST: return 0.1;
         case StitchType.MC: return 1;
         default: return 1;
     }
@@ -480,6 +480,115 @@ const getIndividualStitches = (row: Row) => {
     return result;
 };
 
+const getStitchStyle = (row: Row, stitchIndex: number, rowIndex: number) => {
+    if (!row.isCircular) return '';
+
+    const stitches = getIndividualStitches(row);
+    const totalStitches = stitches.length;
+
+    const centerX = 100;
+    const centerY = 100;
+
+    // --- Trouver le premier rang circulaire
+    let firstCircularRow: Row | null = null;
+    for (let i = 0; i < pattern.value.rows.length; i++) {
+        if (pattern.value.rows[i].isCircular) {
+            firstCircularRow = pattern.value.rows[i];
+            break;
+        }
+    }
+
+    const firstCircularStitches = firstCircularRow
+        ? getIndividualStitches(firstCircularRow).length
+        : totalStitches;
+
+    const baseRadius = Math.max(10, (firstCircularStitches * 12) / (2 * Math.PI));
+
+    // --- Calcul du radius dynamique basé sur les rangs précédents
+    let dynamicOffset = 0;
+    let circularRowsBefore = 0;
+
+    for (let i = 0; i < rowIndex; i++) {
+        const r = pattern.value.rows[i];
+        if (!r.isCircular) continue;
+
+        circularRowsBefore++;
+
+        const stitchesPrev = getIndividualStitches(r);
+
+        let nullCountPrev = 0;
+        for (const s of stitchesPrev) {
+            if (s.action === StitchAction.NULL) nullCountPrev++;
+            else break;
+        }
+
+        if (nullCountPrev > 0) {
+            dynamicOffset += (nullCountPrev - 1) * 12;
+        } else {
+            dynamicOffset += 18;
+        }
+    }
+
+    const radius = baseRadius + dynamicOffset;
+
+    // --- Compter les NULL du début du rang courant
+    let firstNullGroupCount = 0;
+    for (const stitch of stitches) {
+        if (stitch.action === StitchAction.NULL) {
+            firstNullGroupCount++;
+        } else {
+            break;
+        }
+    }
+
+    const nullBlockHeight =
+        firstNullGroupCount > 0
+            ? (firstNullGroupCount - 1) * 12
+            : 0;
+
+    // --- Placement des mailles NULL entre deux rangs
+    if (circularRowsBefore > 0 && stitchIndex < firstNullGroupCount) {
+        const prevRadius = radius - (
+            firstNullGroupCount > 0
+                ? nullBlockHeight
+                : 18
+        );
+
+        const visualOffset = 3; // ajuste entre 2 et 5 selon rendu
+
+        const gapMiddle = centerY - ((radius + prevRadius) / 2) + visualOffset;
+
+        const spacing = 12;
+        const totalHeight = spacing * (firstNullGroupCount - 1);
+
+        const x = centerX;
+        const y = gapMiddle - totalHeight / 2 + (stitchIndex * spacing);
+
+        const rotation = 90;
+
+        return `position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%) rotate(${rotation}deg);`;
+    }
+
+    // --- Placement circulaire classique
+    const remainingCount = totalStitches - firstNullGroupCount;
+    const startAngle = 270;
+    let angle: number;
+
+    if (remainingCount <= 0) {
+        angle = startAngle + (stitchIndex / totalStitches) * 360;
+    } else {
+        const remainingIndex = stitchIndex - firstNullGroupCount;
+        angle = startAngle + (remainingIndex / remainingCount) * 360;
+    }
+
+    const radian = (angle * Math.PI) / 180;
+
+    const x = centerX + radius * Math.cos(radian);
+    const y = centerY + radius * Math.sin(radian);
+
+    return `position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%) rotate(${angle + 90}deg);`;
+};
+
 const generatePattern = () => {
     console.log('Patron généré :', pattern.value);
 };
@@ -601,9 +710,9 @@ const exportPattern = () => {
                 <div v-if="viewMode === null" class="view-toggle">
                     <div>Veuillez choisir une vue pour commencer à créer votre patron :</div>
                     <button class="buttonOutsideInverted" @click="viewMode = '2d'"
-                        :class="{ active: viewMode === '2d' }">Vue 2D</button>
+                        :class="{ active: viewMode === '2d' }">Patron 2D</button>
                     <button class="buttonOutsideInverted" @click="viewMode = '3d'"
-                        :class="{ active: viewMode === '3d' }">Vue 3D</button>
+                        :class="{ active: viewMode === '3d' }">Patron 3D</button>
                 </div>
                 <div v-if="pattern.rows.length === 0 && viewMode !== null" class="empty-pattern">
                     Aucun rang ajouté. Utilisez les outils pour commencer.
@@ -618,6 +727,7 @@ const exportPattern = () => {
                                 :class="{ 'grid-row-circular': row.isCircular, 'grid-row': !row.isCircular }">
                                 <div v-for="(stitchInfo, index) in getIndividualStitches(row)" :key="index"
                                     class="stitch-circle"
+                                    :style="getStitchStyle(row, index, pattern.rows.length - 1 - rowIndex)"
                                     :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
                                     :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
                                     v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
@@ -805,6 +915,9 @@ const exportPattern = () => {
 .stitch-grid {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-height: 300px;
 }
 
 .grid-row {
@@ -814,26 +927,13 @@ const exportPattern = () => {
 }
 
 .grid-row-circular {
-    display: flex;
-    gap: 2px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 200px;
     height: 200px;
-    border: 2px dashed #999;
-    position: relative;
-}
-
-.grid-row-circular::before {
-    content: 'Cercle';
-    position: absolute;
-    font-size: 10px;
-    color: #999;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
+    pointer-events: none;
 }
 
 .stitch-circle {

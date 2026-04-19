@@ -19,10 +19,11 @@ const { t } = useI18n()
     color: var(--light-color);
     text-align: center;
     padding: 20px 0;
-    margin-top: 30px;
-    width: 120%;
-    left: -10%;
-    position: absolute;
+    margin: 30px calc(-50vw + 50%);
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .link {
@@ -30,12 +31,5 @@ const { t } = useI18n()
 }
 .link:hover {
     opacity: 1;
-}
-
-@media (max-width: 650px) {
-    .footer {
-        width: 100%;
-        left: 0;
-    }
 }
 </style>
