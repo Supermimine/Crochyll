@@ -98,6 +98,9 @@ button {
   -ms-user-select: none;
   user-select: none;
 }
+p {
+  margin: 0;
+}
 
 button:hover {
   border: var(--action-color) 2px solid !important;

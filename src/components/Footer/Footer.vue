@@ -16,7 +16,8 @@ const { t } = useI18n()
 <style scoped>
 .footer {
     background-color: var(--dark-color);
-    color: var(--light-color);
+    color: var(--text-color);
+    opacity: 0.6;
     text-align: center;
     padding: 20px 0;
     margin: 30px calc(-50vw + 50%);
@@ -26,9 +27,6 @@ const { t } = useI18n()
     box-sizing: border-box;
 }
 
-.link {
-    opacity: 0.2;
-}
 .link:hover {
     opacity: 1;
 }

@@ -24,7 +24,7 @@ const { t } = useI18n()
 
 <style scoped>
 .footer {
-  margin-top: 130px;
+  margin-top: 170px;
   position: relative;
 }
 </style>
