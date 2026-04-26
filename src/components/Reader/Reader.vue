@@ -15,6 +15,7 @@ import { getPatternAbbreviations } from "@/tools/pdf/reader/pdfAbbreviation";
 import { getPatternMaterials } from "@/tools/pdf/reader/pdfMaterial";
 import { getPatternHookSize } from "@/tools/pdf/reader/pdfHookSize";
 import { getPatternGauge } from "@/tools/pdf/reader/pdfGauge";
+import { getPatternTips } from "@/tools/pdf/reader/pdfTips";
 
 import BasicMenu from "../Menu/BasicMenu.vue";
 import Counter from "./Counter.vue";
@@ -177,9 +178,11 @@ const showSection = async () => {
     finalSections.push(`<h3><b>Size</b></h3><span>${patternSize}</span>`);
   }
 
+
   // Abbreviations
   const patternAbbreviations = getPatternAbbreviations(sections, lang as 'fra' | 'eng');
   finalSections.push(`<h3><b>Abbreviations</b></h3>${patternAbbreviations}`);
+
 
   // Gauge
   const patternGauge = getPatternGauge(sections, lang as 'fra' | 'eng');
@@ -189,7 +192,10 @@ const showSection = async () => {
 
 
   // Tips/info
-
+  const patternTips = getPatternTips(sections, lang as 'fra' | 'eng');
+  if (patternTips) {
+    finalSections.push(`<h3><b>Tips</b></h3><span>${patternTips}</span>`);
+  }
 
 
   //Pattern
