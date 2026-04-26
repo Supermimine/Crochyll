@@ -25,13 +25,23 @@ const isGaugeSection = (section: string, lang: 'fra' | 'eng') => {
     return gaugeRegex.test(normalizedTitle);
 };
 
-export const getPatternGauge = (sections: string[], lang: 'fra' | 'eng' = 'fra') => {
-    for (const section of sections) {
+export const getPatternGauge = (sections: string[], lang: 'fra' | 'eng' = 'fra'): {
+    gauge: string,
+    sectionIndex: number | null
+} => {
+    for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
         if (isGaugeSection(section, lang)) {
             const cleanSection = section.replace(/<h3>.*?<\/h3>/gs, "").trim();
 
-            return cleanSection;
+            return {
+                gauge: cleanSection,
+                sectionIndex: i
+            };
         }
     }
-    return "";
+    return {
+        gauge: "",
+        sectionIndex: null
+    };
 };

@@ -141,6 +141,7 @@ const showSection = async () => {
   const sections = selectedFile.value.content?.toString().split("***SECTION***") ?? [];
   const lang = selectedFile.value.lang ?? "fra";
   const finalSections = [];
+  let lastIndexCheck: number | null = null;
 
   // Title
   const patternTitle = getPatternTitle(sections);
@@ -148,12 +149,16 @@ const showSection = async () => {
 
 
   // Materials
-  const patternMaterials = getPatternMaterials(sections, lang as 'fra' | 'eng');
+  const patternMaterialsResult = getPatternMaterials(sections, lang as 'fra' | 'eng');
   const patternHookSize = getPatternHookSize(sections, lang as 'fra' | 'eng');
 
-  const yarns = patternMaterials[0]
+  if (patternMaterialsResult.sectionIndex !== null) {
+    lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternMaterialsResult.sectionIndex);
+  }
+
+  const yarns = patternMaterialsResult.materials[0]
     .split(
-      patternMaterials[0].includes('##yarn##')
+      patternMaterialsResult.materials[0].includes('##yarn##')
         ? /##yarn##\s*/
         : /[\n\r,–-]|\s+(?:et|and)\s+/
     )
@@ -162,10 +167,10 @@ const showSection = async () => {
 
   const materials = `<h3><b>Materials</b></h3><span>${patternHookSize}</span>
     ${[
-      patternMaterials[1] ? `<span>Needles</span><br/>` : '',
-      patternMaterials[2] ? `<span>Marker</span><br/>` : '',
-      patternMaterials[3] ? `<span>Stuffing</span><br/>` : '',
-      patternMaterials[4] ? `<span>Safety eyes</span><br/>` : '',
+      patternMaterialsResult.materials[1] ? `<span>Needles</span><br/>` : '',
+      patternMaterialsResult.materials[2] ? `<span>Marker</span><br/>` : '',
+      patternMaterialsResult.materials[3] ? `<span>Stuffing</span><br/>` : '',
+      patternMaterialsResult.materials[4] ? `<span>Safety eyes</span><br/>` : '',
     ].filter(Boolean).join('')}<span>Yarns:</span>
     ${yarns.map((y: string) => `<span style="margin-left: 20px;">- ${y}</span><br/>`).join('')}`;
 
@@ -180,25 +185,39 @@ const showSection = async () => {
 
 
   // Abbreviations
-  const patternAbbreviations = getPatternAbbreviations(sections, lang as 'fra' | 'eng');
-  finalSections.push(`<h3><b>Abbreviations</b></h3>${patternAbbreviations}`);
+  const patternAbbreviationsResult = getPatternAbbreviations(sections, lang as 'fra' | 'eng');
+  if (patternAbbreviationsResult.sectionIndex !== null) {
+    lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternAbbreviationsResult.sectionIndex);
+  }
+  finalSections.push(`<h3><b>Abbreviations</b></h3>${patternAbbreviationsResult.abbreviations}`);
 
 
   // Gauge
-  const patternGauge = getPatternGauge(sections, lang as 'fra' | 'eng');
-  if (patternGauge) {
-    finalSections.push(`<h3><b>Gauge</b></h3><span>${patternGauge}</span>`);
+  const patternGaugeResult = getPatternGauge(sections, lang as 'fra' | 'eng');
+  if (patternGaugeResult.sectionIndex !== null) {
+    lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternGaugeResult.sectionIndex);
+  }
+  if (patternGaugeResult.gauge) {
+    finalSections.push(`<h3><b>Gauge</b></h3><span>${patternGaugeResult.gauge}</span>`);
   }
 
 
   // Tips/info
-  const patternTips = getPatternTips(sections, lang as 'fra' | 'eng');
-  if (patternTips) {
-    finalSections.push(`<h3><b>Tips</b></h3><span>${patternTips}</span>`);
+  const patternTipsResult = getPatternTips(sections, lang as 'fra' | 'eng');
+  if (patternTipsResult.sectionIndex !== null) {
+    lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternTipsResult.sectionIndex);
+  }
+  if (patternTipsResult.tips) {
+    finalSections.push(`<h3><b>Tips</b></h3><span>${patternTipsResult.tips}</span>`);
   }
 
 
   //Pattern
+  lastIndexCheck = lastIndexCheck ? lastIndexCheck + 1 : 0;
+  console.log("lastIndexCheck", lastIndexCheck);
+  const lastSection = sections.slice(lastIndexCheck).join(' ').trim();
+  finalSections.push(lastSection);
+
 
 
 

@@ -25,13 +25,23 @@ const isTipsSection = (section: string, lang: 'fra' | 'eng') => {
     return tipsRegex.test(normalizedTitle);
 };
 
-export const getPatternTips = (sections: string[], lang: 'fra' | 'eng' = 'fra') => {
-    for (const section of sections) {
+export const getPatternTips = (sections: string[], lang: 'fra' | 'eng' = 'fra'): {
+    tips: string,
+    sectionIndex: number | null
+} => {
+    for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
         if (isTipsSection(section, lang)) {
             const cleanSection = section.replace(/<h3>.*?<\/h3>/gs, "").trim();
 
-            return cleanSection;
+            return {
+                tips: cleanSection,
+                sectionIndex: i
+            };
         }
     }
-    return "";
+    return {
+        tips: "",
+        sectionIndex: null
+    };
 };

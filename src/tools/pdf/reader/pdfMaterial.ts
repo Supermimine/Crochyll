@@ -25,14 +25,12 @@ const isMaterialSection = (section: string, lang: 'fra' | 'eng') => {
     return matRegex.test(normalizedTitle);
 };
 
-export const getPatternMaterials = (sections: string[], lang: 'fra' | 'eng' = 'fra'): [
-    string,
-    boolean,
-    boolean,
-    boolean,
-    boolean
-] => {
-    for (const section of sections) {
+export const getPatternMaterials = (sections: string[], lang: 'fra' | 'eng' = 'fra'): {
+    materials: [string, boolean, boolean, boolean, boolean],
+    sectionIndex: number | null
+} => {
+    for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
         if (isMaterialSection(section, lang)) {
             const cleanSection = section.replace(/<h3>.*?<\/h3>/gs, "").trim();
 
@@ -112,14 +110,20 @@ export const getPatternMaterials = (sections: string[], lang: 'fra' | 'eng' = 'f
                 }
             }
 
-            return [
-                yarnLines.join("\n"),
-                hasNeedles,
-                hasMarker,
-                hasStuffing,
-                hasSafetyEyes,
-            ];
+            return {
+                materials: [
+                    yarnLines.join("\n"),
+                    hasNeedles,
+                    hasMarker,
+                    hasStuffing,
+                    hasSafetyEyes,
+                ],
+                sectionIndex: i
+            };
         }
     }
-    return ["", false, false, false, false];
+    return {
+        materials: ["", false, false, false, false],
+        sectionIndex: null
+    };
 };

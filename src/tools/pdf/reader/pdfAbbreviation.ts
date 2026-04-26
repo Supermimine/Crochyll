@@ -25,8 +25,12 @@ const isAbbreviationSection = (section: string, lang: 'fra' | 'eng') => {
     return abbrRegex.test(normalizedTitle);
 };
 
-export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' = 'fra') => {
-    for (const section of sections) {
+export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' = 'fra'): {
+    abbreviations: string,
+    sectionIndex: number | null
+} => {
+    for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
         if (isAbbreviationSection(section, lang)) {
             const cleanSection = section.replace(/<h3>.*?<\/h3>/gs, "").trim();
 
@@ -37,7 +41,6 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
                 fra: [
                     "cm",
                     "m",
-                    "tour",
                     "mc",
                     "br",
                     "ba",
@@ -52,7 +55,6 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
                 eng: [
                     "mr",
                     "st",
-                    "rnd",
                     "slst",
                     "blo",
                     "flo",
@@ -88,8 +90,14 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
                 });
             });
 
-            return abbreviations;
+            return {
+                abbreviations,
+                sectionIndex: i
+            };
         }
     }
-    return "";
+    return {
+        abbreviations: "",
+        sectionIndex: null
+    };
 };
