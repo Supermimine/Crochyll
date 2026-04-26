@@ -10,9 +10,11 @@ import { sanitizeHtml } from "@/tools/sanitizer";
 import { validatePdfFile } from "@/tools/pdfValidator";
 
 import { getPatternTitle } from "@/tools/pdf/reader/pdfTitle";
+import { getPatternSize } from "@/tools/pdf/reader/pdfSize";
 import { getPatternAbbreviations } from "@/tools/pdf/reader/pdfAbbreviation";
 import { getPatternMaterials } from "@/tools/pdf/reader/pdfMaterial";
 import { getPatternHookSize } from "@/tools/pdf/reader/pdfHookSize";
+import { getPatternGauge } from "@/tools/pdf/reader/pdfGauge";
 
 import BasicMenu from "../Menu/BasicMenu.vue";
 import Counter from "./Counter.vue";
@@ -170,19 +172,28 @@ const showSection = async () => {
 
 
   // Project size
-
+  const patternSize = getPatternSize(sections);
+  if (patternSize) {
+    finalSections.push(`<h3><b>Size</b></h3><span>${patternSize}</span>`);
+  }
 
   // Abbreviations
   const patternAbbreviations = getPatternAbbreviations(sections, lang as 'fra' | 'eng');
   finalSections.push(`<h3><b>Abbreviations</b></h3>${patternAbbreviations}`);
 
   // Gauge
+  const patternGauge = getPatternGauge(sections, lang as 'fra' | 'eng');
+  if (patternGauge) {
+    finalSections.push(`<h3><b>Gauge</b></h3><span>${patternGauge}</span>`);
+  }
 
 
   // Tips/info
 
 
+
   //Pattern
+
 
 
   if (!finalSections || selectedFile.value?.state == null) {
@@ -202,14 +213,6 @@ const showSection = async () => {
   } finally {
     loadingTranslate.value = false;
   }
-
-
-  // loadingTranslate.value = true;
-  // if (language() == lang.substring(0, 2)) {
-  //       translatedSection.value = currentSection;
-  //     } else {
-  //       translatedSection.value = await translate(currentSection, lang, language());
-  //     }
 };
 
 interface CounterItem {

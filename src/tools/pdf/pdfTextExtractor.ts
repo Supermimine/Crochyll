@@ -49,6 +49,12 @@ function isSubtitle(line: string): boolean {
   return titleCaseRatio > 0.8;
 }
 
+function isWebsite(line: string): boolean {
+  const urlPattern = /https?:\/\/[^\s]+/i;
+  const domainPattern = /\b(?:www\.)?[a-z0-9-]+\.[a-z]{2,}(?:\.[a-z]{2,})?\b/i;
+  return urlPattern.test(line) || domainPattern.test(line);
+};
+
 async function extractLinesFromPage(page: any): Promise<string[]> {
   const content = await page.getTextContent();
   const items: PdfTextItem[] = content.items.filter(
@@ -137,7 +143,7 @@ async function extractLinesFromPage(page: any): Promise<string[]> {
     const clean = text.trim();
     if (!clean) return;
 
-    if (isSubtitle(clean)) {
+    if (isSubtitle(clean) || isWebsite(clean)) {
       output.push(`***SECTION***<h3><b>${clean}</b></h3>`);
     } else {
       output.push(`${clean}\n`);

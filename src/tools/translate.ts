@@ -1,14 +1,7 @@
 import translate from "translate";
 
 const translateText = async (text: string, from: string, to: string): Promise<string> => {
-    const keywordsAbbreviation = [
-        "abbreviation",
-        "abbreviations",
-        "abréviation",
-        "abréviations",
-        "abreviación",
-        "abreviaciones"
-    ];
+    const keywordsAbbreviation = ["Abbreviations"];
 
     const patternAbbreviation = new RegExp(`<h3>\\s*<b>\\s*(${keywordsAbbreviation.join("|")})`, "i");
     const matchAbbreviation = text.toLowerCase().match(patternAbbreviation);
@@ -72,10 +65,6 @@ const translateText = async (text: string, from: string, to: string): Promise<st
         });
 
         text = text.replace('Abbreviations', await translate('Abbreviations', { to }));
-
-        console.log("text", text);
-        console.log("to", to);
-        console.log("abbreviationArray", abbreviationArray);
 
         abbreviationArray.forEach(x => {
             switch (x.toLowerCase()) {
