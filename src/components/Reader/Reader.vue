@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed } from "vue";
+import { ref, watchEffect, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
@@ -152,13 +152,13 @@ const showSection = async () => {
   const patternHookSize = getPatternHookSize(sections, lang as 'fra' | 'eng');
 
   const yarns = patternMaterials[0]
-  .split(
-    patternMaterials[0].includes('##yarn##')
-      ? /##yarn##\s*/
-      : /[\n\r,–-]|\s+(?:et|and)\s+/
-  )
-  .map((y: string) => y.trim())
-  .filter((y: string) => y.length > 0);
+    .split(
+      patternMaterials[0].includes('##yarn##')
+        ? /##yarn##\s*/
+        : /[\n\r,–-]|\s+(?:et|and)\s+/
+    )
+    .map((y: string) => y.trim())
+    .filter((y: string) => y.length > 0);
 
   const materials = `<h3><b>Materials</b></h3><span>${patternHookSize}</span>
     ${[
@@ -255,6 +255,25 @@ const setActiveCounter = (id: number) => {
 
 watchEffect(() => {
   showSection();
+});
+
+const handleKeyDown = async (event: KeyboardEvent) => {
+  if (event.code === 'ArrowLeft') {
+    event.preventDefault();
+    changeState(-1)
+  }
+  if (event.code === 'ArrowRight') {
+    event.preventDefault();
+    changeState(1)
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown);
 });
 </script>
 
