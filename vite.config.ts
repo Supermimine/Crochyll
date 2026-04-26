@@ -5,12 +5,12 @@ import path from 'path';
 const securityHeaders = {
   'Content-Security-Policy': [
     "default-src 'self';",
-    "script-src 'self' 'unsafe-inline' https://*.google.com https://*.gstatic.com;",
-    "style-src 'self' 'unsafe-inline' https://*.googleapis.com;",
+    "script-src 'self' 'unsafe-inline' https://*.google.com https://*.gstatic.com https://www.paypal.com https://c.paypal.com https://www.sandbox.paypal.com;",
+    "style-src 'self' 'unsafe-inline' https://*.googleapis.com https://www.paypal.com https://www.sandbox.paypal.com;",
     "font-src 'self' https://*.gstatic.com;",
-    "frame-src https://*.google.com;",
+    "frame-src https://*.google.com https://www.paypal.com https://c.paypal.com https://www.sandbox.paypal.com;",
     "frame-ancestors 'self';",
-    "connect-src 'self' https://*.google.com https://*.gstatic.com https://*.googleapis.com ws://localhost:*;",
+    "connect-src 'self' https://*.google.com https://*.gstatic.com https://*.googleapis.com https://www.paypal.com https://c.paypal.com https://api.paypal.com https://www.sandbox.paypal.com ws://localhost:*;",
     "img-src 'self' data: https:;",
     "base-uri 'self';"
   ].join(' '),

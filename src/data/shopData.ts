@@ -806,7 +806,7 @@ export const data: { shopName: string; location: string; products: Product[] } =
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [Size.XS, Size.S],
-            shade: ["Green", "Blue", "Yellow", "Pink", ],
+            shade: ["02", "03", "04", "05"],
             matter: [
                 Matter.Acrylic,
             ],

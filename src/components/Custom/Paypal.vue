@@ -39,7 +39,8 @@ defineExpose({ open })
 
 loadScript({
     clientId: CLIENT_ID,
-    currency: 'CAD'
+    currency: 'CAD',
+    disableFunding: 'credit'
 }).then((pp) => {
     paypal = pp
 })

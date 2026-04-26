@@ -8,6 +8,7 @@ const { t, locale } = useI18n()
 
 import { data } from '../../data/shopData';
 import getItem from '../../data/shopData';
+import { colorData } from '../../data/colorData';
 import { Category } from '../../enum/category';
 
 const isOpen = ref(false);
@@ -120,7 +121,7 @@ watch(isOpen, (val) => {
             <div style="display: flex;">
               <div v-for="shade in itemSelected?.shade" :key="shade">
                 <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                  @click="colorSelected = shade"></span>
+                  @click="colorSelected = shade" :style="`background-color: ${colorData.find(c => c.no === shade)?.hex};`"></span>
               </div>
             </div>
           </div>

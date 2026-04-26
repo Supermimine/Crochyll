@@ -5,6 +5,7 @@ import Customization from './Customization.vue';
 import Share from './Share.vue';
 import ShopMenu from '../Menu/ShopMenu.vue';
 import getItem from '../../data/shopData';
+import { colorData } from '../../data/colorData';
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
@@ -127,7 +128,7 @@ useHead({
           <div style="display: flex;">
             <div v-for="shade in item?.shade" :key="shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                @click="colorSelected = shade"></span>
+                @click="colorSelected = shade" :style="`background-color: ${colorData.find(c => c.no === shade)?.hex};`"></span>
             </div>
           </div>
         </div>

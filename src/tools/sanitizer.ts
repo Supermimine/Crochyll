@@ -19,7 +19,7 @@ export function sanitizeHtml(dirty: string): string {
       'a', 'img'
     ],
     ALLOWED_ATTR: [
-      'href', 'title', 'target', 'src', 'alt', 'width', 'height', 'class'
+      'href', 'title', 'target', 'src', 'alt', 'width', 'height', 'class', 'style'
     ],
     ALLOW_DATA_ATTR: false,
     RETURN_DOM: false

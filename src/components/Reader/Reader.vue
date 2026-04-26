@@ -9,6 +9,11 @@ import { importPdfFile } from "@/tools/pdf/fileImport.service";
 import { sanitizeHtml } from "@/tools/sanitizer";
 import { validatePdfFile } from "@/tools/pdfValidator";
 
+import { getPatternTitle } from "@/tools/pdf/reader/pdfTitle";
+import { getPatternAbbreviations } from "@/tools/pdf/reader/pdfAbbreviation";
+import { getPatternMaterials } from "@/tools/pdf/reader/pdfMaterial";
+import { getPatternHookSize } from "@/tools/pdf/reader/pdfHookSize";
+
 import BasicMenu from "../Menu/BasicMenu.vue";
 import Counter from "./Counter.vue";
 
@@ -24,37 +29,6 @@ const uploadSectionShow = ref(selectedFileIndex.value == null ? true : false);
 
 const loadingImport = ref(false);
 const uploadError = ref<string | null>(null);
-
-const keywordsByConcept: Record<string, Record<string, string[]>> = {
-  material: {
-    fra: ["materiel", "materiaux", "mat."],
-    eng: ["material", "materials", "equipment", "supplies", "mat."],
-  },
-  yarn: {
-    fra: ["laine", "laines"],
-    eng: ["wool", "wl", "wools", "yarn", "yarns", "yrn"],
-  },
-  size: {
-    fra: ["taille", "grandeur", "dimension"],
-    eng: ["size", "dimension"],
-  },
-  measurement: {
-    fra: ["mesure", "mesures"],
-    eng: ["measurement", "measurements"],
-  },
-  information: {
-    fra: ["information", "informations"],
-    eng: ["information", "informations"],
-  },
-  abbreviation: {
-    fra: ["Abréviation", "Abréviations"],
-    eng: ["abbreviation", "abbreviations"],
-  },
-  round: {
-    fra: ["tour", "tours", "rang", "rangs", "rg", "rgs"],
-    eng: ["round", "rounds", "rnd", "rnds", "row", "rows", "rw", "rws"],
-  },
-};
 
 const importFile = async () => {
 
@@ -158,70 +132,84 @@ const loadingTranslate = ref<boolean>(false);
 
 const sanitizedSection = computed(() => sanitizeHtml(translatedSection.value));
 
-type Concept = keyof typeof keywordsByConcept;
-
 const showSection = async () => {
-  const sections = selectedFile.value?.content?.toString().split("***SECTION***") ?? [];
-  const lang = selectedFile.value?.lang ?? "fra";
+  if (selectedFile.value == null) return;
 
-  const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const sections = selectedFile.value.content?.toString().split("***SECTION***") ?? [];
+  const lang = selectedFile.value.lang ?? "fra";
+  const finalSections = [];
 
-  const normalize = (str: string) =>
-    str
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
+  // Title
+  const patternTitle = getPatternTitle(sections);
+  finalSections.push(`<h3 style="margin: 100px 0;text-align: center;"><b>${patternTitle}</b></h3>`);
 
-  const otherConcepts = (Object.keys(keywordsByConcept) as Concept[]).filter(
-    (c) => c !== "round"
-  );
 
-  const otherKeywords = otherConcepts
-    .flatMap((concept) => keywordsByConcept[concept][lang] ?? [])
-    .map((k) => escapeRegex(normalize(k)));
+  // Materials
+  const patternMaterials = getPatternMaterials(sections, lang as 'fra' | 'eng');
+  const patternHookSize = getPatternHookSize(sections, lang as 'fra' | 'eng');
 
-  const roundKeywords = (keywordsByConcept.round?.[lang] ?? []).map((k) =>
-    escapeRegex(normalize(k))
-  );
+  const yarns = patternMaterials[0]
+  .split(
+    patternMaterials[0].includes('##yarn##')
+      ? /##yarn##\s*/
+      : /[\n\r,–-]|\s+(?:et|and)\s+/
+  )
+  .map((y: string) => y.trim())
+  .filter((y: string) => y.length > 0);
 
-  const otherRegex = new RegExp(`\\b(${otherKeywords.join("|")})\\b`);
-  const roundRegex = new RegExp(`\\b(${roundKeywords.join("|")})\\b`);
+  const materials = `<h3><b>Materials</b></h3><span>${patternHookSize}</span>
+    ${[
+      patternMaterials[1] ? `<span>Needles</span><br/>` : '',
+      patternMaterials[2] ? `<span>Marker</span><br/>` : '',
+      patternMaterials[3] ? `<span>Stuffing</span><br/>` : '',
+      patternMaterials[4] ? `<span>Safety eyes</span><br/>` : '',
+    ].filter(Boolean).join('')}<span>Yarns:</span>
+    ${yarns.map((y: string) => `<span style="margin-left: 20px;">- ${y}</span><br/>`).join('')}`;
 
-  const filtrer = sections.filter((section) => {
-    const normalizedSection = normalize(section);
+  finalSections.push(materials);
 
-    if (roundRegex.test(normalizedSection)) {
-      return true;
-    }
 
-    const match = section.match(/<h3>(.*?)<\/h3>/i);
-    if (!match) return false;
+  // Project size
 
-    const normalizedTitle = normalize(match[1]);
 
-    return otherRegex.test(normalizedTitle);
-  });
+  // Abbreviations
+  const patternAbbreviations = getPatternAbbreviations(sections, lang as 'fra' | 'eng');
+  finalSections.push(`<h3><b>Abbreviations</b></h3>${patternAbbreviations}`);
 
-  if (!filtrer || selectedFile.value?.state == null) {
+  // Gauge
+
+
+  // Tips/info
+
+
+  //Pattern
+
+
+  if (!finalSections || selectedFile.value?.state == null) {
     translatedSection.value = "";
     return;
   }
 
+
   loadingTranslate.value = true;
 
   try {
-    const currentSection = filtrer[selectedFile.value.state];
-    if (language() == lang.substring(0, 2)) {
-      translatedSection.value = currentSection;
-    }
+    const currentSection = finalSections[selectedFile.value.state];
 
     translatedSection.value = await translate(currentSection, lang, language());
   } catch (error) {
-    console.error(error);
     translatedSection.value = "Erreur de traduction";
   } finally {
     loadingTranslate.value = false;
   }
+
+
+  // loadingTranslate.value = true;
+  // if (language() == lang.substring(0, 2)) {
+  //       translatedSection.value = currentSection;
+  //     } else {
+  //       translatedSection.value = await translate(currentSection, lang, language());
+  //     }
 };
 
 interface CounterItem {
@@ -298,7 +286,8 @@ watchEffect(() => {
         : '100%',
       marginLeft: filesSectionShow ? '32px' : '0'
     }">
-      <div v-if="uploadSectionShow" class="importSection" :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
+      <div v-if="uploadSectionShow" class="importSection"
+        :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
         <p style="margin-bottom: 10px">{{ t('reader.import.description') }}</p>
         <button class="buttonColor" @click="importFile()">{{ t('button.import') }}</button>
         <div v-if="uploadError" style="color: #d32f2f; font-weight: bold; margin-top: 10px;">
