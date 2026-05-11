@@ -21,13 +21,6 @@ const addCart = async (
   const storageValue = localStorage.getItem('cart');
   let cart: CartItem[] = storageValue ? JSON.parse(storageValue) : [];
 
-  console.log('item: ', item);
-  console.log('colorSelected: ', colorSelected);
-  console.log('sizeSelected: ', sizeSelected);
-  console.log('quantity: ', quantity);
-  console.log('itemsList: ', itemsList);
-  console.log('allCart: ', allCart);
-
   if (allCart && item) {
     const existingEntry = cart.find(
       entry =>

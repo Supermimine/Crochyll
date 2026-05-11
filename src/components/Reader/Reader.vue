@@ -21,10 +21,12 @@ import BasicMenu from "../Menu/BasicMenu.vue";
 import Counter from "./Counter.vue";
 
 import type { FilePattern } from "@/model/filepattern";
+import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";
 
 const filesList = ref<FilePattern[]>(JSON.parse(localStorage.getItem("files") || "[]"));
 const filesSectionShow = ref(filesList.value.length > 0);
 const filesSectionOpen = ref(true);
+const maxState = ref(0);
 
 const selectedFileIndex = ref<number | null>(null);
 const selectedFile = ref<FilePattern | null>(null);
@@ -214,12 +216,11 @@ const showSection = async () => {
 
   //Pattern
   lastIndexCheck = lastIndexCheck ? lastIndexCheck + 1 : 0;
-  console.log("lastIndexCheck", lastIndexCheck);
   const lastSection = sections.slice(lastIndexCheck).join(' ').trim();
-  finalSections.push(lastSection);
+  const patternSectionResult = getPatternSection(lastSection);
+  finalSections.push(...patternSectionResult.finalSection);
 
-
-
+  maxState.value = finalSections.length - 1;
 
   if (!finalSections || selectedFile.value?.state == null) {
     translatedSection.value = "";
@@ -369,7 +370,8 @@ onUnmounted(() => {
                 :disabled="selectedFile?.state == 0">
                 -
               </button>
-              <button class="buttonOutside arrow" style="margin-right: auto; margin-left: 5px" @click="changeState(1)">
+              <button class="buttonOutside arrow" style="margin-right: auto; margin-left: 5px" @click="changeState(1)"
+                :disabled="selectedFile && maxState !== null ? selectedFile.state >= maxState : false">
                 +
               </button>
             </div>

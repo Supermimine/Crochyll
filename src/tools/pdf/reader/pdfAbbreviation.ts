@@ -40,28 +40,28 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
             const abbreviationWords: Record<string, string[]> = {
                 fra: [
                     "cm",
+                    "ch",
                     "m",
                     "mc",
                     "br",
                     "ba",
-                    "ch",
                     "ms",
-                    "db",
                     "b",
+                    "db",
                     "dim",
                     "aug",
                     "augm"
                 ],
                 eng: [
                     "mr",
+                    "ch",
                     "st",
                     "slst",
                     "blo",
                     "flo",
-                    "ch",
                     "sc",
-                    "hdc",
                     "dc",
+                    "hdc",
                     "dec",
                     "inc",
                     "inc"
@@ -84,10 +84,14 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
 
                         if (engEquivalent && !abbreviationArray.includes(engEquivalent)) {
                             abbreviationArray.push(engEquivalent);
-                            abbreviations += `<span>${engEquivalent}</span><br/>`;
                         }
                     }
                 });
+            });
+
+            abbreviationArray = abbreviationArray.sort((a, b) => abbreviationWords.eng.indexOf(a) - abbreviationWords.eng.indexOf(b));
+            abbreviationArray.forEach(engEquivalent => {
+                abbreviations += `<span>${engEquivalent}</span><br/>`;
             });
 
             return {

@@ -20,8 +20,8 @@ const translateText = async (text: string, from: string, to: string): Promise<st
                 "ba",
                 "ch",
                 "ms",
-                "db",
                 "b",
+                "db",
                 "dim",
                 "aug",
                 "augm"
@@ -34,8 +34,8 @@ const translateText = async (text: string, from: string, to: string): Promise<st
                 "flo",
                 "ch",
                 "sc",
-                "hdc",
                 "dc",
+                "hdc",
                 "dec",
                 "inc",
                 "inc"
@@ -65,6 +65,8 @@ const translateText = async (text: string, from: string, to: string): Promise<st
         });
 
         text = text.replace('Abbreviations', await translate('Abbreviations', { to }));
+
+        abbreviationArray = abbreviationArray.sort((a, b) => abbreviationWords.eng.indexOf(a) - abbreviationWords.eng.indexOf(b));
 
         abbreviationArray.forEach(x => {
             switch (x.toLowerCase()) {
@@ -117,18 +119,18 @@ const translateText = async (text: string, from: string, to: string): Promise<st
                         text = text.replace('sc', 'sc = (single crochet)');
                     }
                     break;
-                case "hdc":
-                    if (to === 'fr') {
-                        text = text.replace('hdc', 'db = (demi-bride)');
-                    } else {
-                        text = text.replace('hdc', 'hdc = (half double crochet)');
-                    }
-                    break;
                 case "dc":
                     if (to === 'fr') {
                         text = text.replace('dc', 'b = (bride)');
                     } else {
                         text = text.replace('dc', 'dc = (double crochet)');
+                    }
+                    break;
+                case "hdc":
+                    if (to === 'fr') {
+                        text = text.replace('hdc', 'db = (demi-bride)');
+                    } else {
+                        text = text.replace('hdc', 'hdc = (half double crochet)');
                     }
                     break;
                 case "dec":
