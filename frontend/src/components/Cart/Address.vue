@@ -24,16 +24,63 @@ const addressModel = ref<Address>({
   city: "",
   state: "",
   postalCode: "",
-  country: "CA",
+  country: "",
 })
 
-const postalRegexCanada = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/
+// Validation pour codes postaux et états/provinces
+const stateRequiredCountries = new Set(['CA', 'US', 'AU', 'BR', 'MX', 'IN', 'CN'])
+
+const postalValidationRules: Record<string, { regex: RegExp; required: boolean }> = {
+  CA: { regex: /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/, required: true }, // Canada: A1A 1A1
+  US: { regex: /^\d{5}(-\d{4})?$/, required: true }, // USA: 12345 or 12345-6789
+  GB: { regex: /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i, required: true }, // UK: SW1A 1AA
+  FR: { regex: /^\d{5}$/, required: true }, // France: 75001
+  DE: { regex: /^\d{5}$/, required: true }, // Allemagne: 10115
+  ES: { regex: /^\d{5}$/, required: true }, // Espagne: 28001
+  IT: { regex: /^\d{5}$/, required: true }, // Italie: 00100
+  AU: { regex: /^\d{4}$/, required: true }, // Australie: 2000
+  NZ: { regex: /^\d{4}$/, required: true }, // Nouvelle-Zélande: 1010
+  JP: { regex: /^\d{3}-\d{4}$/, required: true }, // Japon: 100-0001
+  MX: { regex: /^\d{5}$/, required: true }, // Mexique: 06500
+  BR: { regex: /^\d{5}-?\d{3}$/, required: true }, // Brésil: 01310-100
+  IN: { regex: /^\d{6}$/, required: true }, // Inde: 110001
+  CN: { regex: /^\d{6}$/, required: true }, // Chine: 100000
+}
+
+const isStateRequired = computed(() => {
+  return stateRequiredCountries.has(addressModel.value.country)
+})
+
+const addressValid = computed(() => {
+  return (addressModel.value.address1 ?? "").trim().length > 0
+})
+
+const cityValid = computed(() => {
+  return (addressModel.value.city ?? "").trim().length > 0
+})
+
+const stateValid = computed(() => {
+  if (!isStateRequired.value)
+    return true
+  return (addressModel.value.state ?? "").trim().length > 0
+})
 
 const postalValid = computed(() => {
-  if (addressModel.value.country !== "CA")
+  const country = addressModel.value.country
+  const postalCode = addressModel.value.postalCode ?? ""
+
+  // Si le pays n'est pas dans notre liste de validations, accepter n'importe quel format
+  if (!postalValidationRules[country])
     return true
 
-  return postalRegexCanada.test(addressModel.value.postalCode ?? "")
+  const rule = postalValidationRules[country]
+
+  // Si le code postal est vide et non requis, accepter
+  if (!postalCode && !rule.required)
+    return true
+
+  // Sinon, valider le format
+  return rule.regex.test(postalCode)
 
 })
 
@@ -54,6 +101,10 @@ const checkForm = () => {
     return false
   if (!addressModel.value.country)
     return false
+  if (!cityValid.value)
+    return false
+  if (!stateValid.value)
+    return false
   if (!postalValid.value)
     return false
 
@@ -73,39 +124,39 @@ const checkForm = () => {
 
         <p class="title">{{ t('address.title') }}</p>
         <!-- Country -->
-        <v-select v-model="addressModel.country" :items="countries" item-title="name" item-value="code" :label="t('address.country')"
-          variant="outlined" />
+        <v-autocomplete v-model="addressModel.country" :items="countries" item-title="name" item-value="code"
+          :label="t('address.country')" variant="outlined" />
 
-        <!-- Address -->
-        <v-text-field v-model="addressModel.address1" :label="t('address.address')" variant="outlined" />
+        <div v-if="addressModel.country.trim() != ''">
+          <!-- Address -->
+          <v-text-field v-model="addressModel.address1" :label="t('address.address') + ' *'" variant="outlined"
+            :color="!addressValid ? 'error' : ''" />
 
-        <v-text-field v-model="addressModel.address2" :label="t('address.address2')" variant="outlined" />
+          <v-text-field v-model="addressModel.address2" :label="t('address.address2')" variant="outlined" />
 
-        <!-- City State -->
-        <v-row>
-          <v-col cols="6">
-            <v-text-field v-model="addressModel.city" :label="t('address.city')" variant="outlined" />
-          </v-col>
+          <!-- City State -->
+          <v-row>
+            <v-col cols="6">
+              <v-text-field v-model="addressModel.city" :label="t('address.city') + ' *'" variant="outlined"
+                :color="!cityValid ? 'error' : ''" />
+            </v-col>
 
-          <v-col cols="6">
-            <v-text-field v-model="addressModel.state" :label="t('address.state')" variant="outlined" />
-          </v-col>
-        </v-row>
+            <v-col cols="6">
+              <v-text-field v-model="addressModel.state" :label="t('address.state') + (isStateRequired ? ' *' : '')"
+                variant="outlined" :color="!stateValid ? 'error' : ''" />
+            </v-col>
+          </v-row>
 
-        <!-- Postal -->
-        <v-text-field v-model="addressModel.postalCode" :label="t('address.postalCode')" variant="outlined"
-          :color="postalValid ? '' : 'error'" />
-
+          <!-- Postal -->
+          <v-text-field v-model="addressModel.postalCode" :label="t('address.postalCode')" variant="outlined"
+            :color="postalValid ? '' : 'error'" />
+        </div>
         <button style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
           {{ t('button.save') }}
         </button>
-
       </div>
-
     </div>
-
   </div>
-
 </template>
 
 <style scoped>
