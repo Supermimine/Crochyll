@@ -3,7 +3,6 @@ import type { ApiResponse } from '../types';
 
 const router = Router();
 
-// Route health check simple
 router.get('/health', (req: Request, res: Response) => {
   const response: ApiResponse<{ status: string }> = {
     success: true,

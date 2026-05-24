@@ -1,0 +1,28 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.json",
+
+  "compilerOptions": {
+    "types": ["vite/client"],
+
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+
+    "paths": {
+      "@/*": ["src/*"],
+
+      "@core": ["../core/index.ts"],
+      "@core/*": ["../core/*"]
+    }
+  },
+
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue",
+
+    "../core/**/*.ts"
+  ]
+}

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import type { ApiResponse, EmailRequest } from '../types';
+import type { ApiResponse } from '../types';
+import { EmailRequest } from '@core/model/email/emailRequest';
 
 const router = Router();
 

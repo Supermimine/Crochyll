@@ -31,10 +31,10 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // À ajouter : importer et utiliser les routes
 // import healthRoutes from './routes/health';
-// import productRoutes from './routes/products';
+import productRoutes from './routes/products';
 // import emailRoutes from './routes/email';
 // app.use('/api', healthRoutes);
-// app.use('/api', productRoutes);
+app.use('/api', productRoutes);
 // app.use('/api', emailRoutes);
 
 // Middleware pour les erreurs 404
