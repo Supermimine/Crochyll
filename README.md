@@ -10,9 +10,10 @@ Main developer
 
 ## Technologies
 * **Frontend:** [HTML, CSS, TypeScript, VueJs, Vite, Vuetify]
+* **Backend** [NodeJS, TypeScript]
 * **Database:** [JSON file]
 * **Payment:** [Paypal Package]
-* **Email:** [EmailJS]
+* **Email:** [NodeMailer, Smtp]
 
 ## Version history
 * 0.0.1 Initial push (shop and reader -> fondation)
