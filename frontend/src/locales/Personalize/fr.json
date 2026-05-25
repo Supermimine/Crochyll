@@ -6,6 +6,7 @@
         "category": "Catégorie",
         "matter": "Laine souhaité",
         "size": "Taille (L x H x l)",
+        "username": "Votre nom (optionnel)",
         "email": "Votre courriel",
         "description": "Description",
         "send": "Envoyer la demande",

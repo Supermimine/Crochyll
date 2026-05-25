@@ -1,9 +1,21 @@
-import express, { Express, Request, Response } from 'express';
-import cors from 'cors';
+import path from 'path';
 import dotenv from 'dotenv';
 
-// Charger les variables d'environnement
-dotenv.config();
+const envPath = path.resolve(__dirname, '../.env');
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.error('❌ Erreur lors du chargement du fichier .env:', result.error);
+}
+
+import express, { Express, Request, Response } from 'express';
+import cors from 'cors';
+import productRoutes from './routes/products';
+import emailRoutes from './routes/email';
+import { mailerService } from './services/mailer.service';
+
+// Réinitialiser le service Mailer avec les variables d'environnement chargées
+mailerService.reinitialize();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -29,13 +41,10 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// À ajouter : importer et utiliser les routes
-// import healthRoutes from './routes/health';
-import productRoutes from './routes/products';
-// import emailRoutes from './routes/email';
+// Utiliser les routes
 // app.use('/api', healthRoutes);
 app.use('/api', productRoutes);
-// app.use('/api', emailRoutes);
+app.use('/api', emailRoutes);
 
 // Middleware pour les erreurs 404
 app.use((req: Request, res: Response) => {

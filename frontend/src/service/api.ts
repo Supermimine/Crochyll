@@ -128,10 +128,21 @@ class ApiService {
   }
 
   /**
-   * Envoyer un formulaire de contact
+   * Send personalized request email
+   * -------------------------------------
+   * @param contactData The contact data to send in the email
+   * @returns A success message or an error message if the request fails
+   * @throws Will throw an error if there is an issue with the API request
+   * @example
+   * await api.sendPersonalizedRequestEmail({
+   *   username: 'John Doe',
+   *   email: 'john.doe@example.com',
+   *   subject: 'Demande de personnalisation',
+   *   message: 'Bonjour, je souhaiterais commander un article personnalisé...'
+   * });
    */
-  async sendContactForm(contactData: {
-    name: string;
+  async sendPersonalizedRequestEmail(contactData: {
+    username: string;
     email: string;
     subject: string;
     message: string;

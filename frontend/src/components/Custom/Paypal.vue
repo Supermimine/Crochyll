@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import { loadScript, type PayPalNamespace } from '@paypal/paypal-js'
-import { sendEmail } from '@/tools/email'
+import { api } from '@/service/api';
 import { useCart } from '@/service/useCart';
 import type { CartItem } from '@core/model/cartItem';
 const { carts, cleanCart } = useCart();
@@ -91,9 +91,9 @@ watch(isOpen, async (open) => {
             message += '</p>';
 
             try {
-                await sendEmail({
-                    template: 'template_ykspufs',
-                    email: email,
+                await api.sendEmail({
+                    to: email,
+                    subject: "test",
                     message: message
                 });
 

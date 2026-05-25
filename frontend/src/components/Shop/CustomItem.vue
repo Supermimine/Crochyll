@@ -5,7 +5,7 @@ import { Creator } from '@core/enum/creator';
 import { Matter } from '@core/enum/matter';
 import { Category } from '@core/enum/category';
 import type { Custom } from '@core/model/custom';
-import { sendEmail } from '@/tools/email'
+import { api } from '@/service/api';
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -22,18 +22,19 @@ const validationRules = [
     }
 ];
 
-const customItem = ref<Custom>({
+const customItem = ref<Custom & { category: Category.Amigurumi | Category.AccessoiresAmigurumi | Category.Pattern }>({
     name: '',
     description: '',
     creator: Creator.All,
     size: '',
     matter: [Matter.Acrylic, Matter.Cotton, Matter.Wool, Matter.Polyester, Matter.Viscose],
     category: Category.Amigurumi,
+    username: '',
     contact: ''
 });
 const creatorList = Object.values(Creator);
 const matterList = Object.values(Matter);
-const categoryList = Object.values(Category).filter((x) => x != Category.Clothes && x != Category.Accessoires);
+const categoryList = Object.values(Category).filter((x) => x != Category.Clothes && x != Category.Accessoires) as Array<Category.Amigurumi | Category.AccessoiresAmigurumi | Category.Pattern>;
 
 const SendRequest = async () => {
     const requestData = {
@@ -43,22 +44,24 @@ const SendRequest = async () => {
         size: customItem.value.size,
         matter: customItem.value.matter,
         category: customItem.value.category,
+        username: customItem.value.username,
         contact: customItem.value.contact
     };
 
     const message = `
-        <p><b>Nom du projet:</b> ${requestData.name}</p>
-        <p><b>Description:</b> ${requestData.description}</p>
-        <p><b>Créateur:</b> ${requestData.creator}</p>
-        <p><b>Taille:</b> ${requestData.size}</p>
-        <p><b>Matière:</b> ${requestData.matter.join(', ')}</p>
-        <p><b>Catégorie:</b> ${requestData.category}</p>
+        Nom du projet: ${requestData.name}
+        Description: ${requestData.description}
+        Créateur: ${requestData.creator}
+        Taille: ${requestData.size}
+        Matière: ${requestData.matter.join(', ')}
+        Catégorie: ${requestData.category}
     `;
 
     try {
-        await sendEmail({
-            template: 'template_ep7ik97',
+        await api.sendPersonalizedRequestEmail({
+            username: requestData.username,
             email: requestData.contact,
+            subject: "Nouvelle demande de personnalisation",
             message: message
         })
     } catch (err) {
@@ -125,8 +128,16 @@ const checkForm = () => {
                 </v-col>
 
                 <v-col cols="12" class="email">
-                    <v-text-field :label="t('personalize.email')" density="compact" variant="solo" hide-details="auto"
-                        v-model="customItem.contact" type="email" :rules="validationRules" />
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field :label="t('personalize.username')" density="compact" variant="solo" hide-details="auto"
+                                v-model="customItem.username" />
+                        </v-col>
+                        <v-col cols="12">
+                            <v-text-field :label="t('personalize.email')" density="compact" variant="solo" hide-details="auto"
+                                v-model="customItem.contact" type="email" :rules="validationRules" />
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
         </div>
@@ -134,7 +145,7 @@ const checkForm = () => {
         <div class="rightSection">
             <v-row>
                 <v-col cols="12">
-                    <v-textarea :label="t('personalize.description')" density="compact" variant="solo" maxlength="800" rows="17"
+                    <v-textarea :label="t('personalize.description')" density="compact" variant="solo" maxlength="800" rows="20"
                         hide-details="auto" v-model="customItem.description" />
                 </v-col>
             </v-row>

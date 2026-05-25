@@ -1,5 +1,5 @@
-import type { Product } from "@/model/product";
-import { Size } from "@/enum/size";
+import type { Product } from "./product";
+import { Size } from "../enum/size";
 
 export interface CartItem {
     quantity: number;

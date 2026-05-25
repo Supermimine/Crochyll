@@ -6,6 +6,7 @@
         "category": "Category",
         "matter": "Desired wool",
         "size": "Size (L x H x W)",
+        "username": "Your name (optional)",
         "email": "Your email",
         "description": "Description",
         "send": "Send request",

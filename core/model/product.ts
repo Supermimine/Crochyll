@@ -1,9 +1,9 @@
-import type { Category } from "@/enum/category";
-import type { Creator } from "@/enum/creator";
-import type { Maintenance } from "@/enum/maintenance";
-import type { Matter } from "@/enum/matter";
-import type { Size } from "@/enum/size";
-import type { TypeMaking } from "@/enum/typeMaking";
+import type { Category } from "../enum/category";
+import type { Creator } from "../enum/creator";
+import type { Maintenance } from "../enum/maintenance";
+import type { Matter } from "../enum/matter";
+import type { Size } from "../enum/size";
+import type { TypeMaking } from "../enum/typeMaking";
 
 export interface Product {
     id: string;

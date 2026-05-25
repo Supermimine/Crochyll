@@ -1,6 +1,6 @@
-import type { Creator } from "@/enum/creator";
-import type { Matter } from "@/enum/matter";
-import type { Category } from "@/enum/category";
+import type { Creator } from "../enum/creator";
+import type { Matter } from "../enum/matter";
+import type { Category } from "../enum/category";
 
 
 export interface Custom {
@@ -10,5 +10,6 @@ export interface Custom {
     size: string;
     matter: Matter[];
     category: Category;
+    username: string;
     contact: string;
 }
