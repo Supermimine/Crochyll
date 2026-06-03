@@ -18,13 +18,11 @@ const { t } = useI18n()
     background-color: var(--dark-color);
     color: var(--text-color);
     opacity: 0.6;
-    text-align: center;
     padding: 20px 0;
-    margin: 30px calc(-50vw + 50%);
-    width: 100vw;
-    max-width: 100vw;
-    position: relative;
-    box-sizing: border-box;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    height: 200px;
+    margin-top: 170px;
 }
 
 .link:hover {

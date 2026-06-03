@@ -1,11 +1,12 @@
 {
     "home": {
-        "whereGo": "Où allons-nous ?"
+
     },
     "category": {
         "shop": "Magasin",
         "read": "Lecteur de patron",
         "maker": "Constructeur de patron",
+        "myProject": "Mes projets",
         "learn": "Apprendre"
     }
 }

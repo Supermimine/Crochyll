@@ -13,8 +13,8 @@ import language from '../Custom/Language.vue';
             </a>
         </li>
 
-        <li style="float: right; padding: 12px 16px; display: flex; justify-content: center;">
-            <language />
+        <li style="float: right; display: flex; justify-content: center;">
+            <language style="padding: 19px 0 5px 0;" />
             <theme />
         </li>
 

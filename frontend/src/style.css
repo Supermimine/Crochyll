@@ -7,10 +7,17 @@
   color: var(--text-color);
   background-color: var(--main-color);
   --text-color: #fffefe;
-  --main-color: #242424;
+  --inverted-text-color: #161616;
+  --main-color: #292521;
   --action-color: #f08214;
-  --dark-color: #161616;
-  --light-color: #333333;
+  --action-second-color: #f3a455;
+  --dark-color: #201d18;
+  --middle-color: #302b26;
+  --light-color: #423f3a;
+
+  --green-color: #749e76;
+  --yellow-color: #cac46f;
+  --orange-color: #dd9d54;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,25 +28,31 @@
 @media (prefers-color-scheme: light) {
   :root {
     --text-color: #161616;
-    --main-color: #eee2db;
-    --dark-color: #d9cec5;
-    --light-color: #f4e9e3;
+    --inverted-text-color: #fffefe;
+    --main-color: #eeddd4;
+    --dark-color: #dbcabc;
+    --middle-color: #e6d2c9;
+    --light-color: #f8e9e1;
   }
 }
 
 [data-theme="light"] {
   --text-color: #161616;
-  --main-color: #eee2db;
-  --dark-color: #d9cec5;
-  --light-color: #f4e9e3;
+  --inverted-text-color: #fffefe;
+  --main-color: #eeddd4;
+  --dark-color: #dbcabc;
+  --middle-color: #e6d2c9;
+  --light-color: #f8e9e1;
 }
 
 [data-theme="dark"] {
   --text-color: #fffefe;
-  --main-color: #242424;
+  --inverted-text-color: #161616;
+  --main-color: #292521;
   --action-color: #f08214;
-  --dark-color: #161616;
-  --light-color: #333333;
+  --dark-color: #201d18;
+  --middle-color: #302b26;
+  --light-color: #423f3a;
 }
 
 @media screen and (max-width: 650px) {
@@ -98,12 +111,9 @@ button {
   -ms-user-select: none;
   user-select: none;
 }
+
 p {
   margin: 0;
-}
-
-button:hover {
-  border: var(--action-color) 2px solid !important;
 }
 
 button:disabled,
@@ -121,8 +131,10 @@ button[disabled] {
   background-color: transparent !important;
   border: var(--action-color) 2px solid !important;
 }
+
 .buttonOutsideInverted:hover {
   border: var(--dark-color) 2px solid !important;
+  cursor: pointer;
 }
 
 .buttonColor {
@@ -130,7 +142,9 @@ button[disabled] {
 }
 
 .buttonColor:hover {
-  background-color: transparent !important;
+  background-color: var(--action-second-color) !important;
+  color: var(--inverted-text-color) !important;
+  cursor: pointer;
 }
 
 .buttonColorInverted {
@@ -140,6 +154,7 @@ button[disabled] {
 .buttonColorInverted:hover {
   background-color: var(--action-color) !important;
   opacity: 0.8;
+  cursor: pointer;
 }
 
 .action-border:hover {
@@ -187,8 +202,25 @@ button[disabled] {
 }
 
 .disable-text-select {
-  /*Empecher la sélection du texte*/
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.dash-box {
+  position: relative; 
+  box-sizing: border-box;
+}
+.dash-box::before {
+  content: "";
+  position: absolute;
+  
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  
+  border: 2px dashed var(--dark-color); 
+  border-radius: 8px; 
+  pointer-events: none; 
 }

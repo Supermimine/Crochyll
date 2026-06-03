@@ -85,9 +85,9 @@ const changeSelectedIndex = (index: number) => {
         </router-link>
       </li>
 
-      <li style="float: right; padding: 12px 6px 12px 16px;">
-        <language />
-        <theme />
+      <li style="float: right; display: flex;">
+        <language class="unSelectable" style="padding: 16px 5px; margin: auto;" />
+        <theme class="unSelectable" style="padding: 10px 5px;" />
       </li>
     </div>
 
@@ -139,8 +139,8 @@ ul li a {
   color: var(--text-color);
 }
 
-ul li a:hover,
-ul li a.selected {
+ul li a:hover:not(.unSelectable),
+ul li a.selected:not(.unSelectable) {
   background-color: var(--action-color);
 }
 

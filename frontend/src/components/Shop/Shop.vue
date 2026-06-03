@@ -15,7 +15,6 @@ import type { Product } from '@core/model/product';
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
 
 const productsFilter: Product[] = await api.getProducts() || [];
-console.log(productsFilter);
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
 };

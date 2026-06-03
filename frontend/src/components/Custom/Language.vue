@@ -14,9 +14,9 @@ const toggleLanguage = async () => {
 </script>
 
 <template>
-  <span class="languageIcon disable-text-select" style="margin: auto; margin-right: 10px; font-size: small; font-weight: bold;" @click="toggleLanguage">
+  <router-link to="" class="languageIcon disable-text-select" style="font-size: small; font-weight: bold;" @click.prevent="toggleLanguage">
     {{ isFr ? "EN" : "FR" }}
-  </span>
+  </router-link>
 </template>
 
 <style scoped>

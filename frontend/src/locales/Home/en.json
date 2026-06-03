@@ -1,11 +1,12 @@
 {
     "home": {
-        "whereGo": "Where are we going?"
+
     },
     "category": {
         "shop": "Shop",
         "read": "Pattern reader",
         "maker": "Pattern maker",
+        "myProject": "My projects",
         "learn": "Learn"
     }
 }

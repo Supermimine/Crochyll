@@ -114,7 +114,17 @@ class ApiService {
   // ============ EMAILS ============
 
   /**
-   * Envoyer un email générique
+   * Send a simple email
+   * -------------------------------------
+   * @param emailData The email data to send
+   * @return A success message or an error message if the request fails
+   * @throws Will throw an error if there is an issue with the API request
+   * @example
+   * await api.sendEmail({
+   *   to: 'recipient@example.com',
+   *   subject: 'Test Email',
+   *   message: 'This is a test email.'
+   * });
    */
   async sendEmail(emailData: {
     to: string;
@@ -154,7 +164,7 @@ class ApiService {
   }
 }
 
-// Créer une instance unique du service
+// Create a singleton instance of the API service
 export const api = new ApiService();
 
 export default ApiService;

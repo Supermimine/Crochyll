@@ -23,18 +23,17 @@ const toggleTheme = () => {
 </script>
 
 <template>
-  <v-icon
-    :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waxing-crescent'"
-    size="25"
-    @click="toggleTheme"
-    class="themeIcon"
-  />
+  <router-link to="">
+     <v-icon :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waxing-crescent'" size="25" @click="toggleTheme"
+      class="themeIcon" />
+  </router-link>
 </template>
 
 <style scoped>
 .themeIcon {
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .themeIcon:hover {
   color: var(--action-color);
 }
