@@ -155,6 +155,7 @@ onUnmounted(() => {
         <div class="dash-box"
           style="background-color: var(--light-color); padding: 80px 50px; border-radius: 8px; width: 750px;">
           <h2 style="margin-bottom: 35px;" class="disable-text-select">Conserver vos projets!</h2>
+          <p></p>
           <router-link to="/myProject" class="buttonColor" style="padding: 20px 25px; border-radius: 30px;">
             +
           </router-link>
@@ -215,7 +216,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <h2 style="margin-bottom: 15px;" class="disable-text-select">Commencez vos nouveaux projets!</h2>
+    <h2 style="margin-bottom: 15px; margin-top: 150px;" class="disable-text-select">Commencez vos nouveaux projets!</h2>
     <p style="margin-bottom: 30px;">Vous avez toujours voulus un endroit pour lire des pdf de patrons de crochet du monde entier sans devoir faire le travail de traduction, c'est l'endroit idéal!</p>
     <router-link to="/reader" class="buttonColor" style="padding: 12px 22px; border-radius: 30px;">
       Commencer
@@ -288,7 +289,7 @@ onUnmounted(() => {
   position: fixed;
   width: 12px;
   height: 2px;
-  background-color: #000000;
+  background-color: var(--text-color);
   border-radius: 0px;
   pointer-events: none;
   z-index: 9998;
