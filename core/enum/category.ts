@@ -1,7 +1,7 @@
 export enum Category {
-  Amigurumi = "Amigurumi",
-  AccessoiresAmigurumi = "Accessoires Amigurumi",
-  Clothes = "Vêtements",
-  Accessoires = "Accessoires",
-  Pattern = "Patron"
+  Amigurumi = 0,
+  AccessoiresAmigurumi = 1,
+  Clothes = 2,
+  Accessoires = 3,
+  Pattern = 4
 }

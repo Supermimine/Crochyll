@@ -167,11 +167,11 @@ useHead({
       <p style="font-size: 25px; margin-bottom: 20px;"><strong>{{ t('detail.title') }}</strong></p>
       <div style="display: flex;">
         <div style="width: 50%;">
-          <p><strong>{{ t('detail.type') }}: </strong> {{ item?.typeMaking }}</p>
-          <p><strong>{{ t('detail.creator') }}: </strong> {{ item?.creator }}</p>
+          <p><strong>{{ t('detail.type') }}: </strong> {{ t(`enum.typeMaking.${item?.typeMaking}`) }}</p>
+          <p><strong>{{ t('detail.creator') }}: </strong> {{ t(`enum.creator.${item?.creator}`) }}</p>
           <p><strong>{{ t('detail.measure') }}: </strong> {{ item?.measure }}</p>
           <br />
-          <p><strong>{{ t('detail.matter') }}: </strong> {{item?.matter.map((m: string) => m).join(', ')}}</p>
+          <p><strong>{{ t('detail.matter') }}: </strong> {{item?.matter.map((m) => t(`enum.matter.${m}`)).join(', ')}}</p>
           <p style="display: flex;"><strong>{{ t('detail.maintenance') }}: </strong>
           <div v-for="maintenance in item?.maintenance" :key="maintenance">
             <v-icon :icon="maintenance" size="20" class="ml-1"></v-icon>
@@ -185,9 +185,9 @@ useHead({
           <div style="margin-left: 10px;">
             <div v-for="wool in item?.wool" :key="wool.compagny">
               <p><strong>{{ wool.compagny }} - {{ wool.name }}</strong></p>
-              <p>{{ t('detail.size') }}: {{ wool.size }}</p>
+              <p>{{ t('detail.size') }}: {{ t(`enum.sizeWool.${wool.size}`) }}</p>
               <p>{{ t('detail.color') }}: {{ wool.color }}</p>
-              <p>{{ t('detail.composition') }}: {{wool.matter.map((m: { type: string; percentage: number }) => `${m.type} (${m.percentage}%)`).join(', ')}}</p>
+              <p>{{ t('detail.composition') }}: {{wool.matter.map((m: { type: any; percentage: number }) => `${t(`enum.matter.${m.type}`)} (${m.percentage}%)`).join(', ')}}</p>
               <br />
             </div>
           </div>

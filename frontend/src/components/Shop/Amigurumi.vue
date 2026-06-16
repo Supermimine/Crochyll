@@ -12,7 +12,7 @@ import { Category } from '@core/enum/category';
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
 
-const productsFilter = await api.getProductsByCategory(Category.Amigurumi);
+const productsFilter = await api.getProductsByCategory([Category.Amigurumi]);
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
 };

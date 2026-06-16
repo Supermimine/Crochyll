@@ -3,6 +3,7 @@ import type { Creator } from "../enum/creator";
 import type { Maintenance } from "../enum/maintenance";
 import type { Matter } from "../enum/matter";
 import type { Size } from "../enum/size";
+import type { SizeWool } from "../enum/sizeWool";
 import type { TypeMaking } from "../enum/typeMaking";
 
 export interface Product {
@@ -27,7 +28,7 @@ export interface Product {
     wool: {
         compagny: string;
         name: string;
-        size: string;
+        size: SizeWool;
         color: string;
         matter: {
             type: Matter;

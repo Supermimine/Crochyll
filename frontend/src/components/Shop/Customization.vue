@@ -15,7 +15,7 @@ const isOpen = ref(false);
 const isTilesPage = ref(true);
 
 const relatedProduct = await api.getProductById(String(window.location.pathname.split('/').pop()));
-let productsFilter = (await api.getProductsByCategory(Category.AccessoiresAmigurumi)).filter(x => x.relatedProduct?.includes(relatedProduct?.id ?? ''));
+let productsFilter = (await api.getProductsByCategory([Category.AccessoiresAmigurumi])).filter(x => x.relatedProduct?.includes(relatedProduct?.id ?? ''));
 
 const itemSelected = ref<Product | null>(null);
 
@@ -143,11 +143,11 @@ watch(isOpen, (val) => {
         <p style="font-size: 25px; margin-bottom: 20px;"><strong>{{ t('customization.detail') }}</strong></p>
         <div style="display: flex;">
           <div style="width: 50%;">
-            <p><strong>{{ t('customization.type') }}: </strong> {{ itemSelected?.typeMaking }}</p>
-            <p><strong>{{ t('customization.creator') }}: </strong> {{ itemSelected?.creator }}</p>
+            <p><strong>{{ t('customization.type') }}: </strong> {{ t(`enum.typeMaking.${itemSelected?.typeMaking}`) }}</p>
+            <p><strong>{{ t('customization.creator') }}: </strong> {{ t(`enum.creator.${itemSelected?.creator}`) }}</p>
             <p><strong>{{ t('customization.measure') }}: </strong> {{ itemSelected?.measure }}</p>
             <br />
-            <p><strong>{{ t('customization.matter') }}: </strong> {{itemSelected?.matter.map((m: string) => m).join(', ')}}</p>
+            <p><strong>{{ t('customization.matter') }}: </strong> {{itemSelected?.matter.map((m) => t(`enum.matter.${m}`)).join(', ')}}</p>
             <p style="display: flex;"><strong>{{ t('customization.maintenance') }}: </strong>
             <div v-for="maintenance in itemSelected?.maintenance" :key="maintenance">
               <v-icon :icon="maintenance" size="20" class="ml-1"></v-icon>
@@ -161,9 +161,9 @@ watch(isOpen, (val) => {
             <div style="margin-left: 10px;">
               <div v-for="wool in itemSelected?.wool" :key="wool.compagny">
                 <p><strong>{{ wool.compagny }} - {{ wool.name }}</strong></p>
-                <p>{{ t('customization.size') }}: {{ wool.size }}</p>
+                <p>{{ t('customization.size') }}: {{ t(`enum.sizeWool.${wool.size}`) }}</p>
                 <p>{{ t('customization.color') }}: {{ wool.color }}</p>
-                <p>{{ t('customization.composition') }}: {{wool.matter.map(m => `${m.type}
+                <p>{{ t('customization.composition') }}: {{wool.matter.map(m => `${t(`enum.matter.${m.type}`)}
                   (${m.percentage}%)`).join(',')}}</p>
                 <br />
               </div>

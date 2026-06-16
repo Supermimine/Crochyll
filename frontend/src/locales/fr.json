@@ -1,11 +1,55 @@
 {
     "button": {
+        "apply": "Appliquer",
         "import": "Importer",
         "add": "Ajouter",
         "edit": "Modifier",
         "save": "Sauvegarder",
         "share": "Partager",
         "remove": "Retirer"
+    },
+    "enum": {
+        "category": {
+            "0": "Amigurumi",
+            "1": "Accessoires Amigurumi",
+            "2": "Vêtements",
+            "3": "Accessoires",
+            "4": "Patron"
+        },
+        "creator": {
+            "0": "Tous",
+            "1": "WolfSoph",
+            "2": "Supermimine"
+        },
+        "matter": {
+            "0": "Coton",
+            "1": "Laine",
+            "2": "Polyester",
+            "3": "Acrylique",
+            "4": "Viscose"
+        },
+        "size": {
+            "0": "Très petit",
+            "1": "Petit",
+            "2": "Moyen",
+            "3": "Large",
+            "4": "Très large"
+        },
+        "sizeWool": {
+            "0": "0 (Dentelle)",
+            "1": "1 (Super fin)",
+            "2": "2 (Fin)",
+            "3": "3 (Léger)",
+            "4": "4 (Moyen)",
+            "5": "5 (Épais)",
+            "6": "6 (Très épais)",
+            "7": "7 (Jumbo)"
+        },
+        "typeMaking": {
+            "0": "Crochet",
+            "1": "Crochet Tunisien",
+            "2": "Tricot"
+        }
     },
     "searchBar": {
         "label": "Rechercher des produits..."

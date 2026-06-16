@@ -11,7 +11,7 @@ import { Category } from '@core/enum/category';
 import { ref } from 'vue';
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
-const productsFilter = (await api.getProductsByCategory(Category.Pattern)) || [];
+const productsFilter = (await api.getProductsByCategory([Category.Pattern])) || [];
 
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;

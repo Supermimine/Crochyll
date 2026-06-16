@@ -5,6 +5,7 @@
         "delivery": "Livraison",
         "totalPrice": "Prix Total",
         "placeOrder": "Passer la commande",
+        "promoCode": "Code promo",
         "item": "items"
     }
 }

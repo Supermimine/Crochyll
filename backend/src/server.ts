@@ -11,6 +11,7 @@ if (result.error) {
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import productRoutes from './routes/products';
+import promoRoutes from './routes/promo';
 import emailRoutes from './routes/email';
 import { mailerService } from './services/mailer.service';
 
@@ -44,6 +45,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 // Utiliser les routes
 // app.use('/api', healthRoutes);
 app.use('/api', productRoutes);
+app.use('/api', promoRoutes);
 app.use('/api', emailRoutes);
 
 // Middleware pour les erreurs 404

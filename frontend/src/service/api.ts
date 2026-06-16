@@ -1,5 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
+import type { Promo } from '@core';
 import type { Category } from '@core/enum/category';
 import type { Product } from '@core/model/product';
 
@@ -99,13 +100,32 @@ class ApiService {
    * @returns An array of products or an error message if the request fails
    * @throws Will throw an error if the products is not found or if there is an issue with the API request
    * @example
-   * const products = await api.getProductsByCategory(Category.Amigurumi);
+   * const products = await api.getProductsByCategory([Category.Amigurumi]);
    */
-  async getProductsByCategory(category: Category): Promise<Product[]> {
-    const response: ApiResponse<Product[]> = await this.request(`/api/products/category/${category}`);
+  async getProductsByCategory(category: Category[]): Promise<Product[]> {
+    const response: ApiResponse<Product[]> = await this.request(`/api/products/category/${category.join(',')}`);
 
       if (!response.success || !response.data) {
         throw new Error('Products not found');
+      }
+
+    return response.data;    
+  }
+
+  // ============ PROMO CODES ============
+    /**
+   * Get promo code
+   * -------------------------------------
+   * @returns An array of promo codes or an error message if the request fails
+   * @throws Will throw an error if the promo codes are not found or if there is an issue with the API request
+   * @example
+   * const promoCodes = await api.getPromoCodes();
+   */
+  async getPromoCodes(): Promise<Promo[]> {
+    const response: ApiResponse<Promo[]> = await this.request('/api/promoCodes');
+
+      if (!response.success || !response.data) {
+        throw new Error('Promo codes not found');
       }
 
     return response.data;    

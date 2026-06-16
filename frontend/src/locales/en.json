@@ -1,11 +1,55 @@
 {
     "button": {
+        "apply": "Apply",
         "import": "Import",
         "add": "Add",
         "edit": "Edit",
         "save": "Save",
         "share": "Share",
         "remove": "Remove"
+    },
+    "enum": {
+        "category": {
+            "0": "Amigurumi",
+            "1": "Amigurumi Accessories",
+            "2": "Clothes",
+            "3": "Accessoires",
+            "4": "Pattern"
+        },
+        "creator": {
+            "0": "All",
+            "1": "WolfSoph",
+            "2": "Supermimine"
+        },
+        "matter": {
+            "0": "Cotton",
+            "1": "Wool",
+            "2": "Polyester",
+            "3": "Acrylic",
+            "4": "Viscose"
+        },
+        "size": {
+            "0": "Extra small",
+            "1": "Small",
+            "2": "Medium",
+            "3": "Large",
+            "4": "Extra large"
+        },
+        "sizeWool": {
+            "0": "0 (Lace)",
+            "1": "1 (Super fine)",
+            "2": "2 (Fine)",
+            "3": "3 (Light)",
+            "4": "4 (Medium)",
+            "5": "5 (Bulky)",
+            "6": "6 (Super bulky)",
+            "7": "7 (Jumbo)"
+        },
+        "typeMaking": {
+            "0": "Crochet",
+            "1": "Tunisian Crochet",
+            "2": "Knitting"
+        }
     },
     "searchBar": {
         "label": "Search for products..."

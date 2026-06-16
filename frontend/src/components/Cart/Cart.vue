@@ -6,9 +6,12 @@ import Paypal from '@/components/Custom/Paypal.vue';
 import AddressVue from '@/components/Cart/Address.vue';
 import { useI18n } from 'vue-i18n'
 
+import { api } from '@/service/api';
+
 const { t } = useI18n()
 
 import type { Address } from '@core/model/address';
+import type { Promo } from '@core';
 
 import { calculateShipping } from '@/service/useShipping';
 import { useCart } from '@/service/useCart';
@@ -18,6 +21,8 @@ const paypalRef = ref<InstanceType<typeof Paypal> | null>(null);
 const addressRef = ref<InstanceType<typeof AddressVue> | null>(null);
 
 const addressSelected = ref<Address | null>(null);
+const promoCode = ref<string>("");
+const discount = ref<number>(0);
 
 const totalPrice = computed(() => {
     return carts.value
@@ -26,11 +31,22 @@ const totalPrice = computed(() => {
         .toFixed(2);
 });
 const totalPriceCart = computed(() => {
-    return (parseFloat(totalPrice.value) + shipping.value).toFixed(2);
+    return ((parseFloat(totalPrice.value) + shipping.value) - (parseFloat(totalPrice.value) * (discount.value / 100))).toFixed(2);
 });
 
 const saveAddress = (addr: Address) => {
     addressSelected.value = addr;
+}
+
+const applyPromoCode = async () => {
+    const promoCodes = await api.getPromoCodes();
+    const promo: Promo | null = promoCodes.find((code) => code.code === promoCode.value) || null;
+    if (promoCode.value === promo?.code) {
+        discount.value = promo.discount || 0;
+        promoCode.value = "";
+
+        console.log(`Code promo appliqué : ${promo.code}, réduction de ${promo.discount}%`);
+    }
 }
 
 const shipping = computed(() => {
@@ -109,12 +125,26 @@ const shipping = computed(() => {
                 <span style="font-size: 12px;">({{ addressSelected.address2 }}<span
                         v-if="addressSelected.address2 != ''">-</span>{{ addressSelected.address1 }} {{
                             addressSelected.city }}) </span>
-                <a class="action-text-inverted" style="font-size: 12px;" @click="addressRef?.open()">{{ t('button.edit') }}</a>
+                <a class="action-text-inverted" style="font-size: 12px;" @click="addressRef?.open()">{{ t('button.edit')
+                }}</a>
             </div>
 
-            <hr style="margin: 30px 0 10px 0;" />
-            <div style="display: flex;">
-                <p style="margin-right: auto;">{{ t('cart.totalPrice') }}</p>
+            <div style="margin-top: 20px;">
+                <div style="display: flex;">
+                    <v-text-field style="width: 60%;" v-model="promoCode" :label="t('cart.promoCode')"
+                        variant="outlined" density="compact" hideDetails />
+                    <v-btn class="buttonColor" style="width: 40%; margin-left: 10px;" @click="applyPromoCode">{{
+                        t('button.apply') }}</v-btn>
+                </div>
+
+                <hr style="margin: 20px 0 10px 0;" />
+                <div style="display: flex;">
+                    <p style="margin-right: auto;">{{ t('cart.totalPrice') }}</p>
+                    <p v-if="discount == 0">${{ totalPriceCart }}</p>
+                    <p v-else> - {{ discount }}%</p>
+                </div>
+            </div>
+            <div v-if="discount > 0" style="text-align: right;">
                 <p>${{ totalPriceCart }}</p>
             </div>
 

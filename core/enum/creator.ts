@@ -1,5 +1,5 @@
 export enum Creator {
-  All = "Tous",
-  WolfSoph = "WolfSoph",
-  Supermimine = "Supermimine"
+  All = 0,
+  WolfSoph = 1,
+  Supermimine = 2
 }

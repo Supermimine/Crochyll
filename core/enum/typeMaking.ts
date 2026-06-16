@@ -1,4 +1,5 @@
 export enum TypeMaking {
-  Crochet = "Crochet",
-  Knitting = "Tricot"
+  Crochet = 0,
+  TunisianCrochet = 1,
+  Knitting = 2
 }

@@ -1,7 +1,7 @@
 export enum Matter {
-    Cotton = "Coton",
-    Wool = "Laine",
-    Polyester = "Polyester",
-    Acrylic = "Acrylique",
-    Viscose = "Viscose"
+    Cotton = 0,
+    Wool = 1,
+    Polyester = 2,
+    Acrylic = 3,
+    Viscose = 4
 }

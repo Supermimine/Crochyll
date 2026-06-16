@@ -166,7 +166,7 @@ onUnmounted(() => {
     <h2 style="margin-bottom: 50px; margin-top: 150px;" class="disable-text-select">Besoin d'un petit coup de pouce?</h2>
     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 100px;"
       class="disable-text-select">
-      <a href="/shop/clothe" class="dash-box"
+      <a href="/learn#beginner" class="dash-box"
         style="border-radius: 12px; width: 250px; background-color: var(--light-color);">
         <div style="height: 50%;  background-color: var(--green-color); border-radius: 12px 12px 0 0;">
           <h4 style="padding: 15px 0 15px 0; margin: 0;">Débutants</h4>
@@ -176,7 +176,7 @@ onUnmounted(() => {
         </div>
       </a>
 
-      <a href="/shop/amigurumi" class="dash-box"
+      <a href="/learn#intermediate" class="dash-box"
         style="border-radius: 12px; width: 250px; background-color: var(--light-color);">
         <div style="height: 50%; background-color: var(--yellow-color); border-radius: 12px 12px 0 0;">
           <h4 style="padding: 15px 0 15px 0; margin: 0;">Intermédiaires</h4>
@@ -186,7 +186,7 @@ onUnmounted(() => {
         </div>
       </a>
 
-      <a href="/shop/pattern" class="dash-box"
+      <a href="/learn#advanced" class="dash-box"
         style="border-radius: 12px; width: 250px; background-color: var(--light-color);">
         <div style="height: 50%; background-color: var(--orange-color); border-radius: 12px 12px 0 0;">
           <h4 style="padding: 15px 0 15px 0; margin: 0;">Avancés</h4>

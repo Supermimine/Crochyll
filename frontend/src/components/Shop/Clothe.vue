@@ -13,7 +13,7 @@ const { t } = useI18n()
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
 
-const productsFilter = await api.getProductsByCategory(Category.Accessoires || Category.Clothes);
+const productsFilter = await api.getProductsByCategory([Category.Accessoires, Category.Clothes]);
 
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;

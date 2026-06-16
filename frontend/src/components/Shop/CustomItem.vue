@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ShopMenu from '../Menu/ShopMenu.vue';
 import { Creator } from '@core/enum/creator';
 import { Matter } from '@core/enum/matter';
@@ -32,9 +32,36 @@ const customItem = ref<Custom & { category: Category.Amigurumi | Category.Access
     username: '',
     contact: ''
 });
-const creatorList = Object.values(Creator);
-const matterList = Object.values(Matter);
-const categoryList = Object.values(Category).filter((x) => x != Category.Clothes && x != Category.Accessoires) as Array<Category.Amigurumi | Category.AccessoiresAmigurumi | Category.Pattern>;
+const creatorList = computed(() =>
+    Object.keys(Creator)
+        .filter(k => isNaN(Number(k)))
+        .map(key => Creator[key as keyof typeof Creator])
+        .map((creator) => ({
+            title: t(`enum.creator.${creator}`),
+            value: creator
+        }))
+);
+
+const matterList = computed(() =>
+    Object.keys(Matter)
+        .filter(k => isNaN(Number(k)))
+        .map(key => Matter[key as keyof typeof Matter])
+        .map((matter) => ({
+            title: t(`enum.matter.${matter}`),
+            value: matter
+        }))
+);
+
+const categoryList = computed(() =>
+    Object.keys(Category)
+        .filter(k => isNaN(Number(k)))
+        .map(key => Category[key as keyof typeof Category])
+        .filter((cat) => cat != Category.Clothes && cat != Category.Accessoires)
+        .map((cat) => ({
+            title: t(`enum.category.${cat}`),
+            value: cat
+        }))
+);
 
 const SendRequest = async () => {
     const requestData = {
@@ -108,18 +135,18 @@ const checkForm = () => {
                 </v-col>
 
                 <v-col cols="12">
-                    <v-select :label="t('personalize.creator')" density="compact" variant="solo" :items="creatorList" hide-details="auto"
-                        v-model="customItem.creator" />
+                    <v-select :label="t('personalize.creator')" density="compact" variant="solo" :items="creatorList"
+                        item-title="title" item-value="value" hide-details="auto" v-model="customItem.creator" />
                 </v-col>
 
                 <v-col cols="12">
                     <v-select :label="t('personalize.category')" density="compact" variant="solo" :items="categoryList"
-                        hide-details="auto" v-model="customItem.category" />
+                        item-title="title" item-value="value" hide-details="auto" v-model="customItem.category" />
                 </v-col>
 
                 <v-col cols="12">
                     <v-select :label="t('personalize.matter')" density="compact" variant="solo" multiple :items="matterList"
-                        hide-details="auto" v-model="customItem.matter" />
+                        item-title="title" item-value="value" hide-details="auto" v-model="customItem.matter" />
                 </v-col>
 
                 <v-col cols="12">

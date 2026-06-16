@@ -6,13 +6,14 @@ import { TypeMaking } from "@core/enum/typeMaking";
 import { Creator } from "@core/enum/creator";
 import { Matter } from "@core/enum//matter";
 import { Size } from "@core/enum//size";
+import { SizeWool } from '@core/enum/sizeWool';
 import { Maintenance } from "@core/enum//maintenance";
 import type { Product } from "@core/model/product";
 
 const router = Router();
 
 const getProducts = (): Product[] => {
-  return [
+    return [
         //Vêtements
         {
             id: "148f32ca-0aa2-4716-b5f9-92c93dc9483a",
@@ -20,7 +21,7 @@ const getProducts = (): Product[] => {
             price: 45.00,
             category: Category.Clothes,
             description: {
-                fr:"TODO",
+                fr: "TODO",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -40,7 +41,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Hobbii",
                     name: "Honolulu",
-                    size: "2 (fine)",
+                    size: SizeWool.Fine,
                     color: "04",
                     matter: [
                         {
@@ -56,7 +57,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Hobbii",
                     name: "Honolulu",
-                    size: "2 (fine)",
+                    size: SizeWool.Fine,
                     color: "03",
                     matter: [
                         {
@@ -79,7 +80,7 @@ const getProducts = (): Product[] => {
             price: 16.00,
             category: Category.Amigurumi,
             description: {
-                fr:"Quoi de plus mignon qu'une petite tortue en peluche ? Cette adorable créature en crochet est parfaite pour les enfants et les amateurs de peluches. Fabriquée avec soin, elle est douce au toucher et idéale pour les câlins. Offrez cette tortue comme cadeau unique et charmant qui apportera un sourire à tous ceux qui la recevront ou pour vous même ;D.",
+                fr: "Quoi de plus mignon qu'une petite tortue en peluche ? Cette adorable créature en crochet est parfaite pour les enfants et les amateurs de peluches. Fabriquée avec soin, elle est douce au toucher et idéale pour les câlins. Offrez cette tortue comme cadeau unique et charmant qui apportera un sourire à tous ceux qui la recevront ou pour vous même ;D.",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -98,7 +99,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Pin",
                     matter: [
                         {
@@ -110,7 +111,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Caramel",
                     matter: [
                         {
@@ -128,7 +129,7 @@ const getProducts = (): Product[] => {
             price: 25.00,
             category: Category.Amigurumi,
             description: {
-                fr:"Ce koala en peluche est un compagnon idéale pour les enfants et amateurs d'animaux en peluche. Ce super animal d'origine d'australie est frabriqué avec soin au crochet.",
+                fr: "Ce koala en peluche est un compagnon idéale pour les enfants et amateurs d'animaux en peluche. Ce super animal d'origine d'australie est frabriqué avec soin au crochet.",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -147,7 +148,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Ivy",
                     matter: [
                         {
@@ -159,7 +160,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Medium grey",
                     matter: [
                         {
@@ -171,7 +172,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Black",
                     matter: [
                         {
@@ -208,7 +209,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Cantaloupe",
                     matter: [
                         {
@@ -226,7 +227,7 @@ const getProducts = (): Product[] => {
             price: 30.00,
             category: Category.Amigurumi,
             description: {
-                fr:"TODO",
+                fr: "TODO",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -245,7 +246,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "TODO",
                     name: "TODO",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "TODO",
                     matter: [
                         {
@@ -282,7 +283,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Black",
                     matter: [
                         {
@@ -320,7 +321,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Purple",
                     matter: [
                         {
@@ -332,7 +333,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Velvet",
-                    size: "5 (épais)",
+                    size: SizeWool.Bulky,
                     color: "Blackbird",
                     matter: [
                         {
@@ -369,7 +370,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Super Value",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Redwood Heather",
                     matter: [
                         {
@@ -381,7 +382,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Coffee",
                     matter: [
                         {
@@ -393,7 +394,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Almond",
                     matter: [
                         {
@@ -430,7 +431,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Off White",
                     matter: [
                         {
@@ -442,7 +443,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Medium grey",
                     matter: [
                         {
@@ -454,7 +455,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Mocha",
                     matter: [
                         {
@@ -491,7 +492,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Off White",
                     matter: [
                         {
@@ -503,7 +504,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Black",
                     matter: [
                         {
@@ -515,7 +516,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Orange",
                     matter: [
                         {
@@ -552,7 +553,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Medium grey",
                     matter: [
                         {
@@ -564,7 +565,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Off White",
                     matter: [
                         {
@@ -576,7 +577,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Dark grey",
                     matter: [
                         {
@@ -588,7 +589,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Gold",
                     matter: [
                         {
@@ -625,7 +626,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Medium grey",
                     matter: [
                         {
@@ -637,7 +638,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Pink",
                     matter: [
                         {
@@ -674,7 +675,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Teal",
                     matter: [
                         {
@@ -686,7 +687,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Off White",
                     matter: [
                         {
@@ -704,7 +705,7 @@ const getProducts = (): Product[] => {
             price: 35.00,
             category: Category.Amigurumi,
             description: {
-                fr:"TODO",
+                fr: "TODO",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -723,7 +724,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "TODO",
                     name: "TODO",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "TODO",
                     matter: [
                         {
@@ -741,7 +742,7 @@ const getProducts = (): Product[] => {
             price: 40.00,
             category: Category.Amigurumi,
             description: {
-                fr:"TODO",
+                fr: "TODO",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -760,7 +761,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Dark grey",
                     matter: [
                         {
@@ -772,7 +773,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Walmart",
                     name: "Bernat Prenium",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Cantaloupe",
                     matter: [
                         {
@@ -784,7 +785,7 @@ const getProducts = (): Product[] => {
                 {
                     compagny: "Michaels",
                     name: "Loops & Threads Soft Classic",
-                    size: "4 (moyenne)",
+                    size: SizeWool.Medium,
                     color: "Off White",
                     matter: [
                         {
@@ -853,7 +854,7 @@ const getProducts = (): Product[] => {
             price: 15.00,
             category: Category.AccessoiresAmigurumi,
             description: {
-                fr:"TODO",
+                fr: "TODO",
                 en: "TODO"
             },
             typeMaking: TypeMaking.Crochet,
@@ -877,73 +878,81 @@ const getProducts = (): Product[] => {
 
 // GET /api/products
 router.get('/products', (req: Request, res: Response) => {
-  try {
-    const products = getProducts();
-    const response: ApiResponse<Product[]> = {
-      success: true,
-      data: products,
-      timestamp: new Date().toISOString()
-    };
-    res.json(response);
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
+    try {
+        const products = getProducts();
+        const response: ApiResponse<Product[]> = {
+            success: true,
+            data: products,
+            timestamp: new Date().toISOString()
+        };
+        res.json(response);
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 // GET /api/products/:id
 router.get('/products/:id', (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const products = getProducts();
-    const product = products.find(p => p.id === id);
+    try {
+        const { id } = req.params;
+        const products = getProducts();
+        const product = products.find(p => p.id === id);
 
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        error: 'Product not found',
-        timestamp: new Date().toISOString()
-      });
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                error: 'Product not found',
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        const response: ApiResponse<Product> = {
+            success: true,
+            data: product,
+            timestamp: new Date().toISOString()
+        };
+        res.json(response);
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
     }
-
-    const response: ApiResponse<Product> = {
-      success: true,
-      data: product,
-      timestamp: new Date().toISOString()
-    };
-    res.json(response);
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
 });
 
 // GET /api/products/category/:category
 router.get('/products/category/:category', (req: Request, res: Response) => {
-  try {
-    const { category } = req.params;
-    const products = getProducts();
-    const filtered = products.filter(p => p.category === category);
+    try {
+        const categoryParam = req.params.category as string;
+        const categories = categoryParam.split(',');
 
-    const response: ApiResponse<Product[]> = {
-      success: true,
-      data: filtered,
-      timestamp: new Date().toISOString()
-    };
-    res.json(response);
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
+        const products = getProducts();
+        let filtered: Product[] = [];
+
+        for (const cat of categories) {
+            const categoryNum = Number(cat);
+            const category = !isNaN(categoryNum) ? categoryNum : Category[cat as keyof typeof Category];
+            filtered = filtered.concat(products.filter(item => item.category === category));
+        }
+
+        const response: ApiResponse<Product[]> = {
+            success: true,
+            data: filtered,
+            timestamp: new Date().toISOString()
+        };
+        res.json(response);
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 export default router;
