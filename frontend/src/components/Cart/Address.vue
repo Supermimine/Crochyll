@@ -18,16 +18,58 @@ const close = () => {
 
 defineExpose({ open })
 
+const TIMEZONE_TO_COUNTRY: Record<string, string> = {
+  // Europe
+  "Europe/Paris": "FR",
+  "Europe/Brussels": "BE",
+  "Europe/Zurich": "CH",
+  "Europe/London": "GB",
+  "Europe/Madrid": "ES",
+  "Europe/Rome": "IT",
+  "Europe/Berlin": "DE",
+
+  // Amérique du Nord
+  "America/Montreal": "CA",
+  "America/Toronto": "CA",
+  "America/Vancouver": "CA",
+  "America/New_York": "US",
+  "America/Chicago": "US",
+  "America/Los_Angeles": "US",
+  "America/Mexico_City": "MX",
+
+  // Afrique
+  "Africa/Casablanca": "MA",
+  "Africa/Tunis": "TN",
+  "Africa/Algiers": "DZ",
+  "Africa/Dakar": "SN",
+
+  // Asie / Océanie
+  "Asia/Tokyo": "JP",
+  "Australia/Sydney": "AU"
+};
+
+function getCountryByTimeZone(): string | null {
+  try {
+    const timeZone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    return TIMEZONE_TO_COUNTRY[timeZone] || null;
+  } catch (error) {
+    console.error("Impossible de récupérer le fuseau horaire :", error);
+    return null;
+  }
+}
+
+const userCountry: string | null = getCountryByTimeZone();
+
 const addressModel = ref<Address>({
   address1: "",
   address2: "",
   city: "",
   state: "",
   postalCode: "",
-  country: "",
+  country: userCountry ?? "",
 })
 
-// Validation pour codes postaux et états/provinces
 const stateRequiredCountries = new Set(['CA', 'US', 'AU', 'BR', 'MX', 'IN', 'CN'])
 
 const postalValidationRules: Record<string, { regex: RegExp; required: boolean }> = {
@@ -125,31 +167,32 @@ const checkForm = () => {
         <p class="title">{{ t('address.title') }}</p>
         <!-- Country -->
         <v-autocomplete v-model="addressModel.country" :items="countries" item-title="name" item-value="code"
-          :label="t('address.country')" variant="outlined" />
+          :label="t('address.country')" variant="outlined" density="compact" />
 
         <div v-if="addressModel.country.trim() != ''">
           <!-- Address -->
           <v-text-field v-model="addressModel.address1" :label="t('address.address') + ' *'" variant="outlined"
-            :color="!addressValid ? 'error' : ''" />
+            :color="!addressValid ? 'error' : ''" density="compact" />
 
-          <v-text-field v-model="addressModel.address2" :label="t('address.address2')" variant="outlined" />
+          <v-text-field v-model="addressModel.address2" :label="t('address.address2')" variant="outlined"
+            density="compact" />
 
           <!-- City State -->
           <v-row>
             <v-col cols="6">
               <v-text-field v-model="addressModel.city" :label="t('address.city') + ' *'" variant="outlined"
-                :color="!cityValid ? 'error' : ''" />
+                :color="!cityValid ? 'error' : ''" density="compact" />
             </v-col>
 
             <v-col cols="6">
               <v-text-field v-model="addressModel.state" :label="t('address.state') + (isStateRequired ? ' *' : '')"
-                variant="outlined" :color="!stateValid ? 'error' : ''" />
+                variant="outlined" :color="!stateValid ? 'error' : ''" density="compact" />
             </v-col>
           </v-row>
 
           <!-- Postal -->
           <v-text-field v-model="addressModel.postalCode" :label="t('address.postalCode')" variant="outlined"
-            :color="postalValid ? '' : 'error'" />
+            :color="postalValid ? '' : 'error'" density="compact" />
         </div>
         <button style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
           {{ t('button.save') }}
