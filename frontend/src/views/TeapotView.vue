@@ -39,7 +39,7 @@ const goHome = () => {
     padding: 40px;
     border-radius: 16px;
     background: var(--dark-color, #ffffff);
-    background-image: url('/img/pelote.png');
+    background-image: url('/img/skein.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

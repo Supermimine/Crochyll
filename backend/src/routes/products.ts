@@ -71,7 +71,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         //Amigurumi
         {
@@ -121,7 +121,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "6c55960e-8887-4978-9f58-7225c95cbcba",
@@ -182,7 +182,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png", "test.png"]
+            image: ["no-picture.png", "icon.png"]
         },
         {
             id: "f8f262ff-07a0-4cf7-beb2-1be26902b788",
@@ -219,7 +219,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "dd82c5b7-5c64-4a09-b8fc-c9a17fe4d099",
@@ -256,7 +256,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "1c57a765-7d99-4ba4-a64a-df57fc396c2b",
@@ -293,7 +293,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "95f8ca4f-34de-4d70-b8b3-fe183f012224",
@@ -343,7 +343,7 @@ const getProducts = (): Product[] => {
                     ]
                 }
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "8bf9c02c-ed2e-4721-b32b-f24ca09f8f0a",
@@ -404,7 +404,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "0133a43e-270c-42ce-bf5b-99f2b81b362e",
@@ -465,7 +465,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "f5f5a251-7f5c-4f4f-acf7-379ea2546b54",
@@ -526,7 +526,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "95be2d6f-5290-4ab5-b384-5af8a5ed7251",
@@ -599,7 +599,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "6cf964cf-f73a-4f96-832b-d2efca21282b",
@@ -648,7 +648,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "112a8609-7876-401c-882a-d54be6d6ac88",
@@ -697,7 +697,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "f3561426-f762-4164-b8a9-ce42623affb9",
@@ -734,7 +734,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "8b333ba4-3195-4923-a1a0-19c7478d03da",
@@ -795,7 +795,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         //Accessoires Amigurumi
         {
@@ -821,7 +821,7 @@ const getProducts = (): Product[] => {
             relatedProduct: ["6cf964cf-f73a-4f96-832b-d2efca21282b", "6c55960e-8887-4978-9f58-7225c95cbcba", "f5f5a251-7f5c-4f4f-acf7-379ea2546b54", "95be2d6f-5290-4ab5-b384-5af8a5ed7251"],
             wool: [
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "db0625fe-cbd0-4ae7-a96e-ccf8e7b73689",
@@ -846,7 +846,7 @@ const getProducts = (): Product[] => {
             relatedProduct: ["6c55960e-8887-4978-9f58-7225c95cbcba"],
             wool: [
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
         {
             id: "a91e8fbe-78a2-4c0f-87ea-fbfe7252027e",
@@ -871,7 +871,7 @@ const getProducts = (): Product[] => {
             relatedProduct: ["6cf964cf-f73a-4f96-832b-d2efca21282b"],
             wool: [
             ],
-            image: ["icon.png"]
+            image: ["no-picture.png"]
         },
     ]
 };

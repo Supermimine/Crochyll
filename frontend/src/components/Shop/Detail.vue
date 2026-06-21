@@ -174,7 +174,7 @@ useHead({
           <p><strong>{{ t('detail.matter') }}: </strong> {{item?.matter.map((m) => t(`enum.matter.${m}`)).join(', ')}}</p>
           <p style="display: flex;"><strong>{{ t('detail.maintenance') }}: </strong>
           <div v-for="maintenance in item?.maintenance" :key="maintenance">
-            <v-icon :icon="maintenance" size="20" class="ml-1"></v-icon>
+              <img :src="`/img/maintenance/${maintenance}.png`"  style="height: 25px;" :alt="maintenance" :title="maintenance" />
           </div>
           </p>
         </div>
