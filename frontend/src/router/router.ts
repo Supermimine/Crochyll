@@ -12,6 +12,7 @@ import ReaderView from '../views/ReaderView.vue'
 import FaqView from '../views/FaqView.vue'
 import PolicyView from '../views/PolicyView.vue'
 import LearnView from '../views/LearnView.vue'
+import MyProjectView from '../views/MyProjectView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import TeapotView from '../views/TeapotView.vue'
 
@@ -32,6 +33,7 @@ const routes = [
   { path: '/policy', name: 'Policy', component: PolicyView },
   { path: '/learn', name: 'Learn', component: LearnView },
   { path: '/418', name: 'Teapot', component: TeapotView },
+  { path: '/myProject', name: 'MyProject', component: MyProjectView },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView }
 ]
 

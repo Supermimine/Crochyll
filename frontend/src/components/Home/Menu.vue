@@ -14,6 +14,7 @@ const { t } = useI18n()
             style="display: flex; gap: 15px; margin-left: auto; margin-right: auto; margin-top: 5px; font-weight: 500;">
             <router-link to="/shop" style="position: relative; z-index: 10000;">{{ t('category.shop') }}</router-link>
             <router-link to="/maker" style="position: relative; z-index: 10000;">{{ t('category.maker') }}</router-link>
+            <router-link to="/reader" style="position: relative; z-index: 10000;">{{ t('category.reader') }}</router-link>
             <router-link to="/learn" style="position: relative; z-index: 10000;">{{ t('category.learn') }}</router-link>
             <router-link to="/myProject" style="position: relative; z-index: 10000;">{{ t('category.myProject') }}</router-link>
         </div>

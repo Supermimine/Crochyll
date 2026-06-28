@@ -4,9 +4,9 @@
     },
     "category": {
         "shop": "Magasin",
-        "read": "Lecteur de patron",
-        "maker": "Constructeur de patron",
+        "maker": "Constructeur",
         "myProject": "Mes projets",
-        "learn": "Apprendre"
+        "learn": "Apprendre",
+        "reader": "Lecteur"
     }
 }

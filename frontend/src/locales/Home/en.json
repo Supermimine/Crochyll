@@ -4,9 +4,9 @@
     },
     "category": {
         "shop": "Shop",
-        "read": "Pattern reader",
-        "maker": "Pattern maker",
+        "maker": "Maker",
         "myProject": "My projects",
-        "learn": "Learn"
+        "learn": "Learn",
+        "reader": "Reader"
     }
 }
