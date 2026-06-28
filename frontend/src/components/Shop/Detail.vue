@@ -120,8 +120,9 @@ useHead({
         <div v-if="item?.size?.length != 0" style="margin-bottom: 20px;">
           <p><strong>{{ t('detail.size') }}</strong></p>
           <button v-for="size in item?.size" :key="size" style="font-size: 12px; margin: 2px;"
-            :class="sizeSelected === size ? 'action-border-outside' : ''" @click="sizeSelected = size">{{ size
-            }}</button>
+            :class="sizeSelected === size ? 'action-border-outside' : ''" @click="sizeSelected = size">
+            {{ t(`enum.size.${size}`) }}
+          </button>
         </div>
 
         <div v-if="item?.shade?.length != 0" style="margin-bottom: 20px;">
