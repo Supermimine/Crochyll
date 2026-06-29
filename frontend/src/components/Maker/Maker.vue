@@ -650,7 +650,7 @@ const exportPattern = () => {
                         modifier leurs quantité</small><br />
                     <small>• <strong>Sélection:</strong> Cliquez sur un rang pour ajouter des mailles dedans</small>
                 </div>
-                <button class="buttonOutsideInverted" @click="addRow">Ajouter un rang</button>
+                <v-btn class="buttonOutsideInverted" @click="addRow">Ajouter un rang</v-btn>
                 <div class="stitch-tools">
                     <h4>Ajouter une maille</h4>
                     <div class="row-selector">
@@ -687,10 +687,10 @@ const exportPattern = () => {
                     <v-text-field v-model.number="stitchCount" type="number" min="1" density="compact" variant="solo"
                         hide-details="auto" />
 
-                    <button :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0"
+                    <v-btn :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0"
                         class="buttonOutsideInverted" @click="addStitch">
                         Ajouter maille
-                    </button>
+                    </v-btn>
                 </div>
                 <div class="yarn-size">
                     <label>Taille du fil :</label>
@@ -700,8 +700,8 @@ const exportPattern = () => {
                 <div class="project-size">
                     <p>Taille du projet : {{ calculateProjectSize }}</p>
                 </div>
-                <button @click="generatePattern" class="buttonColor">Générer</button>
-                <button @click="exportPattern" class="buttonOutsideInverted">Exporter TXT</button>
+                <v-btn @click="generatePattern" class="buttonColor">Générer</v-btn>
+                <v-btn @click="exportPattern" class="buttonOutsideInverted">Exporter TXT</v-btn>
             </aside>
 
             <!-- Section principale : visualisation du patron -->
@@ -709,10 +709,10 @@ const exportPattern = () => {
                 <h2>Patron de crochet <span v-if="viewMode !== null">{{ viewMode.toUpperCase() }}</span></h2>
                 <div v-if="viewMode === null" class="view-toggle">
                     <div>Veuillez choisir une vue pour commencer à créer votre patron :</div>
-                    <button class="buttonOutsideInverted" @click="viewMode = '2d'"
-                        :class="{ active: viewMode === '2d' }">Patron 2D</button>
-                    <button class="buttonOutsideInverted" @click="viewMode = '3d'"
-                        :class="{ active: viewMode === '3d' }">Patron 3D</button>
+                    <v-btn class="buttonOutsideInverted" @click="viewMode = '2d'"
+                        :class="{ active: viewMode === '2d' }">Patron 2D</v-btn>
+                    <v-btn class="buttonOutsideInverted" @click="viewMode = '3d'"
+                        :class="{ active: viewMode === '3d' }">Patron 3D</v-btn>
                 </div>
                 <div v-if="pattern.rows.length === 0 && viewMode !== null" class="empty-pattern">
                     Aucun rang ajouté. Utilisez les outils pour commencer.
@@ -746,15 +746,15 @@ const exportPattern = () => {
                             <div class="row-header">
                                 <h4>Rang {{ rowIndex + 1 }} {{ row.isCircular ? '🔄' : '' }}</h4>
                                 <div class="row-actions">
-                                    <button class="buttonOutsideInverted small"
-                                        @click="insertRowBefore(rowIndex)">Insérer avant</button>
-                                    <button class="buttonOutsideInverted small"
-                                        @click="insertRowAfter(rowIndex)">Insérer après</button>
-                                    <button class="buttonOutsideInverted small"
-                                        @click="duplicateRow(rowIndex)">Dupliquer</button>
-                                    <button class="buttonOutsideInverted small" :class="{ active: row.isCircular }"
-                                        @click="toggleCircular(rowIndex)">🔄 Cercle</button>
-                                    <button class="buttonColor" @click="removeRow(rowIndex)">Supprimer</button>
+                                    <v-btn class="buttonOutsideInverted small"
+                                        @click="insertRowBefore(rowIndex)">Insérer avant</v-btn>
+                                    <v-btn class="buttonOutsideInverted small"
+                                        @click="insertRowAfter(rowIndex)">Insérer après</v-btn>
+                                    <v-btn class="buttonOutsideInverted small"
+                                        @click="duplicateRow(rowIndex)">Dupliquer</v-btn>
+                                    <v-btn class="buttonOutsideInverted small" :class="{ active: row.isCircular }"
+                                        @click="toggleCircular(rowIndex)">🔄 Cercle</v-btn>
+                                    <v-btn class="buttonColor" @click="removeRow(rowIndex)">Supprimer</v-btn>
                                 </div>
                             </div>
                             <div class="stitches">
@@ -762,8 +762,8 @@ const exportPattern = () => {
                                     draggable="true" @dragstart="onDragStart($event, rowIndex, stitchIndex)"
                                     @dragover="onDragOverEntry($event)" @dragleave="onDragLeave($event)"
                                     @drop="onDrop($event, rowIndex, stitchIndex)">
-                                    <button class="stitch-move" :disabled="stitch.count <= 1"
-                                        @click="decreaseStitchCount(rowIndex, stitchIndex)">◀</button>
+                                    <v-btn class="stitch-move" :disabled="stitch.count <= 1"
+                                        @click="decreaseStitchCount(rowIndex, stitchIndex)">◀</v-btn>
                                     <strong>{{ t(`stitchType.${stitch.type}`).split("(")[0] || stitch.type }} x{{
                                         stitch.count }}</strong>
                                     <small v-if="stitch.orientation !== StitchOrientation.AL" style="opacity:0.7">[{{
@@ -771,8 +771,8 @@ const exportPattern = () => {
                                     <small v-if="stitch.action !== StitchAction.NULL"
                                         style="opacity:0.7; color:#f39c12">{{ stitch.action }}({{ stitch.nbTime
                                         }})</small>
-                                    <button class="stitch-move"
-                                        @click="increaseStitchCount(rowIndex, stitchIndex)">▶</button>
+                                    <v-btn class="stitch-move"
+                                        @click="increaseStitchCount(rowIndex, stitchIndex)">▶</v-btn>
                                     <a style="cursor: pointer;" @click="removeStitch(rowIndex, stitchIndex)">
                                         <v-icon icon="mdi-close" size="20"></v-icon>
                                     </a>

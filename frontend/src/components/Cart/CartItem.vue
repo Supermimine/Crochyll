@@ -29,14 +29,14 @@ const removeQuantity = () => {
 
         <div class="cartItemEnd">
             <div class="cartItemQuantity ">
-                <button class="btnQuantity" style="margin-left: auto;" :disabled="quantity <= 1"
+                <v-btn class="btnQuantity" style="margin-left: auto;" :disabled="quantity <= 1"
                     @click="removeQuantity()">
                     <v-icon icon="mdi-minus" size="10"></v-icon>
-                </button>
+                </v-btn>
                 <span style="margin: 10px;">{{ quantity }}</span>
-                <button class="btnQuantity" style="margin-right: auto;" @click="addQuantity()">
+                <v-btn class="btnQuantity" style="margin-right: auto;" @click="addQuantity()">
                     <v-icon icon="mdi-plus" size="10"></v-icon>
-                </button>
+                </v-btn>
             </div>
 
             <div style="margin: auto;">${{ (cart.item.price * quantity).toFixed(2) }}</div>
@@ -48,11 +48,18 @@ const removeQuantity = () => {
 
 <style scoped>
 .btnQuantity {
-    padding: 0 5px;
-    height: 30px;
-    width: 30px;
+    padding: 0 !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
     margin: auto 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--light-color) !important;
+    border: none !important;
+    box-sizing: border-box;
 }
 
 .cartItem {

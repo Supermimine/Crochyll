@@ -10,7 +10,7 @@
   --inverted-text-color: #161616;
   --main-color: #292521;
   --action-color: #f08214;
-  --action-second-color: #f3a455;
+  --action-second-color: #ff8d19;
   --dark-color: #201d18;
   --middle-color: #302b26;
   --light-color: #423f3a;
@@ -139,6 +139,7 @@ button[disabled] {
 
 .buttonColor {
   background-color: var(--action-color) !important;
+  border: none !important;
 }
 
 .buttonColor:hover {

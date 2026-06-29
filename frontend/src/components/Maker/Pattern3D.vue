@@ -1,8 +1,8 @@
 <template>
   <div ref="container" class="pattern-3d-container">
     <div class="controls">
-      <button @click="resetCamera">Reset Camera</button>
-      <button @click="toggleAnimation" :class="{ active: isAnimating }">{{ isAnimating ? 'Stop' : 'Animate' }} Construction</button>
+      <v-btn @click="resetCamera">Reset Camera</v-btn>
+      <v-btn @click="toggleAnimation" :class="{ active: isAnimating }">{{ isAnimating ? 'Stop' : 'Animate' }} Construction</v-btn>
       <label>
         <input type="checkbox" v-model="showConnections" /> Show Connections
       </label>

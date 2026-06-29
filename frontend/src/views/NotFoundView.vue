@@ -20,7 +20,7 @@ const goHome = () => {
             <h1>404</h1>
             <h2>{{ t('notFound.title') }}</h2>
             <p>{{ t('notFound.message') }}</p>
-            <button class="buttonColor" @click="goHome">{{ t('notFound.buttonHome') }}</button>
+            <v-btn class="buttonColor" @click="goHome">{{ t('notFound.buttonHome') }}</v-btn>
         </div>
     </div>
 </template>

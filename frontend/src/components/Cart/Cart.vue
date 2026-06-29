@@ -148,10 +148,10 @@ const shipping = computed(() => {
                 <p>${{ totalPriceCart }}</p>
             </div>
 
-            <button :disabled="carts.length === 0 || addressSelected == null" class="buttonColor"
+            <v-btn :disabled="carts.length === 0 || addressSelected == null" class="buttonColor"
                 style="width: 100%; margin: 2px; margin-top: 50px;" @click="paypalRef?.open()">
                 {{ t('cart.placeOrder') }}
-            </button>
+            </v-btn>
         </div>
     </div>
 

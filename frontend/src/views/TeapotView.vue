@@ -19,7 +19,7 @@ const goHome = () => {
         <div class="not-found-card">
             <h1>418</h1>
             <h2>{{ t('teapot.title') }}</h2>
-            <button class="buttonColor" @click="goHome">{{ t('teapot.buttonHome') }}</button>
+            <v-btn class="buttonColor" @click="goHome">{{ t('teapot.buttonHome') }}</v-btn>
         </div>
     </div>
 </template>

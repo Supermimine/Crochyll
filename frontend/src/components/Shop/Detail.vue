@@ -109,7 +109,7 @@ useHead({
 
         <div v-if="item?.category == Category.Amigurumi">
           <p><strong>{{ t('detail.addAccessory') }}</strong></p>
-          <button @click="customRef?.open()">{{ t('detail.personalize') }}</button>
+          <v-btn @click="customRef?.open()">{{ t('detail.personalize') }}</v-btn>
           <div style="display: flex;">
             <div v-for="miniItem in customRef?.itemsList" class="miniImg">
               <img style="width: inherit; border-radius: 5px;" :src="`/img/${miniItem.image[0]}`" :alt="miniItem.image[0]" :title="miniItem.image[0]" />
@@ -119,10 +119,10 @@ useHead({
 
         <div v-if="item?.size?.length != 0" style="margin-bottom: 20px;">
           <p><strong>{{ t('detail.size') }}</strong></p>
-          <button v-for="size in item?.size" :key="size" style="font-size: 12px; margin: 2px;"
+          <v-btn v-for="size in item?.size" :key="size" style="font-size: 12px; margin: 2px;"
             :class="sizeSelected === size ? 'action-border-outside' : ''" @click="sizeSelected = size">
             {{ t(`enum.size.${size}`) }}
-          </button>
+          </v-btn>
         </div>
 
         <div v-if="item?.shade?.length != 0" style="margin-bottom: 20px;">
@@ -130,32 +130,32 @@ useHead({
           <div style="display: flex;">
             <div v-for="shade in item?.shade" :key="shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                @click="colorSelected = shade" :style="`background-color: ${colorData.find(c => c.no === shade)?.hex};`"></span>
+                @click="colorSelected = shade" :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
             </div>
           </div>
         </div>
 
         <p style="margin-top: 50px;"><strong>{{ t('detail.quantity') }}</strong></p>
         <div style="margin: auto; display: flex;">
-          <button class="btnQuantity" @click="quantity = Math.max(1, quantity - 1)" :disabled="quantity == 1">-</button>
+          <v-btn class="btnQuantity" @click="quantity = Math.max(1, quantity - 1)" :disabled="quantity == 1">-</v-btn>
           <span style="margin: 10px;">{{ quantity }}</span>
-          <button class="btnQuantity" @click="quantity++">+</button>
+          <v-btn class="btnQuantity" @click="quantity++">+</v-btn>
         </div>
 
-        <button style="width: 100%; margin: 2px;" class="buttonColor" @click="addCartItem()">
+        <v-btn style="width: 100%; margin: 2px;" class="buttonColor" @click="addCartItem()">
           <span v-if="loading">
             <v-progress-circular color="var(--action-color)" indeterminate></v-progress-circular>
           </span>
           <span v-else>{{ t('detail.addToCart') }}</span>
-        </button>
-        <button v-if="customRef?.itemsList && customRef.itemsList.length > 0" class="buttonOutsideInverted"
+        </v-btn>
+        <v-btn v-if="customRef?.itemsList && customRef.itemsList.length > 0" class="buttonOutsideInverted"
           style="width: 100%; margin: 2px;" @click="addCartItem(false)">
           <span v-if="loading">
             <v-progress-circular color="var(--action-color)" indeterminate></v-progress-circular>
           </span>
           <span v-else>{{ t('detail.addAccessoryToCart') }}</span>
-        </button>
-        <button class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">{{ t('button.share') }}</button>
+        </v-btn>
+        <v-btn class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">{{ t('button.share') }}</v-btn>
 
         <div style="margin-top: 30px;">
           <p style="margin-top: 20px;"><strong>{{ t('detail.description') }}</strong></p>
@@ -289,10 +289,18 @@ useHead({
 }
 
 .btnQuantity {
-  padding: 0 5px;
-  height: 30px;
-  width: 30px;
-  margin: auto 0;
+    padding: 0 !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    margin: auto 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-color) !important;
+    border: none !important;
+    box-sizing: border-box;
 }
 
 .miniImg {

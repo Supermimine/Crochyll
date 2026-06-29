@@ -59,17 +59,17 @@ onUnmounted(() => {
         <hr />
         <div style="font-size: 1.5em; display: flex; justify-content: space-around; ">
             <div style="border-right: 1.5px solid rgba(255,255,255,0.3); width: 50%;">
-                <button style="width: 100%; border-radius: 0 0 0 5px; padding: 0;" class="buttonColorInverted"
+                <v-btn style="width: 100%; border-radius: 0 0 0 5px; padding: 0;" class="buttonColorInverted"
                     @click="changeCounter(-1)" :disabled="counter == 0">
                     <v-icon icon="mdi-minus" size="20" class="ma-auto"></v-icon>
-                </button>
+                </v-btn>
             </div>
 
             <div style="border-left: 1.5px solid rgba(255,255,255,0.3); width: 50%;">
-                <button style="width: 100%; border-radius: 0 0 5px 0; padding: 0;" class="buttonColorInverted"
+                <v-btn style="width: 100%; border-radius: 0 0 5px 0; padding: 0;" class="buttonColorInverted"
                     @click="changeCounter(1)">
                     <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
-                </button>
+                </v-btn>
             </div>
         </div>
     </div>

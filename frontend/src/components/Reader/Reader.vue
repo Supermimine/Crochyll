@@ -337,7 +337,7 @@ onUnmounted(() => {
       <div v-if="uploadSectionShow" class="importSection"
         :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
         <p style="margin-bottom: 10px">{{ t('reader.import.description') }}</p>
-        <button class="buttonColor" @click="importFile()">{{ t('button.import') }}</button>
+        <v-btn class="buttonColor" @click="importFile()">{{ t('button.import') }}</v-btn>
         <div v-if="uploadError" style="color: #d32f2f; font-weight: bold; margin-top: 10px;">
           {{ uploadError }}
         </div>
@@ -366,14 +366,14 @@ onUnmounted(() => {
             <div style="text-align: left; white-space: pre-line;" v-html="sanitizedSection"></div>
 
             <div style="display: flex; margin-top: 50px">
-              <button class="buttonOutside arrow" style="margin-left: auto; margin-right: 5px" @click="changeState(-1)"
+              <v-btn class="buttonOutside arrow" style="margin-left: auto; margin-right: 5px" @click="changeState(-1)"
                 :disabled="selectedFile?.state == 0">
                 -
-              </button>
-              <button class="buttonOutside arrow" style="margin-right: auto; margin-left: 5px" @click="changeState(1)"
+              </v-btn>
+              <v-btn class="buttonOutside arrow" style="margin-right: auto; margin-left: 5px" @click="changeState(1)"
                 :disabled="selectedFile && maxState !== null ? selectedFile.state >= maxState : false">
                 +
-              </button>
+              </v-btn>
             </div>
           </span>
         </div>
@@ -387,10 +387,10 @@ onUnmounted(() => {
           </div>
 
           <div v-if="showAddButton" style="width: 50%;">
-            <button class="buttonColor" @click="addCounter"
+            <v-btn class="buttonColor" @click="addCounter"
               style="margin: auto; background-color: var(--dark-color);height: 45px;width: 45px;border-radius: 50px; margin-top: 100px; padding: 8px;">
               <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
-            </button>
+            </v-btn>
           </div>
         </div>
       </div>

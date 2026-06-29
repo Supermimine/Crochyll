@@ -180,8 +180,8 @@ const checkForm = () => {
     </div>
 
     <div>
-        <button style="padding-left: 100px; padding-right: 100px; margin-bottom: 150px;" class="buttonColor"
-            @click="SendRequest()" :disabled="!checkForm()">{{ t('personalize.send') }}</button>
+        <v-btn style="padding-left: 100px; padding-right: 100px; margin-bottom: 150px;" class="buttonColor"
+            @click="SendRequest()" :disabled="!checkForm()">{{ t('personalize.send') }}</v-btn>
     </div>
 </template>
 

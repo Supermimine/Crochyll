@@ -121,16 +121,16 @@ watch(isOpen, (val) => {
             <div style="display: flex;">
               <div v-for="shade in itemSelected?.shade" :key="shade">
                 <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                  @click="colorSelected = shade" :style="`background-color: ${colorData.find(c => c.no === shade)?.hex};`"></span>
+                  @click="colorSelected = shade" :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
               </div>
             </div>
           </div>
 
-          <button v-if="!itemsList.some(i => i.id === itemSelected?.id)"
+          <v-btn v-if="!itemsList.some(i => i.id === itemSelected?.id)"
             style="width: 100%; margin: 2px; margin-top: 50px;" class="buttonColor" @click="addCart">{{ t('button.add')
-            }}</button>
-          <button v-else style="width: 100%; margin: 2px; margin-top: 50px;" @click="removeCart">{{ t('button.remove')
-          }}</button>
+            }}</v-btn>
+          <v-btn v-else style="width: 100%; margin: 2px; margin-top: 50px;" @click="removeCart">{{ t('button.remove')
+          }}</v-btn>
 
           <div style="margin-top: 30px;">
             <p style="margin-top: 20px;"><strong>{{ t('customization.description') }}</strong></p>

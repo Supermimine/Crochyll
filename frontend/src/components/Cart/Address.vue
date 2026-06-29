@@ -194,9 +194,9 @@ const checkForm = () => {
           <v-text-field v-model="addressModel.postalCode" :label="t('address.postalCode')" variant="outlined"
             :color="postalValid ? '' : 'error'" density="compact" />
         </div>
-        <button style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
+        <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
           {{ t('button.save') }}
-        </button>
+        </v-btn>
       </div>
     </div>
   </div>

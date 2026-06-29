@@ -62,29 +62,29 @@ defineExpose({
                 </a>
                 <p style="font-size: 30px;">{{ t('share.title') }}</p>
 
-                <button style="width: 100%; margin: 5px;" @click="shareLink">
+                <v-btn style="width: 100%; margin: 5px auto;" @click="shareLink">
                     <span>{{ t('share.link') }}</span>
                     <v-icon size="20" class="ml-1" icon="mdi-link-variant"></v-icon>
-                </button>
+                </v-btn>
 
                 <div style="display: flex;">
-                    <button style="background-color: #1877f2 !important; width: 50%; margin: 5px;"
+                    <v-btn style="width: 48%; margin: 5px 5px 5px auto"
                         @click="shareFacebook">
                         Facebook
-                    </button>
-                    <button style="background-color: #0866ff !important; width: 50%; margin: 5px;"
+                    </v-btn>
+                    <v-btn style="width: 48%; margin: 5px 5px 5px auto"
                         @click="shareMessenger">
                         Messenger
-                    </button>
+                    </v-btn>
                 </div>
                 <div style="display: flex;">
-                    <button style="background-color: #0a66c2 !important; width: 50%; margin: 5px;"
+                    <v-btn style="width: 48%; margin: 5px auto 5px 5px;"
                         @click="shareLinkedIn">
                         LinkedIn
-                    </button>
-                    <button style="background-color: #6fcf97 !important; width: 50%; margin: 5px;" @click="shareEmail">
+                    </v-btn>
+                    <v-btn style="width: 48%; margin: 5px auto 5px 5px;" @click="shareEmail">
                         Email
-                    </button>
+                    </v-btn>
                 </div>
             </div>
         </div>
