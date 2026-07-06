@@ -3,5 +3,6 @@ export enum Matter {
     Wool = 1,
     Polyester = 2,
     Acrylic = 3,
-    Viscose = 4
+    Viscose = 4,
+    Bamboo = 5,
 }

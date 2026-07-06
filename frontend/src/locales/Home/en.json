@@ -1,6 +1,30 @@
 {
     "home": {
+        "shop": "Looking for some gifts?",
+        "shopDescription": "Discover our store for all tastes and ages.",
+        "shopOption1": "Clothing",
+        "shopOption2": "Toys",
+        "shopOption3": "Patterns",
 
+        "myProject": "Save Your Projects!",
+        "myProjectDescription": "Have a project in progress? Save it in your personal space.",
+
+        "learn": "Need a little help?",
+        "learnDescription": "Discover our tutorials to help you create your projects.",
+        "learnOption1": "Beginners",
+        "learnOption1Description": "Learn the basics of crocheting",
+        "learnOption2": "Intermediate",
+        "learnOption2Description": "Refine your skills",
+        "learnOption3": "Advanced",
+        "learnOption3Description": "Create unique patterns",
+
+        "maker": "Let's make some new ideas!",
+        "makerDescription": "Do you have a project idea? Build your pattern with our easy-to-use pattern creation tools.",
+        "makerBtn": "Create a Pattern",
+
+        "reader": "Start Your New Projects!",
+        "readerDescription": "Have you always wanted a place to read crochet pattern PDFs from around the world without having to do the translation work? This is the ideal place!",
+        "readerBtn": "Start"
     },
     "category": {
         "shop": "Shop",

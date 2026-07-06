@@ -3,10 +3,12 @@ import ShopMenu from '../Menu/ShopMenu.vue';
 import Tiles from './Tiles.vue';
 import Searchbar from '../Custom/Searchbar.vue';
 import { useI18n } from 'vue-i18n'
+import { useScreen } from '@/tools/appTools';
 
 import { api } from '@/service/api';
 
 const { t } = useI18n()
+const { isMobile } = useScreen();
 import { Category } from '@core/enum/category';
 import { ref } from 'vue';
 
@@ -23,13 +25,21 @@ const getFilteredProducts = () => {
     <ShopMenu />
     <Searchbar :items="productsFilter" ref="searchRef" />
 
+    <div style="left: 0; right: 0; position: fixed; height: 130px;
+    backdrop-filter: blur(100px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%); z-index: 3;"
+        :style="{ 'margin-top': isMobile ? '-105px' : '-150px' }"></div>
+
     <section class="sectionTiles">
         <router-link v-if="getFilteredProducts().length > 0" v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
             <Tiles :item="item" class="tiles" />
         </router-link>
 
-        <router-link class="tiles" style="width: 185px; height: 230px;" :to="`/shop/custom`">
-            <p>{{ t('offert.personalize') }}</p>
+        <router-link class="tiles" style="width: 185px;" :to="`/shop/custom`" :class="{ 'mobile': isMobile }"
+            :style="{ height: isMobile ? '123px' : '230px' }">
+            <p><b>{{ t('offert.personalize') }}</b></p>
+            <p style="font-size: 14px;">{{ t('offert.personalizeDescription') }}</p>
         </router-link>
     </section>
 </template>

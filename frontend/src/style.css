@@ -57,18 +57,19 @@
 
 @media screen and (max-width: 650px) {
   #app {
-    padding: 0.5rem !important;
+    padding: 0 !important;
   }
 }
 
 
 #app {
   padding: 2rem;
+  padding-bottom: 0;
   text-align: center;
   width: 100vw;
-  height: 90vh;
+  min-height: 90vh;
   max-width: 1200px;
-  margin: 50px auto;
+  margin: 50px auto auto auto;
 }
 
 
@@ -197,6 +198,11 @@ button[disabled] {
   cursor: pointer;
 }
 
+.tiles.mobile {
+  width: 100% !important;
+  min-width: 350px;
+}
+
 .v-text-field .v-field {
   background-color: var(--dark-color);
   color: var(--text-color);
@@ -209,19 +215,20 @@ button[disabled] {
 }
 
 .dash-box {
-  position: relative; 
+  position: relative;
   box-sizing: border-box;
 }
+
 .dash-box::before {
   content: "";
   position: absolute;
-  
+
   top: 5px;
   bottom: 5px;
   left: 5px;
   right: 5px;
-  
-  border: 2px dashed var(--dark-color); 
-  border-radius: 8px; 
-  pointer-events: none; 
+
+  border: 2px dashed var(--dark-color);
+  border-radius: 8px;
+  pointer-events: none;
 }

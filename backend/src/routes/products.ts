@@ -21,8 +21,8 @@ const getProducts = (): Product[] => {
             price: 45.00,
             category: Category.Clothes,
             description: {
-                fr: "TODO",
-                en: "TODO"
+                fr: "Ce châle va vous apporter douceur et réconfort pour les soirées froides d'été! Il est parfait pour vous protéger du soleil, le châle douceur est léger et permet à la peau de respirer.",
+                en: "This shawl will bring you softness and comfort for the cold summer evenings! It is perfect to protect you from the sun, the softness shawl is light and allows the skin to breathe."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.WolfSoph,
@@ -73,6 +73,48 @@ const getProducts = (): Product[] => {
             ],
             image: ["no-picture.png"]
         },
+        {
+            id: "ee2b74c8-0958-4b52-9772-4cfdc1807792",
+            name: "Serviette à cheveaux",
+            price: 45.00,
+            category: Category.Accessoires,
+            description: {
+                fr: "Avec sa composition de conton et de bamboo, cette serviette à cheveaux est très absorbante et ce même pour vos cheveux dégoulinant d'eaux!",
+                en: "With its composition of cotton and bamboo, this hair towel is very absorbent and even for your dripping hair!"
+            },
+            typeMaking: TypeMaking.Crochet,
+            creator: Creator.WolfSoph,
+            size: [],
+            shade: [],
+            matter: [
+                Matter.Bamboo,
+                Matter.Cotton
+            ],
+            maintenance: [ Maintenance.Washable, Maintenance.Dryer, Maintenance.Uniron ],
+            measure: "26 x 60 x 1 cm",
+            weight: 0,
+            keywords: ["serviette", "cheveux", "accessoire", "mode", "léger", "eaux", "hygiène", "douche", "bain"],
+            relatedProduct: [],
+            wool: [
+                {
+                    compagny: "Hobbii",
+                    name: "Rainbow Bamboo",
+                    size: SizeWool.SuperFine,
+                    color: "38",
+                    matter: [
+                        {
+                            type: Matter.Cotton,
+                            percentage: 40
+                        },
+                        {
+                            type: Matter.Bamboo,
+                            percentage: 60
+                        }
+                    ]
+                }
+            ],
+            image: ["no-picture.png"]
+        },
         //Amigurumi
         {
             id: "56265f9b-24a9-468f-824f-f16ee0aa049d",
@@ -93,7 +135,7 @@ const getProducts = (): Product[] => {
             maintenance: [Maintenance.Washable, Maintenance.Dryer],
             measure: "10 x 8 x 12 cm",
             weight: 0.5,
-            keywords: ["tortue", "peluche", "amigurumi", "mignon", "kawaii", "cadeau", "enfant", "animal", "marin"],
+            keywords: ["tortue", "peluche", "amigurumi", "mignon", "kawaii", "cadeau", "enfant", "animal", "marin", "mers"],
             relatedProduct: [],
             wool: [
                 {

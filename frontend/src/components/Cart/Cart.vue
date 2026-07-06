@@ -164,6 +164,7 @@ const shipping = computed(() => {
     display: flex;
     text-align: left;
     font-weight: bold;
+    padding: 0.5rem;
 }
 
 .cartSection {

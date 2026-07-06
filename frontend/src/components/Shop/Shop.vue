@@ -4,10 +4,12 @@ import Footer from '../Footer/Footer.vue';
 import Searchbar from '../Custom/Searchbar.vue';
 import Tiles from './Tiles.vue';
 import { useI18n } from 'vue-i18n'
+import { useScreen } from '@/tools/appTools';
 
 import { api } from '@/service/api';
 
 const { t } = useI18n()
+const { isMobile } = useScreen();
 import { ref } from 'vue';
 import { Category } from '@core/enum/category';
 import type { Product } from '@core/model/product';
@@ -51,16 +53,22 @@ const dynamicUrl = (item: Product) => {
 };
 
 const changeSelectedIndex = (index: number) => {
-  localStorage.setItem('menuIndex', index.toString());
+    localStorage.setItem('menuIndex', index.toString());
 };
 </script>
 
 
 <template>
     <ShopMenu />
-    <Searchbar :items="productsFilter" ref="searchRef" />
+    <Searchbar :items="productsFilter" ref="searchRef" style="position: sticky;" />
 
-    <section>
+    <div style="left: 0; right: 0; position: fixed; height: 130px;
+    backdrop-filter: blur(100px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%); z-index: 3;"
+        :style="{ 'margin-top': isMobile ? '-105px' : '-150px' }"></div>
+
+    <section style="padding: 0.5rem;">
         <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px;">
             {{ t('offert.allNoProduct') }}
         </div>
@@ -73,7 +81,7 @@ const changeSelectedIndex = (index: number) => {
                 <div class="sectionTiles">
                     <router-link v-if="getNewProducts().length != 0" v-for="item in getNewProducts()" :key="item.id"
                         :to="dynamicUrl(item)" class="slide">
-                        <Tiles :item="item" class="tiles" />
+                        <Tiles :item="item" :is-mobile-width="false" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
                         {{ t('offert.noProduct') }}
@@ -84,13 +92,14 @@ const changeSelectedIndex = (index: number) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">{{ t('offert.amigurumi') }}</p>
-                    <a class="showMore" href="/shop/amigurumi" @click="changeSelectedIndex(1)">{{ t('offert.showMore') }}</a>
+                    <a class="showMore" href="/shop/amigurumi" @click="changeSelectedIndex(1)">{{ t('offert.showMore')
+                        }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
                     <router-link v-if="getAmigurumiProducts().length != 0" v-for="item in getAmigurumiProducts()"
                         :key="item.id" :to="dynamicUrl(item)" class="slide">
-                        <Tiles :item="item" class="tiles" />
+                        <Tiles :item="item" :is-mobile-width="false" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
                         {{ t('offert.noProduct') }}
@@ -101,13 +110,14 @@ const changeSelectedIndex = (index: number) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">{{ t('offert.clothe') }}</p>
-                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">{{ t('offert.showMore') }}</a>
+                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">{{ t('offert.showMore')
+                        }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
                     <router-link v-if="getClotheProducts().length != 0" v-for="item in getClotheProducts()"
                         :key="item.id" :to="dynamicUrl(item)" class="slide">
-                        <Tiles :item="item" class="tiles" />
+                        <Tiles :item="item" :is-mobile-width="false" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
                         {{ t('offert.noProduct') }}
@@ -118,13 +128,14 @@ const changeSelectedIndex = (index: number) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">{{ t('offert.accessories') }}</p>
-                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">{{ t('offert.showMore') }}</a>
+                    <a class="showMore" href="/shop/clothe" @click="changeSelectedIndex(2)">{{ t('offert.showMore')
+                        }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
                     <router-link v-if="getAccessoriesProducts().length != 0" v-for="item in getAccessoriesProducts()"
                         :key="item.id" :to="dynamicUrl(item)" class="slide">
-                        <Tiles :item="item" class="tiles" />
+                        <Tiles :item="item" :is-mobile-width="false" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
                         {{ t('offert.noProduct') }}
@@ -135,13 +146,14 @@ const changeSelectedIndex = (index: number) => {
             <div class="sectionBox disable-text-select">
                 <div class="sectionSubtitle">
                     <p style="text-align: left;">{{ t('offert.pattern') }}</p>
-                    <a class="showMore" href="/shop/pattern" @click="changeSelectedIndex(3)">{{ t('offert.showMore') }}</a>
+                    <a class="showMore" href="/shop/pattern" @click="changeSelectedIndex(3)">{{ t('offert.showMore')
+                        }}</a>
                 </div>
                 <hr style="margin: 10px 0 10px 0;" />
                 <div class="sectionTiles">
                     <router-link v-if="getPatternProducts().length != 0" v-for="item in getPatternProducts()"
                         :key="item.id" :to="dynamicUrl(item)" class="slide">
-                        <Tiles :item="item" class="tiles" />
+                        <Tiles :item="item" :is-mobile-width="false" class="tiles" />
                     </router-link>
                     <div v-else style="margin: auto;">
                         {{ t('offert.noProduct') }}
@@ -185,25 +197,28 @@ const changeSelectedIndex = (index: number) => {
     transform: translateY(-5px);
 }
 
-
-@media (max-width: 650px) {
-    .sectionTiles {
-        margin-left: 10px !important;
-        margin-right: 10px !important;
-        height: 250px;
-    }
+.showMore {
+    margin-left: auto;
+    margin-right: 50px;
 }
 
 .sectionSubtitle {
     display: flex;
 }
 
-.showMore {
-    margin-left: auto;
-    margin-right: 50px;
-}
-
 p {
     font-weight: 600;
+}
+
+@media (max-width: 650px) {
+    .sectionTiles {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+        height: 250px;
+    }
+
+    .showMore {
+        margin-right: 0;
+    }
 }
 </style>

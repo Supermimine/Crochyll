@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import ShopMenu from '../Menu/ShopMenu.vue';
 import { Creator } from '@core/enum/creator';
 import { Matter } from '@core/enum/matter';
@@ -9,6 +9,10 @@ import { api } from '@/service/api';
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 
 const validationRules = [
     (v: string) => !!v || t('rule.required'),
@@ -27,7 +31,8 @@ const customItem = ref<Custom & { category: Category.Amigurumi | Category.Access
     description: '',
     creator: Creator.All,
     size: '',
-    matter: [Matter.Acrylic, Matter.Cotton, Matter.Wool, Matter.Polyester, Matter.Viscose],
+    sizeFormat: 'cm',
+    matter: [Matter.Acrylic, Matter.Cotton, Matter.Wool, Matter.Polyester, Matter.Viscose, Matter.Bamboo],
     category: Category.Amigurumi,
     username: '',
     contact: ''
@@ -149,9 +154,11 @@ const checkForm = () => {
                         item-title="title" item-value="value" hide-details="auto" v-model="customItem.matter" />
                 </v-col>
 
-                <v-col cols="12">
+                <v-col cols="12" style="display: flex;">
                     <v-text-field :label="t('personalize.size')" density="compact" variant="solo" hide-details="auto"
-                        v-model="customItem.size" />
+                        v-model="customItem.size" style="width: 60%; margin-right: 10px;" />
+                    <v-select :label="t('personalize.sizeFormat')" density="compact" variant="solo" :items="['cm', 'inch']"
+                        hide-details="auto" v-model="customItem.sizeFormat" style="width: 30%;" />
                 </v-col>
 
                 <v-col cols="12" class="email">

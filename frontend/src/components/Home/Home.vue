@@ -1,39 +1,48 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useScreen } from '@/tools/appTools';
 import Menu from './Menu.vue';
 import Footer from '../Footer/Footer.vue';
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n()
+const { t } = useI18n();
+const { isMobile } = useScreen();
 
 const cursorRef = ref<HTMLImageElement | null>(null);
 const containerRef = ref<HTMLDivElement | null>(null);
+const isTouchModeActive = ref(false);
+const shouldUseCustomCursor = computed(() => !isMobile.value || isTouchModeActive.value);
 
 let lastX = 0;
 let lastY = 0;
-
 const MIN_DISTANCE_BETWEEN_DOTS = 25;
-
 let lastDotX = 0;
 let lastDotY = 0;
 let isOverLink = false;
 let lastAngle = 0;
 
-const handleMouseMove = (e: MouseEvent): void => {
+const createDot = (x: number, y: number, angle: number, targetContainer: HTMLDivElement): void => {
+  const dot = document.createElement('div');
+  dot.className = 'trail-dot';
+  dot.style.left = `${x}px`;
+  dot.style.top = `${y}px`;
+  dot.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+
+  targetContainer.appendChild(dot);
+
+  setTimeout(() => {
+    dot.remove();
+  }, 500);
+};
+
+const updateCursorPosition = (x: number, y: number, targetElement: EventTarget | null, container: HTMLDivElement): void => {
   const cursor = cursorRef.value;
-  const container = containerRef.value;
 
-  if (!cursor || !container) return;
-
-  const x = e.clientX;
-  const y = e.clientY;
+  if (!cursor) return;
 
   const deltaX = x - lastX;
   const deltaY = y - lastY;
-
   const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-
-
 
   if (Math.abs(deltaX) > 0.8 || Math.abs(deltaY) > 0.8) {
     if (!isOverLink) {
@@ -57,21 +66,53 @@ const handleMouseMove = (e: MouseEvent): void => {
 
   lastX = x;
   lastY = y;
+
+  const target = (targetElement as HTMLElement | null)?.closest('a, router-link');
+  if (target) {
+    isOverLink = true;
+    const rect = target.getBoundingClientRect();
+    cursor.style.left = `${rect.right + 15}px`;
+    cursor.style.top = `${rect.top - 15}px`;
+    cursor.style.transform = `translate(-100%, 0) rotate(${lastAngle + 90}deg)`;
+  } else {
+    isOverLink = false;
+  }
 };
 
-const createDot = (x: number, y: number, angle: number, targetContainer: HTMLDivElement): void => {
-  const dot = document.createElement('div');
-  dot.className = 'trail-dot';
-  dot.style.left = `${x}px`;
-  dot.style.top = `${y}px`;
+const handleMouseMove = (e: MouseEvent): void => {
+  if (isTouchModeActive.value) return;
 
-  dot.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+  const container = containerRef.value;
+  if (!container) return;
 
-  targetContainer.appendChild(dot);
+  updateCursorPosition(e.clientX, e.clientY, e.target, container);
+};
 
-  setTimeout(() => {
-    dot.remove();
-  }, 500);
+const handleTouchMove = (e: TouchEvent): void => {
+  if (!isTouchModeActive.value) return;
+
+  const touch = e.touches[0];
+  const container = containerRef.value;
+  if (!touch || !container) return;
+
+  updateCursorPosition(touch.clientX, touch.clientY, e.target, container);
+};
+
+const handleTouchStart = (e: TouchEvent): void => {
+  if (!isTouchModeActive.value) return;
+
+  const touch = e.touches[0];
+  if (!touch) return;
+
+  const cursor = cursorRef.value;
+  if (!cursor) return;
+
+  cursor.style.left = `${touch.clientX}px`;
+  cursor.style.top = `${touch.clientY}px`;
+  cursor.style.transform = 'translate(-50%, -50%)';
+
+  lastX = touch.clientX;
+  lastY = touch.clientY;
 };
 
 const handleComponentLeave = (): void => {
@@ -86,30 +127,26 @@ const handleComponentLeave = (): void => {
   }
 };
 
-onMounted(() => {
-  window.addEventListener('mousemove', (e) => {
-    handleMouseMove(e);
+const toggleTouchMode = (event?: Event): void => {
+  event?.preventDefault();
+  event?.stopPropagation();
+  isTouchModeActive.value = !isTouchModeActive.value;
+};
 
-    let target = (e.target as HTMLElement).closest('a, router-link');
-    if (target) {
-      isOverLink = true;
-      const cursor = cursorRef.value;
-      if (cursor) {
-        const rect = target.getBoundingClientRect();
-        cursor.style.left = `${rect.right + 15}px`;
-        cursor.style.top = `${rect.top - 15}px`;
-        cursor.style.transform = `translate(-100%, 0) rotate(${lastAngle + 90}deg)`;
-      }
-    } else {
-      isOverLink = false;
-    }
-  });
+onMounted(() => {
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('touchmove', handleTouchMove, { passive: false });
+  window.addEventListener('touchstart', handleTouchStart, { passive: false });
 
   const homeComponent = document.querySelector('.home-component');
   homeComponent?.addEventListener('mouseleave', handleComponentLeave);
 });
 
 onUnmounted(() => {
+  window.removeEventListener('mousemove', handleMouseMove);
+  window.removeEventListener('touchmove', handleTouchMove);
+  window.removeEventListener('touchstart', handleTouchStart);
+
   const homeComponent = document.querySelector('.home-component');
   homeComponent?.removeEventListener('mouseleave', handleComponentLeave);
 });
@@ -121,29 +158,36 @@ onUnmounted(() => {
     -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 0%, transparent 100%); z-index: 3;"></div>
 
-  <div class="home-component">
+  <div class="home-component"
+    :class="{ 'mobile-normal': isMobile && !isTouchModeActive, 'mobile-touch-active': isMobile && isTouchModeActive }">
     <Menu />
 
     <!-- Cursor -->
-    <img ref="cursorRef" src="/img/icon-noBG.png" alt="Cursor" class="custom-cursor" />
-    <div ref="containerRef" class="trail-container"></div>
+    <img v-if="shouldUseCustomCursor" ref="cursorRef" src="/img/icon-noBG.png" alt="Cursor" class="custom-cursor" />
+    <div v-if="shouldUseCustomCursor" ref="containerRef" class="trail-container"></div>
 
-    <h2 style="margin-bottom: 0px; margin-top: 150px;" class="disable-text-select">Vous cherchez quelques cadeaux?</h2>
-    <p style="margin-bottom: 30px;">Découvrez notre magasin pour tous les goûts et tous les âges.</p>
+    <button v-if="isMobile" type="button" class="touch-mode-toggle" :class="{ active: isTouchModeActive }"
+      @click.stop.prevent="toggleTouchMode" @touchend.stop.prevent="toggleTouchMode"
+      :aria-label="isTouchModeActive ? 'Désactiver le mode tactile' : 'Activer le mode tactile'">
+      <span>{{ isTouchModeActive ? '🔒' : '🔓' }}</span>
+    </button>
+
+    <h2 style="margin-bottom: 0px; margin-top: 150px;" class="disable-text-select">{{ t('home.shop') }}</h2>
+    <p style="margin-bottom: 30px;" class="disable-text-select">{{ t('home.shopDescription') }}</p>
     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 100px;"
       class="disable-text-select">
       <a href="/shop/clothe" class="box-shop dash-box">
-        <h4 style="margin-bottom: 15px;">Vêtements</h4>
+        <h4 style="margin-bottom: 15px;">{{ t('home.shopOption1') }}</h4>
       </a>
       <a href="/shop/amigurumi" class="dash-box box-shop">
-        <h4 style="margin-bottom: 15px;">Toutou</h4>
+        <h4 style="margin-bottom: 15px;">{{ t('home.shopOption2') }}</h4>
       </a>
       <a href="/shop/pattern" class="dash-box box-shop">
-        <h4 style="margin-bottom: 15px;">Patrons</h4>
+        <h4 style="margin-bottom: 15px;">{{ t('home.shopOption3') }}</h4>
       </a>
     </div>
 
-    <div class="wave-container">
+    <div class="wave-container" :class="{ 'mobile-wave': isMobile }">
       <svg viewBox="0 0 500 800" preserveAspectRatio="none">
         <path d="M0,100 
            C150,200 350,0 500,100 
@@ -152,10 +196,9 @@ onUnmounted(() => {
            Z" style="stroke: none; fill:var(--middle-color);"></path>
       </svg>
       <div class="wave-content">
-        <div class="dash-box"
-          style="background-color: var(--light-color); padding: 80px 50px; border-radius: 8px; width: 750px;">
-          <h2 style="margin-bottom: 35px;" class="disable-text-select">Conserver vos projets!</h2>
-          <p></p>
+        <div class="dash-box big-dash-box">
+          <h2 style="margin-bottom: 0;" class="disable-text-select">{{ t('home.myProject') }}</h2>
+          <p style="margin-bottom: 35px;" class="disable-text-select">{{ t('home.myProjectDescription') }}</p>
           <router-link to="/myProject" class="buttonColor" style="padding: 20px 25px; border-radius: 30px;">
             +
           </router-link>
@@ -163,41 +206,42 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <h2 style="margin-bottom: 50px; margin-top: 150px;" class="disable-text-select">Besoin d'un petit coup de pouce?</h2>
+    <h2 style="margin-bottom: 0; margin-top: 150px;" class="disable-text-select">{{ t('home.learn') }}</h2>
+    <p style="margin-bottom: 50px;" class="disable-text-select">{{ t('home.learnDescription') }}</p>
     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 100px;"
       class="disable-text-select">
       <a href="/learn#beginner" class="dash-box"
         style="border-radius: 12px; width: 250px; background-color: var(--light-color);">
         <div style="height: 50%;  background-color: var(--green-color); border-radius: 12px 12px 0 0;">
-          <h4 style="padding: 15px 0 15px 0; margin: 0;">Débutants</h4>
+          <h4 style="padding: 15px 0 15px 0; margin: 0;">{{ t('home.learnOption1') }}</h4>
         </div>
         <div style="height: 50%;">
-          <p style="margin: 15px 0 35px 0;">Apprenez les bases du crochet</p>
+          <p style="margin: 15px 0 35px 0;" class="disable-text-select">{{ t('home.learnOption1Description') }}</p>
         </div>
       </a>
 
       <a href="/learn#intermediate" class="dash-box"
         style="border-radius: 12px; width: 250px; background-color: var(--light-color);">
         <div style="height: 50%; background-color: var(--yellow-color); border-radius: 12px 12px 0 0;">
-          <h4 style="padding: 15px 0 15px 0; margin: 0;">Intermédiaires</h4>
+          <h4 style="padding: 15px 0 15px 0; margin: 0;">{{ t('home.learnOption2') }}</h4>
         </div>
         <div style="height: 50%;">
-          <p style="margin: 15px 0 35px 0;">Affinez vos compétences</p>
+          <p style="margin: 15px 0 35px 0;" class="disable-text-select">{{ t('home.learnOption2Description') }}</p>
         </div>
       </a>
 
       <a href="/learn#advanced" class="dash-box"
         style="border-radius: 12px; width: 250px; background-color: var(--light-color);">
         <div style="height: 50%; background-color: var(--orange-color); border-radius: 12px 12px 0 0;">
-          <h4 style="padding: 15px 0 15px 0; margin: 0;">Avancés</h4>
+          <h4 style="padding: 15px 0 15px 0; margin: 0;">{{ t('home.learnOption3') }}</h4>
         </div>
         <div style="height: 50%;">
-          <p style="margin: 15px 0 35px 0;">Créez des modèles uniques</p>
+          <p style="margin: 15px 0 35px 0;" class="disable-text-select">{{ t('home.learnOption3Description') }}</p>
         </div>
       </a>
     </div>
 
-    <div class="wave-container">
+    <div class="wave-container" :class="{ 'mobile-wave': isMobile }">
       <svg viewBox="0 0 500 800" preserveAspectRatio="none">
         <path d="M0,100 
            C150,200 350,0 500,100 
@@ -206,20 +250,20 @@ onUnmounted(() => {
            Z" style="stroke: none; fill:var(--middle-color);"></path>
       </svg>
       <div class="wave-content">
-        <div class="dash-box"
-          style="background-color: var(--light-color); padding: 80px 50px; border-radius: 8px; width: 750px;">
-          <h2 style="margin-bottom: 35px;" class="disable-text-select">Frabriquons de nouvelles idées!</h2>
+        <div class="dash-box big-dash-box">
+          <h2 style="margin-bottom: 0;" class="disable-text-select">{{ t('home.maker') }}</h2>
+          <p style="margin-bottom: 35px;" class="disable-text-select">{{ t('home.makerDescription') }}</p>
           <router-link to="/maker" class="buttonColor" style="padding: 12px 22px; border-radius: 30px;">
-            Creer un patron
+            {{ t('home.makerBtn') }}
           </router-link>
         </div>
       </div>
     </div>
 
-    <h2 style="margin-bottom: 15px; margin-top: 150px;" class="disable-text-select">Commencez vos nouveaux projets!</h2>
-    <p style="margin-bottom: 30px;">Vous avez toujours voulus un endroit pour lire des pdf de patrons de crochet du monde entier sans devoir faire le travail de traduction, c'est l'endroit idéal!</p>
+    <h2 style="margin-bottom: 0; margin-top: 150px;" class="disable-text-select">{{ t('home.reader') }}</h2>
+    <p style="margin-bottom: 30px;" class="disable-text-select">{{ t('home.readerDescription') }}</p>
     <router-link to="/reader" class="buttonColor" style="padding: 12px 22px; border-radius: 30px;">
-      Commencer
+      {{ t('home.readerBtn') }}
     </router-link>
 
     <Footer class="footer" />
@@ -229,17 +273,51 @@ onUnmounted(() => {
 <style scoped>
 .home-component {
   cursor: none;
+  touch-action: none;
+  overflow-x: visible;
+  padding: 0.5rem;
+  padding-bottom: 0;
+}
+
+.home-component.mobile-normal {
+  cursor: auto;
+  touch-action: auto;
+}
+
+.home-component.mobile-touch-active {
+  cursor: none;
+  touch-action: none;
+}
+
+.touch-mode-toggle {
+  touch-action: manipulation;
+}
+
+@supports (-moz-appearance: none) {
+  .wave-container {
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .wave-container {
   display: block;
   position: relative;
-  width: 100vw;
   left: 50%;
+  right: 50%;
+  width: 100vw;
+  max-width: none;
   transform: translateX(-50%);
   overflow: hidden;
+  box-sizing: border-box;
 
   padding-bottom: 80%;
+}
+
+.wave-container.mobile-wave {
+  padding-bottom: 200%;
 }
 
 .wave-container svg {
@@ -271,6 +349,42 @@ onUnmounted(() => {
   border-radius: 12px;
   width: 300px;
   cursor: pointer !important;
+}
+
+.big-dash-box {
+  background-color: var(--light-color);
+  padding: 80px 50px;
+  border-radius: 8px;
+  width: 750px;
+}
+
+@media (max-width: 650px) {
+  .big-dash-box {
+    width: 370px;
+  }
+}
+
+.touch-mode-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 102;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: var(--light-color);
+  color: var(--text-color);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.touch-mode-toggle.active {
+  background: var(--text-color);
+  color: var(--light-color);
 }
 </style>
 

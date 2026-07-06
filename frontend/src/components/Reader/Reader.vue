@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
+import { useScreen } from '@/tools/appTools';
+
 const { t } = useI18n()
+const { isMobile } = useScreen();
 
 import translate from "@/tools/translate";
 import { language } from "../../tools/appTools";
@@ -103,6 +106,7 @@ const changeSelectedFile = (index: number) => {
   uploadSectionShow.value = false;
 
   selectedFile.value = filesList.value[index];
+  filesSectionOpen.value = false;
 };
 const unSelectedFile = () => {
   selectedFileIndex.value = null;
@@ -303,9 +307,9 @@ onUnmounted(() => {
   <div style="display: flex">
     <!-- Menu -->
     <div v-if="filesSectionShow" :class="['filesSection', { open: filesSectionOpen }]">
-      <v-icon style="position: absolute; right: 10px;"
+      <v-icon class="chevron ml-1 action-text"
         :icon="filesSectionOpen ? 'mdi-chevron-double-left' : 'mdi-chevron-double-right'" size="25"
-        class="ml-1 action-text" @click="filesSectionOpen = !filesSectionOpen"></v-icon>
+        @click="filesSectionOpen = !filesSectionOpen"></v-icon>
 
       <h3 style="margin-bottom: 10px; margin-left: 10px">{{ t('reader.import.file') }}</h3>
       <ul class="listFilesSection"
@@ -324,15 +328,15 @@ onUnmounted(() => {
 
     <div :style="{
       width: filesSectionShow
-        ? (filesSectionOpen ? '30%' : '5%')
+        ? (filesSectionOpen ? '30%' : '0%')
         : '0%'
     }"></div>
 
     <div :style="{
       width: filesSectionShow
-        ? (filesSectionOpen ? '70%' : '90%')
+        ? (filesSectionOpen ? '70%' : '100%')
         : '100%',
-      marginLeft: filesSectionShow ? '32px' : '0'
+      marginLeft: filesSectionShow ? (isMobile ? '0' : '32px') : '0'
     }">
       <div v-if="uploadSectionShow" class="importSection"
         :style="filesSectionShow == true ? 'width: auto; margin-left: 20px;' : 'margin-left: auto;'">
@@ -348,13 +352,9 @@ onUnmounted(() => {
         <p>{{ t('reader.import.warning2') }} info.crochyll@gmail.com</p>
       </div>
 
-      <div v-else style="margin-left: 20px; position: relative">
+      <div v-else class="stateContainer" style=" position: relative">
         <!-- State -->
-        <div style="
-            background-color: var(--dark-color);
-            border-radius: 5px;
-            padding: 20px 50px;
-          ">
+        <div class="stateBox">
           <span v-if="loadingTranslate">
             <v-progress-circular color="var(--action-color)" indeterminate></v-progress-circular>
           </span>
@@ -363,9 +363,12 @@ onUnmounted(() => {
             <a style="right: 30px; position: absolute; cursor: pointer" @click="unSelectedFile()">
               <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
             </a>
-            <div style="text-align: left; white-space: pre-line;" v-html="sanitizedSection"></div>
 
-            <div style="display: flex; margin-top: 50px">
+            <div class="reader-text"
+              style="text-align: left; white-space: pre-line; max-height: 90%; overflow-y: auto;"
+              v-html="sanitizedSection"></div>
+
+            <div class="btnSection">
               <v-btn class="buttonOutside arrow" style="margin-left: auto; margin-right: 5px" @click="changeState(-1)"
                 :disabled="selectedFile?.state == 0">
                 -
@@ -379,14 +382,14 @@ onUnmounted(() => {
         </div>
 
         <!-- Tools -->
-        <div style="display: flex;">
+        <div class="toolSection">
           <!--Compteur-->
-          <div v-for="counter in counters" :key="counter.id" style="width: 50%;">
+          <div v-for="counter in counters" :key="counter.id" class="tool">
             <Counter :id="counter.id" :isActive="activeCounterId === counter.id" @click="setActiveCounter(counter.id)"
               @remove="removeCounter" />
           </div>
 
-          <div v-if="showAddButton" style="width: 50%;">
+          <div v-if="showAddButton" class="tool">
             <v-btn class="buttonColor" @click="addCounter"
               style="margin: auto; background-color: var(--dark-color);height: 45px;width: 45px;border-radius: 50px; margin-top: 100px; padding: 8px;">
               <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
@@ -399,6 +402,35 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+#app {
+  max-width: initial !important;
+}
+
+.stateContainer {
+  display: flex;
+}
+
+.stateBox {
+  height: auto;
+  aspect-ratio: 3 / 2;
+  margin: auto;
+  background-color: var(--dark-color);
+  border-radius: 5px;
+  padding: 20px 50px;
+  position: relative;
+  max-width: 850px;
+  max-height: 560px;
+  min-height: 400px;
+  width: 60%;
+}
+
+.btnSection {
+  bottom: 10px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .importSection {
   background-color: var(--dark-color);
   border-radius: 5px;
@@ -420,8 +452,17 @@ onUnmounted(() => {
   top: 0;
 
 
-  transform: translateX(-80%);
+  transform: translateX(-85%);
   transition: transform 0.3s ease-in-out;
+}
+
+.reader-text ::v-deep h3:first-of-type {
+  position: sticky;
+  top: 0;
+  background-color: var(--dark-color);
+  z-index: 2;
+  padding-top: 20px;
+  margin: 0;
 }
 
 .filesSection.open {
@@ -467,5 +508,57 @@ onUnmounted(() => {
   background-color: var(--main-color) !important;
   height: 40px;
   width: 40px;
+}
+
+.chevron {
+  position: absolute;
+  right: 10px;
+}
+
+.toolSection {
+  display: block;
+  width: 40%;
+}
+
+.tool {
+  width: 100%;
+}
+
+@media (max-width: 1250px) {
+  .stateContainer {
+    display: block;
+  }
+
+  .stateBox {
+    width: 100%;
+  }
+
+  .toolSection {
+    display: flex !important;
+    width: 100%;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .tool {
+    width: 50%;
+  }
+}
+
+@media (max-width: 650px) {
+  .stateContainer {
+    width: 80%;
+    margin: auto;
+  }
+
+  .filesSection {
+    transform: translateX(-90%);
+  }
+
+  .chevron {
+    right: 5px;
+  }
+
 }
 </style>

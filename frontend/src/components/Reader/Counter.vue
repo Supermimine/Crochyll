@@ -18,7 +18,7 @@ const changeCounter = (value: number) => {
 };
 
 const emit = defineEmits<{
-  (e: 'remove', id: number): void
+    (e: 'remove', id: number): void
 }>()
 
 const removeCounter = () => {
@@ -80,12 +80,18 @@ onUnmounted(() => {
     background-color: var(--dark-color);
     border-radius: 5px;
     border: 2px solid transparent;
-    margin: 20px 0 5px 5px;
+    margin: 0 0 15px 10px;
     cursor: pointer;
     position: relative;
 }
 
 .box.active {
     border-color: var(--action-color);
+}
+
+@media (max-width: 1250px) {
+    .box {
+        margin: 20px 0 5px 5px;
+    }
 }
 </style>

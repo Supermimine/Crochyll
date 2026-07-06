@@ -27,11 +27,19 @@ defineExpose({
 </script>
 
 <template>
-    <div style="margin-bottom: 50px; max-width: 500px; margin-left: auto; margin-right: auto;">
+    <div class="searchbar-wrapper">
         <v-text-field class="search" :label="t('searchBar.label')" density="compact" variant="solo" maxlength="100"
             hide-details="auto" v-model="searchQuery" append-inner-icon="mdi-magnify" />
     </div>
 </template>
 
 <style scoped>
+.searchbar-wrapper {
+    margin: 0 auto 50px auto;
+    max-width: 500px;
+    position: sticky;
+    top: 60px;
+    z-index: 200;
+    padding: 0 12px;
+}
 </style>

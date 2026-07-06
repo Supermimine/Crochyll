@@ -91,7 +91,7 @@ useHead({
 <template>
   <ShopMenu />
 
-  <div class="container">
+  <div class="container" style="padding: 0.5rem;">
     <div class="mainSection">
       <div class="backgroundImg">
         <div class="imgList">
@@ -112,7 +112,8 @@ useHead({
           <v-btn @click="customRef?.open()">{{ t('detail.personalize') }}</v-btn>
           <div style="display: flex;">
             <div v-for="miniItem in customRef?.itemsList" class="miniImg">
-              <img style="width: inherit; border-radius: 5px;" :src="`/img/${miniItem.image[0]}`" :alt="miniItem.image[0]" :title="miniItem.image[0]" />
+              <img style="width: inherit; border-radius: 5px;" :src="`/img/${miniItem.image[0]}`"
+                :alt="miniItem.image[0]" :title="miniItem.image[0]" />
             </div>
           </div>
         </div>
@@ -130,7 +131,8 @@ useHead({
           <div style="display: flex;">
             <div v-for="shade in item?.shade" :key="shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                @click="colorSelected = shade" :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
+                @click="colorSelected = shade"
+                :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
             </div>
           </div>
         </div>
@@ -155,7 +157,8 @@ useHead({
           </span>
           <span v-else>{{ t('detail.addAccessoryToCart') }}</span>
         </v-btn>
-        <v-btn class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">{{ t('button.share') }}</v-btn>
+        <v-btn class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">{{ t('button.share')
+          }}</v-btn>
 
         <div style="margin-top: 30px;">
           <p style="margin-top: 20px;"><strong>{{ t('detail.description') }}</strong></p>
@@ -172,10 +175,12 @@ useHead({
           <p><strong>{{ t('detail.creator') }}: </strong> {{ t(`enum.creator.${item?.creator}`) }}</p>
           <p><strong>{{ t('detail.measure') }}: </strong> {{ item?.measure }}</p>
           <br />
-          <p><strong>{{ t('detail.matter') }}: </strong> {{item?.matter.map((m) => t(`enum.matter.${m}`)).join(', ')}}</p>
+          <p><strong>{{ t('detail.matter') }}: </strong> {{item?.matter.map((m) => t(`enum.matter.${m}`)).join(', ')}}
+          </p>
           <p style="display: flex;"><strong>{{ t('detail.maintenance') }}: </strong>
           <div v-for="maintenance in item?.maintenance" :key="maintenance">
-              <img :src="`/img/maintenance/${maintenance}.png`"  style="height: 25px;" :alt="maintenance" :title="maintenance" />
+            <img :src="`/img/maintenance/${maintenance}.png`" style="height: 25px;" :alt="maintenance"
+              :title="maintenance" />
           </div>
           </p>
         </div>
@@ -188,7 +193,8 @@ useHead({
               <p><strong>{{ wool.compagny }} - {{ wool.name }}</strong></p>
               <p>{{ t('detail.size') }}: {{ t(`enum.sizeWool.${wool.size}`) }}</p>
               <p>{{ t('detail.color') }}: {{ wool.color }}</p>
-              <p>{{ t('detail.composition') }}: {{wool.matter.map((m: { type: any; percentage: number }) => `${t(`enum.matter.${m.type}`)} (${m.percentage}%)`).join(', ')}}</p>
+              <p>{{ t('detail.composition') }}: {{wool.matter.map((m: { type: any; percentage: number }) =>
+                `${t(`enum.matter.${m.type}`)} (${m.percentage}%)`).join(', ')}}</p>
               <br />
             </div>
           </div>
@@ -289,18 +295,18 @@ useHead({
 }
 
 .btnQuantity {
-    padding: 0 !important;
-    height: 30px !important;
-    min-height: 30px !important;
-    width: 30px !important;
-    min-width: 30px !important;
-    margin: auto 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--light-color) !important;
-    border: none !important;
-    box-sizing: border-box;
+  padding: 0 !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  margin: auto 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--light-color) !important;
+  border: none !important;
+  box-sizing: border-box;
 }
 
 .miniImg {
@@ -337,8 +343,10 @@ useHead({
   .imgDetail {
     width: 100%;
     height: auto;
+    aspect-ratio: 1 / 1;
     max-width: 350px;
     margin: auto;
+    object-fit: cover;
   }
 }
 </style>

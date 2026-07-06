@@ -33,9 +33,9 @@ const changeSelectedIndex = (index: number) => {
   <div v-if="mobileDetailShow" class="overlay" @click="mobileDetailShow = false" />
   <div v-if="mobileDetailShow" class="subShopMenu">
     <ul>
-      <li style="float: right; margin: 0 10px 10px 0;">
-        <language />
-        <theme />
+      <li style="float: right; margin: 0 10px 10px 0; display: flex;">
+        <language class="unSelectable" />
+        <theme class="unSelectable" />
       </li>
       <li v-for="(menu, index) in menus" :key="index" style="width: 100%;">
         <router-link :to="menu.link" :class="{ selected: selectedIndex === index }" @click="changeSelectedIndex(index)">

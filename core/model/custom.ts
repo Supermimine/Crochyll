@@ -8,6 +8,7 @@ export interface Custom {
     description: string;
     creator: Creator;
     size: string;
+    sizeFormat: string;
     matter: Matter[];
     category: Category;
     username: string;

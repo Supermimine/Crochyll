@@ -26,7 +26,8 @@
             "1": "Wool",
             "2": "Polyester",
             "3": "Acrylic",
-            "4": "Viscose"
+            "4": "Viscose",
+            "5": "Bamboo"
         },
         "size": {
             "0": "Extra small",

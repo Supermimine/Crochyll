@@ -1,6 +1,30 @@
 {
     "home": {
+        "shop": "Vous cherchez quelques cadeaux?",
+        "shopDescription": "Découvrez notre magasin pour tous les goûts et tous les âges.",
+        "shopOption1": "Vêtements",
+        "shopOption2": "Toutou",
+        "shopOption3": "Patrons",
 
+        "myProject": "Conserver vos projets!",
+        "myProjectDescription": "Vous avez un projet en cours? Conservez-le dans votre espace personnel.",
+
+        "learn": "Besoin d'un petit coup de pouce?",
+        "learnDescription": "Découvrez nos tutoriels pour vous aider à réaliser vos projets.",
+        "learnOption1": "Débutants",
+        "learnOption1Description": "Apprenez les bases du crochet",
+        "learnOption2": "Intermédiaires",
+        "learnOption2Description": "Affinez vos compétences",
+        "learnOption3": "Avancés",
+        "learnOption3Description": "Créez des modèles uniques",
+
+        "maker": "Frabriquons de nouvelles idées!",
+        "makerDescription": "Vous avez une idée de projet? Construisez votre patron avec nos outil facile de création de patrons.",
+        "makerBtn": "Créer un patron",
+
+        "reader": "Commencez vos nouveaux projets!",
+        "readerDescription": "Vous avez toujours voulus un endroit pour lire des pdf de patrons de crochet du monde entier sans devoir faire le travail de traduction, c'est l'endroit idéal!",
+        "readerBtn": "Commencer"
     },
     "category": {
         "shop": "Magasin",
