@@ -39,7 +39,7 @@ const removeQuantity = () => {
                 </v-btn>
             </div>
 
-            <div style="margin: auto;">${{ (cart.item.price * quantity).toFixed(2) }}</div>
+            <div style="margin: auto;">${{ ((cart?.item?.price?.[(cart?.size ?? 1) - 1] ?? cart?.item?.price?.[0] ?? 0) * (quantity ?? 1)).toFixed(2) }}</div>
         </div>
 
         <v-icon icon="mdi-close" size="20" class="ml-1 removeCart action-text" @click="removeCart(props.cart)"></v-icon>

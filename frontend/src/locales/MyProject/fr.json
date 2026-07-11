@@ -1,0 +1,19 @@
+{
+    "myProject": {
+        
+    },
+    "myReserve": {
+        "yarnModel": {
+            "name": "Nom",
+            "compagny": "Compagnie",
+            "color": "Couleur",
+            "size": "Taille",
+            "length": "longueur",
+            "weight": "poids",
+            "hookSize": "Taille crochet",
+            "needleSize": "Taille aiguille",
+            "noPlace": "No Emplacement",
+            "quantity": "Quantité"
+        }
+    }
+}

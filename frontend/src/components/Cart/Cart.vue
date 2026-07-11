@@ -26,8 +26,11 @@ const discount = ref<number>(0);
 
 const totalPrice = computed(() => {
     return carts.value
-        .map((x: { quantity: number; item: { price: number; }; }) => (x.quantity * x.item.price).toFixed(2))
-        .reduce((sum: number, price: string) => sum + parseFloat(price), 0)
+        .reduce((sum: number, x: any) => {
+            const price = x?.item?.price?.[(x?.size ?? 1) - 1] ?? x?.item?.price?.[0] ?? 0;
+            const itemTotal = price * (x?.quantity ?? 1);
+            return sum + itemTotal;
+        }, 0)
         .toFixed(2);
 });
 const totalPriceCart = computed(() => {

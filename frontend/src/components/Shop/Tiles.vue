@@ -40,7 +40,7 @@ function onImgError() {
 
         <div style="width: 100%; text-align: left;">
             <p class="titleItem">{{ props.item.name }}</p>
-            <p style="font-size: 18px;">${{ props.item.price }}</p>
+            <p style="font-size: 18px;">${{ props.item.price[0] }}</p>
         </div>
     </div>
 </template>

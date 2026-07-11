@@ -9,7 +9,7 @@ import type { TypeMaking } from "../enum/typeMaking";
 export interface Product {
     id: string;
     name: string;
-    price: number;
+    price: number[];
     category: Category;
     description: {
         fr: string,

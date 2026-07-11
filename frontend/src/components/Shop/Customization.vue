@@ -9,6 +9,7 @@ const { t, locale } = useI18n()
 
 import { colorData } from '../../data/colorData';
 import { Category } from '@core/enum/category';
+import { Size } from '@core/enum/size';
 import type { Product } from '@core/model/product';
 
 const isOpen = ref(false);
@@ -20,6 +21,7 @@ let productsFilter = (await api.getProductsByCategory([Category.AccessoiresAmigu
 const itemSelected = ref<Product | null>(null);
 
 const colorSelected = ref<string | null>(null);
+const sizeSelected = ref<Size | null>(null);
 const imgSelected = ref<string | undefined>(undefined);
 
 const itemsList = ref<Product[]>([]);
@@ -43,12 +45,14 @@ const close = () => {
   isOpen.value = false;
 };
 
-const selectItem = async (item: any) => {
+const selectItem = async (item: Product) => {
   itemSelected.value = await api.getProductById(item.id);
   isTilesPage.value = false;
   imgSelected.value = `/img/${itemSelected.value.image[0]}`;
-  if (itemSelected.value.shade && item.shade.length > 0)
+  if (itemSelected.value.shade && item.shade.length > 0) {
     colorSelected.value = item.shade[0];
+    sizeSelected.value = item.size[0];
+  }
 }
 
 const addCart = () => {
@@ -114,16 +118,26 @@ watch(isOpen, (val) => {
 
         <div class="infoDetail">
           <p style="font-size: 20px;">{{ itemSelected?.name }}</p>
-          <p style="font-size: 30px;">+ ${{ itemSelected?.price.toFixed(2) }}</p>
+          <p style="font-size: 30px;">+ ${{ itemSelected?.price[(sizeSelected ?? 0)] ?? itemSelected?.price[0] ?? ''
+            }}</p>
 
           <div v-if="itemSelected?.shade?.length != 0" style="margin-bottom: 20px;">
             <p style="margin-top: 20px;"><strong>{{ t('customization.color') }}</strong></p>
             <div style="display: flex;">
               <div v-for="shade in itemSelected?.shade" :key="shade">
                 <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                  @click="colorSelected = shade" :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
+                  @click="colorSelected = shade"
+                  :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
               </div>
             </div>
+          </div>
+
+          <div v-if="itemSelected?.size?.length != 0" style="margin-bottom: 20px;">
+            <p><strong>{{ t('detail.size') }}</strong></p>
+            <v-btn v-for="size in itemSelected?.size" :key="size" style="font-size: 12px; margin: 2px;"
+              :class="sizeSelected === size ? 'action-border-outside' : ''" @click="sizeSelected = size">
+              {{ t(`enum.size.${size}`) }}
+            </v-btn>
           </div>
 
           <v-btn v-if="!itemsList.some(i => i.id === itemSelected?.id)"
@@ -134,7 +148,7 @@ watch(isOpen, (val) => {
 
           <div style="margin-top: 30px;">
             <p style="margin-top: 20px;"><strong>{{ t('customization.description') }}</strong></p>
-            <span>{{ description}}</span>
+            <span>{{ description }}</span>
           </div>
         </div>
       </div>
@@ -143,14 +157,17 @@ watch(isOpen, (val) => {
         <p style="font-size: 25px; margin-bottom: 20px;"><strong>{{ t('customization.detail') }}</strong></p>
         <div style="display: flex;">
           <div style="width: 50%;">
-            <p><strong>{{ t('customization.type') }}: </strong> {{ t(`enum.typeMaking.${itemSelected?.typeMaking}`) }}</p>
+            <p><strong>{{ t('customization.type') }}: </strong> {{ t(`enum.typeMaking.${itemSelected?.typeMaking}`) }}
+            </p>
             <p><strong>{{ t('customization.creator') }}: </strong> {{ t(`enum.creator.${itemSelected?.creator}`) }}</p>
             <p><strong>{{ t('customization.measure') }}: </strong> {{ itemSelected?.measure }}</p>
             <br />
-            <p><strong>{{ t('customization.matter') }}: </strong> {{itemSelected?.matter.map((m) => t(`enum.matter.${m}`)).join(', ')}}</p>
+            <p><strong>{{ t('customization.matter') }}: </strong> {{itemSelected?.matter.map((m) =>
+              t(`enum.matter.${m}`)).join(', ')}}</p>
             <p style="display: flex;"><strong>{{ t('customization.maintenance') }}: </strong>
             <div v-for="maintenance in itemSelected?.maintenance" :key="maintenance">
-              <img :src="`/img/maintenance/${maintenance}.png`"  style="height: 25px;" :alt="maintenance" :title="maintenance" />
+              <img :src="`/img/maintenance/${maintenance}.png`" style="height: 25px;" :alt="maintenance"
+                :title="maintenance" />
             </div>
             </p>
           </div>

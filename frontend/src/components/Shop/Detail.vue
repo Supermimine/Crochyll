@@ -71,7 +71,7 @@ const schemaOrg = computed(() => {
     "offers": {
       "@type": "Offer",
       "url": pageUrl,
-      "price": item!.price,
+      "price": item!.price[0],
       "priceCurrency": "CAD",
       "availability": "https://schema.org/InStock"
     }
@@ -104,7 +104,7 @@ useHead({
 
       <div class="infoDetail">
         <p style="font-size: 26px;">{{ item?.name ?? '' }}</p>
-        <p style="font-size: 30px; margin-bottom: 20px;">${{ item?.price ?? '' }}</p>
+        <p style="font-size: 30px; margin-bottom: 20px;">${{ item?.price[(sizeSelected ?? 1) - 1] ?? item?.price[0] ?? '' }}</p>
 
 
         <div v-if="item?.category == Category.Amigurumi">
@@ -128,7 +128,7 @@ useHead({
 
         <div v-if="item?.shade?.length != 0" style="margin-bottom: 20px;">
           <p><strong>{{ t('detail.color') }}</strong></p>
-          <div style="display: flex;">
+          <div class="shadeGrid">
             <div v-for="shade in item?.shade" :key="shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
                 @click="colorSelected = shade"
@@ -158,7 +158,7 @@ useHead({
           <span v-else>{{ t('detail.addAccessoryToCart') }}</span>
         </v-btn>
         <v-btn class="buttonOutside" style="width: 100%; margin: 2px;" @click="shareRef?.open()">{{ t('button.share')
-          }}</v-btn>
+        }}</v-btn>
 
         <div style="margin-top: 30px;">
           <p style="margin-top: 20px;"><strong>{{ t('detail.description') }}</strong></p>
@@ -282,6 +282,13 @@ useHead({
   width: 50%;
   max-width: 450px;
   text-align: left;
+}
+
+.shadeGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 30px);
+  gap: 8px;
+  align-items: center;
 }
 
 .colorOption {

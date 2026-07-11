@@ -1,0 +1,19 @@
+{
+    "myProject": {
+
+    },
+    "myReserve": {
+        "yarnModel": {
+            "name": "Name",
+            "compagny": "Compagny",
+            "color": "Color",
+            "size": "Size",
+            "length": "Length",
+            "weight": "Weigth",
+            "hookSize": "Hook size",
+            "needleSize": "Needle size",
+            "noPlace": "No Place",
+            "quantity": "Quantity"
+        }
+    }
+}
