@@ -18,7 +18,7 @@ const sizeWoolList = ref<{ name: string; code: number }[]>(
 );
 const yarnModel = ref<Yarn>({
     name: '',
-    compagny: '',
+    compagny: undefined,
     color: '',
     size: 0,
     length: undefined,
@@ -38,6 +38,23 @@ onMounted(async () => {
     lstYarn.value = storageValue ? JSON.parse(storageValue) : []
 });
 
+const openDialog = () => {
+    showDialog.value = true;
+    yarnModel.value = {
+        name: '',
+        compagny: undefined,
+        color: '',
+        size: 0,
+        length: undefined,
+        weight: undefined,
+        hookSize: undefined,
+        needleSize: undefined,
+        noPlace: undefined,
+        quantity: 1,
+        matter: []
+    }
+}
+
 const checkForm = () => {
     if (yarnModel.value.name == '')
         return false
@@ -55,14 +72,15 @@ const save = () => {
     const storageValue = localStorage.getItem("myProject:reserve");
     lstYarn.value = storageValue ? JSON.parse(storageValue) : [];
 
-    const existingEntry = lstYarn.value.find(
+    const existingIndex = lstYarn.value.findIndex(
         (entry: Yarn) =>
             entry.name === yarnModel.value.name &&
-            entry.color === yarnModel.value.color
+            entry.color === yarnModel.value.color &&
+            entry.size === yarnModel.value.size
     );
 
-    if (existingEntry) {
-        existingEntry.quantity += yarnModel.value.quantity;
+    if (existingIndex !== -1) {
+        lstYarn.value[existingIndex] = { ...yarnModel.value };
     } else {
         lstYarn.value.push({ ...yarnModel.value });
     }
@@ -71,6 +89,32 @@ const save = () => {
     showDialog.value = false;
 };
 
+const editYarn = (yarn: Yarn) => {
+    showDialog.value = true;
+    yarnModel.value = yarn;
+}
+
+const deleteYarn = (yarn: Yarn) => {
+    const isConfirmed: boolean = window.confirm("Are you sure you want to delete this item?");
+
+    if (isConfirmed) {
+        const storageValue = localStorage.getItem("myProject:reserve");
+        const storedYarn = storageValue ? JSON.parse(storageValue) as Yarn[] : [];
+
+        const indexToRemove = storedYarn.findIndex(
+            (entry: Yarn) =>
+                entry.name === yarn.name &&
+                entry.color === yarn.color &&
+                entry.size === yarn.size
+        );
+
+        if (indexToRemove !== -1) {
+            storedYarn.splice(indexToRemove, 1);
+            lstYarn.value = storedYarn;
+            localStorage.setItem('myProject:reserve', JSON.stringify(storedYarn));
+        }
+    }
+}
 
 const showInfo = () => {
     alert('Cette information sert à tout ceux qui souhaiterais organiser leurs inventaire ou ceux qui ont tendance à perdre leurs laine (ont ce reconnais hahahha)');
@@ -86,54 +130,82 @@ const toggleOpen = (index: number) => {
     <p class="ma-auto" v-if="lstYarn.length === 0">C'est étrange, n'est-ce pas ? Votre stock est vide.</p>
 
     <div v-else v-for="(yarn, index) in lstYarn" :key="index" class="box">
-        <div style="display: flex;">
-            <img src="" :alt="yarn.name + '.png'" class="imgBox">
+        <div class="card-top">
+            <div class="card-header">
+                <img src="/img/no-picture.png" :alt="`${yarn.name}.png`" class="imgBox">
 
-            <div>
-                <p style="position: absolute; top: 10px; right: 10px; font-style: italic; opacity: 0.7;">{{ yarn.noPlace
-                    }}</p>
+                <div class="card-title">
+                    <span class="place">#{{ yarn.noPlace }}</span>
 
-                <p style="margin-top: 25px;">{{ yarn.name }}</p>
-                <p><b>{{ yarn.color }}</b></p>
+                    <h3>{{ yarn.color }}</h3>
+                    <p class="subtitle">{{ yarn.name }}</p>
+
+                    <div class="quantity">
+                        <span>{{ yarn.quantity }} pelote{{ yarn.quantity > 1 ? 's' : '' }}</span>
+
+                        <span>0 utilisé{{ yarn.quantity > 1 ? 's' : '' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <v-btn icon="mdi-pencil-outline" variant="text" size="small" @click="editYarn(yarn)" />
+                <v-btn icon="mdi-delete-outline" variant="text" size="small" @click="deleteYarn(yarn)" />
             </div>
         </div>
 
-        <p>Nombre total: {{ yarn.quantity }}</p>
-        <p>Nombre utilisé: TODO</p>
-
-        <div v-if="yarn.compagny != undefined && yarn.hookSize != undefined && yarn.needleSize != undefined && yarn.length != undefined && yarn.weight != undefined"
-            style="justify-content: center; display: flex; margin-top: 25px;">
-            <a href="#" @click.prevent="toggleOpen(index)" style="display: flex;">
-                <p>Plus de détail</p>
-                <v-icon :icon="openItems[index] ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'"></v-icon>
+        <div v-if="yarn.compagny || yarn.hookSize || yarn.needleSize || yarn.length || yarn.weight"
+            class="details-toggle">
+            <a href="" @click.prevent="toggleOpen(index)">
+                <v-icon :icon="openItems[index]
+                    ? 'mdi-chevron-double-up'
+                    : 'mdi-chevron-double-down'" />
             </a>
         </div>
 
-        <div v-if="openItems[index]" style="display: flex;">
-            <div class="mr-6">
-                <p v-if="yarn.compagny != undefined">Compagnie: {{ yarn.compagny }}</p>
-                <p v-if="yarn.hookSize != undefined">Taille crochet: {{ yarn.hookSize }}</p>
-                <p v-if="yarn.needleSize != undefined">taille aiguille: {{ yarn.needleSize }}</p>
-            </div>
-            <div>
-                <p v-if="yarn.length != undefined">Longueur: {{ yarn.length }}</p>
-                <p v-if="yarn.weight != undefined">Poids: {{ yarn.weight }}</p>
+        <v-expand-transition>
+            <div v-show="openItems[index]" class="details">
 
-                <!-- <p>Compagnie: {{ yarn.matter }}</p> -->
+                <div v-if="yarn.compagny" class="detail-row">
+                    <span>Compagnie</span>
+                    <strong>{{ yarn.compagny }}</strong>
+                </div>
+
+                <div v-if="yarn.hookSize" class="detail-row">
+                    <span>Crochet</span>
+                    <strong>{{ yarn.hookSize }} mm</strong>
+                </div>
+
+                <div v-if="yarn.needleSize" class="detail-row">
+                    <span>Aiguille</span>
+                    <strong>{{ yarn.needleSize }} mm</strong>
+                </div>
+
+                <div v-if="yarn.length" class="detail-row">
+                    <span>Longueur</span>
+                    <strong>{{ yarn.length }} m</strong>
+                </div>
+
+                <div v-if="yarn.weight" class="detail-row">
+                    <span>Poids</span>
+                    <strong>{{ yarn.weight }} g</strong>
+                </div>
+
             </div>
-        </div>
+        </v-expand-transition>
     </div>
 
-    <v-btn class="buttonColor addItem" icon="mdi-plus" size="large" @click="showDialog = true;"></v-btn>
+    <v-btn class="buttonColor addItem" icon="mdi-plus" size="large" @click="openDialog()"></v-btn>
 
     <div v-if="showDialog" class="overlay">
         <div class="dialog" @click.stop>
+            <div class="closeBtn action-text" @click="showDialog = false;">
+                <v-icon icon="mdi-close" size="30"></v-icon>
+            </div>
+
             <div style="width:100%">
                 <h3 class="title">Laine</h3>
 
-                <div class="closeBtn action-text" @click="showDialog = false;">
-                    <v-icon icon="mdi-close" size="30"></v-icon>
-                </div>
 
                 <v-row>
                     <v-col cols="12">
@@ -215,66 +287,217 @@ const toggleOpen = (index: number) => {
 
 <style scoped>
 .addItem {
-    height: 70px;
-    width: 70px;
-    border-radius: 50px;
-    background-color: var(--action-color);
     position: fixed;
     right: 20px;
     bottom: 20px;
+
+    width: 68px;
+    height: 68px;
+
+    border-radius: 50%;
+    background-color: var(--action-color);
+
     display: flex;
     justify-content: center;
     align-items: center;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+    cursor: pointer;
 }
 
 .overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    inset: 0;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background: rgba(0, 0, 0, .4);
     z-index: 998;
 }
 
 .dialog {
-    background: var(--main-color);
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 520px;
-    width: 90%;
     position: relative;
-    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.35);
-    max-height: 80%;
+
+    width: min(520px, 90%);
+    max-height: 80vh;
+
+    padding: 24px;
+
     overflow-y: auto;
+
+    background: var(--main-color);
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
 }
 
 .closeBtn {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 18px;
+    right: 18px;
+
     cursor: pointer;
-    margin: 13px 26px;
 }
 
 .box {
-    background-color: var(--middle-color);
-    width: 100%;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: left;
     position: relative;
-    min-width: 400px;
+
+    width: 100%;
+    min-width: 380px;
+
+    margin: 16px 0;
+    padding: 18px;
+
+    background: var(--middle-color);
+    border-radius: 14px;
+
+    transition: .2s ease;
+}
+
+.box:hover {
+    transform: translateY(-2px);
 }
 
 .imgBox {
-    height: 80px;
-    width: 80px;
-    background-color: var(--dark-color);
-    border-radius: 5px;
-    margin-right: 15px;
+    width: 72px;
+    height: 72px;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+    background: var(--dark-color);
+
+    object-fit: cover;
+}
+
+.card-title {
+    position: relative;
+    flex: 1;
+}
+
+.place {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    opacity: .6;
+    font-size: .85rem;
+    font-style: italic;
+}
+
+.card-title h3 {
+    margin: 0;
+    padding-right: 60px;
+
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin-top: 4px;
+
+    opacity: .75;
+    font-size: .95rem;
+}
+
+.quantity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 14px;
+}
+
+.status {
+    font-weight: 600;
+}
+
+.details-toggle {
+    display: flex;
+    justify-content: center;
+
+    margin: 18px 0 10px;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin-top: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 2px 0;
+}
+
+.detail-row span {
+    opacity: .65;
+}
+
+.detail-row strong {
+    text-align: right;
+}
+
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.card-actions .v-btn {
+    opacity: 0;
+    transition: .2s;
+}
+
+.box:hover .card-actions .v-btn {
+    opacity: 1;
+}
+
+@media (max-width: 480px) {
+
+    .box {
+        min-width: auto;
+        padding: 16px;
+    }
+
+    .imgBox {
+        width: 60px;
+        height: 60px;
+    }
+
+    .card-title h3 {
+        font-size: 1.15rem;
+    }
+
+    .quantity,
+    .detail-row {
+        font-size: .95rem;
+    }
+
 }
 </style>
