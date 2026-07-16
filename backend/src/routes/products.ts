@@ -18,7 +18,7 @@ const getProducts = (): Product[] => {
         {
             id: "148f32ca-0aa2-4716-b5f9-92c93dc9483a",
             name: "Châle douceur",
-            price: [45.00, 45.00, 80.00, 85.00],
+            price: [45.00, 45.00, 85.00, 85.00],
             category: Category.Clothes,
             description: {
                 fr: "Ce châle va vous apporter douceur et réconfort pour les soirées froides d'été! Il est parfait pour vous protéger du soleil, le châle douceur est léger et permet à la peau de respirer.",
@@ -124,7 +124,7 @@ const getProducts = (): Product[] => {
         {
             id: "2732d19e-b5cd-4c1c-ad97-7fa17f8560b5",
             name: "Veste granny",
-            price: [55.00, 55.00, 75.00],
+            price: [60.00, 60.00, 85.00],
             category: Category.Clothes,
             description: {
                 fr: "TODO",
@@ -170,11 +170,11 @@ const getProducts = (): Product[] => {
         {
             id: "56265f9b-24a9-468f-824f-f16ee0aa049d",
             name: "Tortue",
-            price: [16.00],
+            price: [14.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Quoi de plus mignon qu'une petite tortue en peluche ? Cette adorable créature en crochet est parfaite pour les enfants et les amateurs de peluches. Fabriquée avec soin, elle est douce au toucher et idéale pour les câlins. Offrez cette tortue comme cadeau unique et charmant qui apportera un sourire à tous ceux qui la recevront ou pour vous même ;D.",
-                en: "TODO"
+                en: "What could be cuter than a little plush turtle? This adorable crochet creature is perfect for children and stuffed animal lovers alike. Carefully crafted, it is soft to the touch and ideal for cuddling. Give this turtle as a unique, charming gift that will bring a smile to anyone's face—or keep it for yourself! ;D"
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -186,11 +186,11 @@ const getProducts = (): Product[] => {
             maintenance: [Maintenance.Washable, Maintenance.Dryer],
             measure: "10 x 8 x 12 cm",
             weight: 0.5,
-            keywords: ["tortue", "peluche", "amigurumi", "mignon", "kawaii", "cadeau", "enfant", "animal", "marin", "mers"],
+            keywords: ["tortue", "peluche", "amigurumi", "mignon", "kawaii", "cadeau", "enfant", "animal", "marin", "mers", "petit"],
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Pin",
@@ -202,7 +202,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Caramel",
@@ -225,11 +225,11 @@ const getProducts = (): Product[] => {
         {
             id: "6c55960e-8887-4978-9f58-7225c95cbcba",
             name: "Koala",
-            price: [25.00],
+            price: [24.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Ce koala en peluche est un compagnon idéale pour les enfants et amateurs d'animaux en peluche. Ce super animal d'origine d'australie est frabriqué avec soin au crochet.",
-                en: "TODO"
+                en: "This plush koala is an ideal companion for children and stuffed animal enthusiasts. This wonderful animal from Australia is carefully crafted using the crochet technique."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -245,10 +245,10 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
-                    name: "Bernat Prenium",
+                    compagny: "Loops & Threads",
+                    name: "Soft Classic",
                     size: SizeWool.Medium,
-                    color: "Ivy",
+                    color: "Grey",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -257,7 +257,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Medium grey",
@@ -269,7 +269,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Black",
@@ -293,11 +293,11 @@ const getProducts = (): Product[] => {
         {
             id: "f8f262ff-07a0-4cf7-beb2-1be26902b788",
             name: "Lapin",
-            price: [30.00],
+            price: [17.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Ce lapin en peluche est un compagnon idéal pour les enfants et les amateurs de peluches. Un adorable petit lapin à oreille tombante en crochet.",
-                en: "TODO"
+                en: "This plush rabbit is an ideal companion for children and stuffed animal enthusiasts. An adorable little crocheted lop-eared rabbit."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -313,7 +313,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Cantaloupe",
@@ -330,7 +330,7 @@ const getProducts = (): Product[] => {
         {
             id: "dd82c5b7-5c64-4a09-b8fc-c9a17fe4d099",
             name: "Serpent",
-            price: [30.00],
+            price: [29.99],
             category: Category.Amigurumi,
             description: {
                 fr: "TODO",
@@ -341,7 +341,7 @@ const getProducts = (): Product[] => {
             size: [],
             shade: [],
             matter: [
-                Matter.Acrylic,
+                Matter.Polyester,
             ],
             maintenance: [Maintenance.Washable, Maintenance.Dryer],
             measure: "TODO",
@@ -350,13 +350,13 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "TODO",
-                    name: "TODO",
-                    size: SizeWool.Medium,
-                    color: "TODO",
+                    compagny: "Big Twist",
+                    name: "Baby Bear Yarn",
+                    size: SizeWool.SuperBulky,
+                    color: "Sepia",
                     matter: [
                         {
-                            type: Matter.Acrylic,
+                            type: Matter.Polyester,
                             percentage: 100
                         }
                     ]
@@ -371,7 +371,7 @@ const getProducts = (): Product[] => {
             category: Category.Amigurumi,
             description: {
                 fr: "Découvrez notre adorable petite d'araignée en crochet, parfaite pour les décorations d'halloween ou pour les amateurs d'araignées en peluche. Cette petite créature à huit pattes est fabriquée avec soin.",
-                en: "TODO"
+                en: "Discover our adorable little crochet spider, perfect for Halloween decorations or for fans of plush spiders. This little eight-legged creature is crafted with care."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -387,10 +387,22 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Black",
+                    matter: [
+                        {
+                            type: Matter.Acrylic,
+                            percentage: 100
+                        }
+                    ]
+                },
+                {
+                    compagny: "Loops & Threads",
+                    name: "Soft Classic",
+                    size: SizeWool.Medium,
+                    color: "Grey",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -404,11 +416,11 @@ const getProducts = (): Product[] => {
         {
             id: "95f8ca4f-34de-4d70-b8b3-fe183f012224",
             name: "Arraignée géante",
-            price: [80.00],
+            price: [79.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Découvrez notre impressionnante grande d'araignée en crochet, parfaite pour les décorations d'halloween ou pour les amateurs d'araignées en peluche. Cette créature à huit pattes est fabriquée avec soin et mesure 120 cm de long, ce qui en fait une pièce maîtresse pour votre collection de peluches ou une décoration unique pour les fêtes d'halloween ou comme oreiller a forme particulière.",
-                en: "TODO"
+                en: "Discover our impressive large crochet spider, perfect for Halloween decorations or for fans of plush spiders. Carefully crafted, this eight-legged creature measures 120 cm in length, making it a standout piece for your plush collection, a unique Halloween decoration, or a novelty-shaped pillow."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -425,7 +437,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Purple",
@@ -437,7 +449,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Velvet",
                     size: SizeWool.Bulky,
                     color: "Blackbird",
@@ -454,11 +466,11 @@ const getProducts = (): Product[] => {
         {
             id: "8bf9c02c-ed2e-4721-b32b-f24ca09f8f0a",
             name: "Vachette",
-            price: [15.00],
+            price: [21.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Cette adorable petite vache poilu en peluche représente une vachette Highland. Avec son pelage doux et son caractère charmant, elle est parfaite pour les tous.",
-                en: "TODO"
+                en: "This adorable little plush Highland cow features a shaggy coat. With its soft fur and charming personality, it is perfect for everyone."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -474,7 +486,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Super Value",
                     size: SizeWool.Medium,
                     color: "Redwood Heather",
@@ -486,10 +498,10 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Michaels",
-                    name: "Loops & Threads Soft Classic",
+                    compagny: "Yarnspirations",
+                    name: "Bernat Prenium",
                     size: SizeWool.Medium,
-                    color: "Coffee",
+                    color: "Caramel",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -498,10 +510,10 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
-                    name: "Bernat prenium",
+                    compagny: "Michaels",
+                    name: "Big Twist",
                     size: SizeWool.Medium,
-                    color: "Almond",
+                    color: "Ivory",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -522,11 +534,11 @@ const getProducts = (): Product[] => {
         {
             id: "0133a43e-270c-42ce-bf5b-99f2b81b362e",
             name: "Chèvre",
-            price: [15.00],
+            price: [11.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Cette adorable petite chèvre assise et avec sa longue barbe est parfaite et simple comme peluche pour tout les ages.",
-                en: "TODO"
+                en: "This adorable little seated goat with a long beard makes a perfect, simple plush toy for all ages."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -543,9 +555,9 @@ const getProducts = (): Product[] => {
             wool: [
                 {
                     compagny: "Michaels",
-                    name: "Loops & Threads Soft Classic",
+                    name: "Big Twist",
                     size: SizeWool.Medium,
-                    color: "Off White",
+                    color: "Ivory",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -554,7 +566,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Medium grey",
@@ -566,10 +578,10 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Michaels",
-                    name: "Loops & Threads Soft Classic",
+                    compagny: "Yarnspirations",
+                    name: "Bernat Prenium",
                     size: SizeWool.Medium,
-                    color: "Mocha",
+                    color: "Caramel",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -589,11 +601,11 @@ const getProducts = (): Product[] => {
         {
             id: "f5f5a251-7f5c-4f4f-acf7-379ea2546b54",
             name: "Renard",
-            price: [50.00],
+            price: [49.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Ce renard sur 2 pattes en peluche est un compagnon idéal pour les enfants et les amateurs de peluches. Avec son pelage doux et ses détails soignés il sera le compagnon idéal pour les câlins et les aventures imaginaires.",
-                en: "TODO"
+                en: "This plush fox standing on two legs is an ideal companion for children and stuffed animal enthusiasts. With its soft fur and finely crafted details, it makes the perfect companion for cuddles and imaginative adventures."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -610,9 +622,9 @@ const getProducts = (): Product[] => {
             wool: [
                 {
                     compagny: "Michaels",
-                    name: "Loops & Threads Soft Classic",
+                    name: "Big Twist",
                     size: SizeWool.Medium,
-                    color: "Off White",
+                    color: "Ivory",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -620,8 +632,8 @@ const getProducts = (): Product[] => {
                         }
                     ]
                 },
-                {
-                    compagny: "Walmart",
+                                {
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Black",
@@ -633,7 +645,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Orange",
@@ -650,11 +662,11 @@ const getProducts = (): Product[] => {
         {
             id: "95be2d6f-5290-4ab5-b384-5af8a5ed7251",
             name: "Pinguin",
-            price: [15.00],
+            price: [19.99],
             category: Category.Amigurumi,
             description: {
                 fr: "Ce bébé pinguin assis en peluche est un compagnon mignon et adorable qui ce tiens parfaitement dans les mains.",
-                en: "TODO"
+                en: "This seated plush baby penguin is a cute and adorable companion that fits perfectly in your hands."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -670,7 +682,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Medium grey",
@@ -683,9 +695,9 @@ const getProducts = (): Product[] => {
                 },
                 {
                     compagny: "Michaels",
-                    name: "Loops & Threads Soft Classic",
+                    name: "Big Twist",
                     size: SizeWool.Medium,
-                    color: "Off White",
+                    color: "Ivory",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -694,10 +706,10 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
-                    color: "Dark grey",
+                    color: "Dark Grey Heather",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -706,7 +718,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Gold",
@@ -749,7 +761,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Medium grey",
@@ -761,7 +773,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Pink",
@@ -802,7 +814,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Teal",
@@ -837,7 +849,7 @@ const getProducts = (): Product[] => {
         {
             id: "f3561426-f762-4164-b8a9-ce42623affb9",
             name: "Requin baleine",
-            price: [35.00],
+            price: [74.99],
             category: Category.Amigurumi,
             description: {
                 fr: "TODO",
@@ -848,7 +860,7 @@ const getProducts = (): Product[] => {
             size: [],
             shade: [],
             matter: [
-                Matter.Acrylic,
+                Matter.Polyester,
             ],
             maintenance: [Maintenance.Washable, Maintenance.Dryer],
             measure: "TODO",
@@ -857,17 +869,41 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "TODO",
-                    name: "TODO",
-                    size: SizeWool.Medium,
-                    color: "TODO",
+                    compagny: "Yarnspirations",
+                    name: "Bernat Blanket Brights",
+                    size: SizeWool.SuperBulky,
+                    color: "Bleu roi",
                     matter: [
                         {
-                            type: Matter.Acrylic,
+                            type: Matter.Polyester,
                             percentage: 100
                         }
                     ]
                 },
+                {
+                    compagny: "Yarnspirations",
+                    name: "Bernat Blanket",
+                    size: SizeWool.SuperBulky,
+                    color: "Whipped Cream",
+                    matter: [
+                        {
+                            type: Matter.Polyester,
+                            percentage: 100
+                        }
+                    ]
+                },
+                {
+                    compagny: "Yarnspirations",
+                    name: "Bernat Blanket",
+                    size: SizeWool.SuperBulky,
+                    color: "Pink Dust",
+                    matter: [
+                        {
+                            type: Matter.Polyester,
+                            percentage: 100
+                        }
+                    ]
+                }
             ],
             image: ["no-picture.png"]
         },
@@ -894,7 +930,7 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Dark grey",
@@ -906,7 +942,7 @@ const getProducts = (): Product[] => {
                     ]
                 },
                 {
-                    compagny: "Walmart",
+                    compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
                     color: "Cantaloupe",
@@ -935,7 +971,7 @@ const getProducts = (): Product[] => {
         {
             id: "725f771c-5e82-4507-9f32-58e27561a07a",
             name: "Pieuvre",
-            price: [90.00],
+            price: [89.99],
             category: Category.Amigurumi,
             description: {
                 fr: "TODO",
@@ -956,13 +992,25 @@ const getProducts = (): Product[] => {
             relatedProduct: [],
             wool: [
                 {
-                    compagny: "TODO",
-                    name: "TODO",
-                    size: SizeWool.Medium,
-                    color: "TODO",
+                    compagny: "Michaels",
+                    name: "Big Twist",
+                    size: SizeWool.SuperBulky,
+                    color: "Gold",
                     matter: [
                         {
-                            type: Matter.Acrylic,
+                            type: Matter.Polyester,
+                            percentage: 100
+                        }
+                    ]
+                },
+                {
+                    compagny: "Loops & Threads",
+                    name: "Demi Purl",
+                    size: SizeWool.SuperBulky,
+                    color: "Dark Gulf Grey",
+                    matter: [
+                        {
+                            type: Matter.Polyester,
                             percentage: 100
                         }
                     ]
