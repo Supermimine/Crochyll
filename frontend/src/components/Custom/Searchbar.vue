@@ -12,12 +12,36 @@ const props = defineProps<{
 }>();
 
 const filteredProducts = computed(() => {
-    return props.items.filter(product => {
-        let query = searchQuery.value.toLowerCase();
-        query = query.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    const query = searchQuery.value
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 
-        return product.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query) ||
-            product.keywords.some(keyword => keyword.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(query));
+    if (!query) return props.items;
+
+    return props.items.filter(product => {
+        if (!product || !product.name) return false;
+
+        const productName = product.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+        if (productName.includes(query)) return true;
+
+        if (product.keywords && Array.isArray(product.keywords)) {
+            return product.keywords.some(keyword => {
+                if (!keyword) return false;
+                return keyword
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .includes(query);
+            });
+        }
+
+        return false;
     });
 });
 

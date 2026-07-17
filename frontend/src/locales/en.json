@@ -47,9 +47,13 @@
             "7": "7 (Jumbo)"
         },
         "typeMaking": {
-            "0": "Crochet",
-            "1": "Tunisian Crochet",
+            "0": "Hook",
+            "1": "Tunisian Hook",
             "2": "Knitting"
+        },
+        "stateProject": {
+            "0": "In progess",
+            "1": "Finished"
         }
     },
     "searchBar": {

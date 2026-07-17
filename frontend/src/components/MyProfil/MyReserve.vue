@@ -34,7 +34,7 @@ const showDialog = ref<boolean>(false);
 const openItems = ref<Record<number, boolean>>({});
 
 onMounted(async () => {
-    const storageValue = localStorage.getItem("myProject:reserve")
+    const storageValue = localStorage.getItem("myProfil:reserve")
     lstYarn.value = storageValue ? JSON.parse(storageValue) : []
 });
 
@@ -67,9 +67,7 @@ const checkForm = () => {
 }
 
 const save = () => {
-    console.log(yarnModel);
-
-    const storageValue = localStorage.getItem("myProject:reserve");
+    const storageValue = localStorage.getItem("myProfil:reserve");
     lstYarn.value = storageValue ? JSON.parse(storageValue) : [];
 
     const existingIndex = lstYarn.value.findIndex(
@@ -85,7 +83,7 @@ const save = () => {
         lstYarn.value.push({ ...yarnModel.value });
     }
 
-    localStorage.setItem('myProject:reserve', JSON.stringify(lstYarn.value));
+    localStorage.setItem('myProfil:reserve', JSON.stringify(lstYarn.value));
     showDialog.value = false;
 };
 
@@ -95,10 +93,10 @@ const editYarn = (yarn: Yarn) => {
 }
 
 const deleteYarn = (yarn: Yarn) => {
-    const isConfirmed: boolean = window.confirm("Are you sure you want to delete this item?");
+    const isConfirmed: boolean = window.confirm(t('myProfil.delete'));
 
     if (isConfirmed) {
-        const storageValue = localStorage.getItem("myProject:reserve");
+        const storageValue = localStorage.getItem("myProfil:reserve");
         const storedYarn = storageValue ? JSON.parse(storageValue) as Yarn[] : [];
 
         const indexToRemove = storedYarn.findIndex(
@@ -111,13 +109,13 @@ const deleteYarn = (yarn: Yarn) => {
         if (indexToRemove !== -1) {
             storedYarn.splice(indexToRemove, 1);
             lstYarn.value = storedYarn;
-            localStorage.setItem('myProject:reserve', JSON.stringify(storedYarn));
+            localStorage.setItem('myProfil:reserve', JSON.stringify(storedYarn));
         }
     }
 }
 
 const showInfo = () => {
-    alert('Cette information sert à tout ceux qui souhaiterais organiser leurs inventaire ou ceux qui ont tendance à perdre leurs laine (ont ce reconnais hahahha)');
+    alert(t('myReserve.infoNoPlace'));
 }
 
 const toggleOpen = (index: number) => {
@@ -126,8 +124,8 @@ const toggleOpen = (index: number) => {
 </script>
 
 <template>
-    <h3 class="ma-auto">Ma réserve</h3>
-    <p class="ma-auto" v-if="lstYarn.length === 0">C'est étrange, n'est-ce pas ? Votre stock est vide.</p>
+    <h3 class="ma-auto">{{ t('myReserve.title') }}</h3>
+    <p class="ma-auto" v-if="lstYarn.length === 0">{{ t('myReserve.empty') }}</p>
 
     <div v-else v-for="(yarn, index) in lstYarn" :key="index" class="box">
         <div class="card-top">
@@ -135,7 +133,7 @@ const toggleOpen = (index: number) => {
                 <img src="/img/no-picture.png" :alt="`${yarn.name}.png`" class="imgBox">
 
                 <div class="card-title">
-                    <span class="place">#{{ yarn.noPlace }}</span>
+                    <span v-if="yarn.noPlace" class="place">#{{ yarn.noPlace }}</span>
 
                     <h3>{{ yarn.color }}</h3>
                     <p class="subtitle">{{ yarn.name }}</p>
@@ -167,30 +165,29 @@ const toggleOpen = (index: number) => {
             <div v-show="openItems[index]" class="details">
 
                 <div v-if="yarn.compagny" class="detail-row">
-                    <span>Compagnie</span>
+                    <span>{{ t('myReserve.yarnModel.compagny') }}</span>
                     <strong>{{ yarn.compagny }}</strong>
                 </div>
 
                 <div v-if="yarn.hookSize" class="detail-row">
-                    <span>Crochet</span>
+                    <span>{{ t('myReserve.yarnModel.hook') }}</span>
                     <strong>{{ yarn.hookSize }} mm</strong>
                 </div>
 
                 <div v-if="yarn.needleSize" class="detail-row">
-                    <span>Aiguille</span>
+                    <span>{{ t('myReserve.yarnModel.needle') }}</span>
                     <strong>{{ yarn.needleSize }} mm</strong>
                 </div>
 
                 <div v-if="yarn.length" class="detail-row">
-                    <span>Longueur</span>
+                    <span>{{ t('myReserve.yarnModel.length') }}</span>
                     <strong>{{ yarn.length }} m</strong>
                 </div>
 
                 <div v-if="yarn.weight" class="detail-row">
-                    <span>Poids</span>
+                    <span>{{ t('myReserve.yarnModel.weigth') }}</span>
                     <strong>{{ yarn.weight }} g</strong>
                 </div>
-
             </div>
         </v-expand-transition>
     </div>
@@ -204,7 +201,7 @@ const toggleOpen = (index: number) => {
             </div>
 
             <div style="width:100%">
-                <h3 class="title">Laine</h3>
+                <h3 class="title">{{ t('myReserve.yarnModel.title') }}</h3>
 
 
                 <v-row>
@@ -237,24 +234,24 @@ const toggleOpen = (index: number) => {
                 <v-row>
                     <v-col cols="12" sm="6">
                         <v-text-field v-model="yarnModel.length" :label="t('myReserve.yarnModel.length')"
-                            variant="outlined" density="compact" hide-details="auto" />
+                            variant="outlined" density="compact" hide-details="auto" suffix="m" />
                     </v-col>
 
                     <v-col cols="12" sm="6">
                         <v-text-field v-model="yarnModel.weight" :label="t('myReserve.yarnModel.weight')"
-                            variant="outlined" density="compact" hide-details="auto" />
+                            variant="outlined" density="compact" hide-details="auto" suffix="g" />
                     </v-col>
                 </v-row>
 
                 <v-row>
                     <v-col cols="12" sm="6">
                         <v-text-field v-model="yarnModel.hookSize" :label="t('myReserve.yarnModel.hookSize')"
-                            variant="outlined" density="compact" hide-details="auto" />
+                            variant="outlined" density="compact" hide-details="auto" suffix="mm" />
                     </v-col>
 
                     <v-col cols="12" sm="6">
                         <v-text-field v-model="yarnModel.needleSize" :label="t('myReserve.yarnModel.needleSize')"
-                            variant="outlined" density="compact" hide-details="auto" />
+                            variant="outlined" density="compact" hide-details="auto" suffix="mm" />
                     </v-col>
                 </v-row>
 

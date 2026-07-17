@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import BasicMenu from '../Menu/BasicMenu.vue';
+import { useI18n } from 'vue-i18n'
 
-import type { Project } from '@core/model/myProject/project.ts';
 import MyReserve from './MyReserve.vue';
+import MyProject from './MyProject.vue'
+
+const { t } = useI18n()
 
 const userName = ref<string>('');
-const lstProjects = ref<Project[]>([]);
 
 const showCreateAccount = ref<boolean>(false);
 const showCreateAccountForm = ref<boolean>(false);
@@ -15,7 +17,7 @@ const showMyProjects = ref<boolean>(false);
 const showMyReserve = ref<boolean>(false);
 
 onMounted(async () => {
-    const storageValue = localStorage.getItem("myProject:userName");
+    const storageValue = localStorage.getItem("myProfil:userName");
 
     showCreateAccount.value = true;
 
@@ -31,7 +33,7 @@ const showCreation = async () => {
 };
 
 const createAccount = async () => {
-    localStorage.setItem("myProject:userName", userName.value);
+    localStorage.setItem("myProfil:userName", userName.value);
     showCreateAccount.value = false;
     showCreateAccountForm.value = false;
     showAccount.value = true;
@@ -48,10 +50,6 @@ const myProjects = async () => {
     showMyProjects.value = true;
 };
 
-const createProject = async () => {
-
-};
-
 const myReserve = async () => {
     showAccount.value = false;
     showMyReserve.value = true;
@@ -65,51 +63,44 @@ const myReserve = async () => {
         style="display: flex; justify-content: center; align-items: center; height: 80vh; padding: 0.5rem;">
         <v-card class="mx-auto card" max-width="500" v-if="showCreateAccount">
             <div v-if="!showCreateAccountForm">
-                <h2 style="margin: 0;">Bonjour!</h2>
-                <h3 style="margin: 0; font-weight: normal;">Avant de commencer, créons ton profil.</h3>
+                <h2 style="margin: 0;">{{ t('myProfil.hello') }}!</h2>
+                <h3 style="margin: 0; font-weight: normal;">{{ t('myProfil.subTitleCreateAccount') }}</h3>
 
                 <v-btn @click="showCreation" class="mt-4">
-                    Créer mon profil
+                    {{ t('myProfil.createAccount') }}
                 </v-btn>
             </div>
 
             <div v-else>
                 <h2 style="margin: 0;">Création du profil</h2>
-                <p class="pb-5">***A des fin confidentialité nous ne stockons aucune donnée personnelle dans nos
-                    infrastructures.
-                    Les
-                    informations suivantes seront sauvegardées dans votre navigateur.</p>
+                <p class="pb-5">***{{ t('myProfil.policy') }}</p>
 
-                <v-text-field variant="outlined" density="compact" hide-details="auto" label="Nom d'utilisateur"
+                <v-text-field variant="outlined" density="compact" hide-details="auto" :label="t('myProfil.username')"
                     v-model="userName" />
 
                 <v-btn @click="createAccount" class="mt-4">
-                    Confirmer
+                    {{ t('myProfil.confirm') }}
                 </v-btn>
             </div>
         </v-card>
 
         <div v-if="showAccount && !showCreateAccount" style="text-align: center;">
             <div>
-                <h2 style="margin: 0;">Bonjour {{ userName }}!</h2>
-                <h3 class="pb-5" style="margin: 0; font-weight: normal;">Envie de donner vie à votre prochaine idée?
-                </h3>
+                <h2 style="margin: 0;">{{ t('myProfil.hello') }} {{ userName }}!</h2>
+                <h3 class="pb-5" style="margin: 0; font-weight: normal;">{{ t('myProfil.subTitle') }}</h3>
 
-                <v-card class="ma-2" link color="var(--dark-color)" subtitle="Gardez le fil de toutes vos créations"
-                    title="Mes projets" @click="myProjects()"></v-card>
+                <v-card class="ma-2" link color="var(--dark-color)" :subtitle="t('myProfil.subTitleMyProject')"
+                    :title="t('myProfil.myProject')" @click="myProjects()"></v-card>
 
-                <v-card class="ma-2" link color="var(--dark-color)" subtitle="Votre collection de laine prend vie ici"
-                    title="Ma réserve" @click="myReserve()"></v-card>
+                <v-card class="ma-2" link color="var(--dark-color)" :subtitle="t('myProfil.subTitleMyReserve')"
+                    :title="t('myProfil.myReserve')" @click="myReserve()"></v-card>
             </div>
         </div>
 
         <div v-if="showMyProjects">
             <v-icon icon="mdi-arrow-left" size="30" class="backArrow ma-2" @click="backToAccount()"></v-icon>
 
-            <h3 class="ma-auto">Mes projets</h3>
-            <p class="ma-auto" v-if="lstProjects.length === 0">Il ne manque plus que votre premier projet</p>
-
-            <v-btn class="buttonColor addItem" icon="mdi-plus" size="large"></v-btn>
+            <MyProject />
         </div>
 
         <div v-if="showMyReserve">

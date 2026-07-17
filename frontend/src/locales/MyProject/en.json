@@ -1,16 +1,47 @@
 {
+    "myProfil": {
+        "hello": "Hello",
+        "subTitleCreateAccount": "Before we begin, let's create your profile.",
+        "subTitle": "Want to bring your next idea to life?",
+        "createAccount": "Create my profile",
+        "policy": "For privacy reasons, we do not store any personal data on our infrastructure. The following information will be saved in your browser.",
+        "username": "User name",
+        "confirm": "Confirm",
+        "myProject": "My project",
+        "subTitleMyProject": "Keep track of all your creations.",
+        "myReserve": "My reserve",
+        "subTitleMyReserve": "Your wool collection comes to life here.",
+        "delete": "Are you sure you want to delete this item?"
+    },
     "myProject": {
-
+        "title": "My projects",
+        "empty": "All that’s missing is your first project.",
+        "infoNoPlace": "This information is useful for anyone wanting to organize their yarn stash, or for those who tend to lose their project (guilty as charged, hahaha).",
+        "projectModel": {
+            "title": "Project",
+            "name": "Name",
+            "description": "Description",
+            "type": "Type",
+            "hookSize": "Size",
+            "state": "State",
+            "noPlace": "No Place"
+        }
     },
     "myReserve": {
+        "title": "My reserve",
+        "empty": "It's strange, isn't it? Your stock is empty.",
+        "infoNoPlace": "This information is useful for anyone wanting to organize their yarn stash, or for those who tend to lose their yarn (guilty as charged, hahaha).",
         "yarnModel": {
+            "title": "Yarn",
             "name": "Name",
             "compagny": "Compagny",
             "color": "Color",
             "size": "Size",
             "length": "Length",
             "weight": "Weigth",
+            "hook": "Hook",
             "hookSize": "Hook size",
+            "needle": "Needle",
             "needleSize": "Needle size",
             "noPlace": "No Place",
             "quantity": "Quantity"

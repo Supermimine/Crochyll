@@ -1,0 +1,445 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+import type { Project } from '@core/model/myProject/project';
+import { StateProject, TypeMaking } from '@core';
+
+const lstProjects = ref<Project[]>([]);
+
+const typeList = ref<{ name: string; code: number }[]>(
+    Object.keys(TypeMaking)
+        .filter(k => isNaN(Number(k)))
+        .map((k) => {
+            const code = (TypeMaking as any)[k] as number;
+            return { name: `${k}`, code };
+        })
+);
+const stateList = ref<{ name: string; code: number }[]>(
+    Object.keys(StateProject)
+        .filter(k => isNaN(Number(k)))
+        .map((k) => {
+            const code = (StateProject as any)[k] as number;
+            return { name: `${k}`, code };
+        })
+);
+const projectModel = ref<Project>({
+    name: '',
+    description: '',
+    type: TypeMaking.Crochet,
+    hookSize: 0,
+    state: StateProject.InProgress,
+    notes: [],
+    yarns: [],
+    image: undefined,
+    noPlace: undefined
+});
+
+const showDialog = ref<boolean>(false);
+const openItems = ref<Record<number, boolean>>({});
+
+onMounted(async () => {
+    const storageValue = localStorage.getItem("myProfil:project")
+    lstProjects.value = storageValue ? JSON.parse(storageValue) : []
+});
+
+const openDialog = () => {
+    showDialog.value = true;
+    projectModel.value = {
+        name: '',
+        description: '',
+        type: TypeMaking.Crochet,
+        hookSize: 4,
+        state: StateProject.InProgress,
+        notes: [],
+        yarns: [],
+        image: undefined,
+        noPlace: undefined
+    }
+}
+
+const checkForm = () => {
+    if (projectModel.value.name == '')
+        return false
+
+    return true;
+}
+
+const save = () => {
+    console.log(projectModel);
+
+    const storageValue = localStorage.getItem("myProfil:project");
+    lstProjects.value = storageValue ? JSON.parse(storageValue) : [];
+
+    const existingIndex = lstProjects.value.findIndex(
+        (entry: Project) =>
+            entry.name === projectModel.value.name
+    );
+
+    if (existingIndex !== -1) {
+        lstProjects.value[existingIndex] = { ...projectModel.value };
+    } else {
+        lstProjects.value.push({ ...projectModel.value });
+    }
+
+    localStorage.setItem('myProfil:project', JSON.stringify(lstProjects.value));
+    showDialog.value = false;
+};
+
+const editProject = (project: Project) => {
+    showDialog.value = true;
+    projectModel.value = project;
+}
+
+const deleteProject = (project: Project) => {
+    const isConfirmed: boolean = window.confirm(t('myProfil.delete'));
+
+    if (isConfirmed) {
+        const storageValue = localStorage.getItem("myProfil:project");
+        const storedYarn = storageValue ? JSON.parse(storageValue) as Project[] : [];
+
+        const indexToRemove = storedYarn.findIndex(
+            (entry: Project) =>
+                entry.name === project.name
+        );
+
+        if (indexToRemove !== -1) {
+            storedYarn.splice(indexToRemove, 1);
+            lstProjects.value = storedYarn;
+            localStorage.setItem('myProfil:project', JSON.stringify(storedYarn));
+        }
+    }
+}
+
+const showInfo = () => {
+    alert(t('myProject.infoNoPlace'));
+}
+
+const toggleOpen = (index: number) => {
+    openItems.value[index] = !openItems.value[index];
+};
+</script>
+
+<template>
+    <h3 class="ma-auto">{{ t('myProject.title') }}</h3>
+    <p class="ma-auto" v-if="lstProjects.length === 0">{{ t('myProject.empty') }}</p>
+
+    <div v-else v-for="(project, index) in lstProjects" :key="index" class="box">
+        <div class="card-top">
+            <div class="card-header">
+                <img src="/img/no-picture.png" :alt="`${project.name}.png`" class="imgBox">
+
+                <div class="card-title">
+                    <span v-if="project.noPlace" class="place">#{{ project.noPlace }}</span>
+
+                    <h3>{{ project.name }}</h3>
+                    <p class="subtitle">{{ t('enum.typeMaking.' + project.type) }} {{ project.hookSize }}mm</p>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <v-btn icon="mdi-pencil-outline" variant="text" size="small" @click="editProject(project)" />
+                <v-btn icon="mdi-delete-outline" variant="text" size="small" @click="deleteProject(project)" />
+            </div>
+        </div>
+
+        <span style="text-align: left; width: 100%; display: block;">
+            {{ t('enum.stateProject.' + project.state) }}
+        </span>
+
+        <div class="details-toggle">
+            <a href="" @click.prevent="toggleOpen(index)">
+                <v-icon :icon="openItems[index]
+                    ? 'mdi-chevron-double-up'
+                    : 'mdi-chevron-double-down'" />
+            </a>
+        </div>
+
+        <v-expand-transition>
+            <div v-show="openItems[index]" class="details">
+                <div v-if="project.description" class="detail-row">
+                    <span>{{ t('myProject.projectModel.description') }}</span>
+                    <strong>{{ project.description }}</strong>
+                </div>
+            </div>
+        </v-expand-transition>
+    </div>
+
+    <v-btn class="buttonColor addItem" icon="mdi-plus" size="large" @click="openDialog()"></v-btn>
+
+    <div v-if="showDialog" class="overlay">
+        <div class="dialog" @click.stop>
+            <div class="closeBtn action-text" @click="showDialog = false;">
+                <v-icon icon="mdi-close" size="30"></v-icon>
+            </div>
+
+            <div style="width:100%">
+                <h3 class="title">{{ t('myProject.projectModel.title') }}</h3>
+
+                <v-row>
+                    <v-col cols="12">
+                        <v-text-field v-model="projectModel.name" :label="t('myProject.projectModel.name') + ' *'"
+                            variant="outlined" density="compact" hide-details="auto" />
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-textarea v-model="projectModel.description"
+                            :label="t('myProject.projectModel.description') + ' *'" variant="outlined" density="compact"
+                            hide-details="auto" />
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-autocomplete v-model="projectModel.type" :items="typeList" item-title="name"
+                            item-value="code" :label="t('myProject.projectModel.type') + ' *'" variant="outlined"
+                            density="compact" hide-details="auto" />
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-text-field v-model="projectModel.hookSize"
+                            :label="t('myProject.projectModel.hookSize') + ' *'" variant="outlined" density="compact"
+                            hide-details="auto" suffix="mm" />
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-autocomplete v-model="projectModel.state" :items="stateList" item-title="name"
+                            item-value="code" :label="t('myProject.projectModel.state') + ' *'" variant="outlined"
+                            density="compact" hide-details="auto" />
+                    </v-col>
+                </v-row>
+
+                <v-row>
+                    <v-col cols="11">
+                        <v-text-field v-model="projectModel.noPlace" :label="t('myProject.projectModel.noPlace')"
+                            variant="outlined" density="compact" hide-details="auto" />
+
+                    </v-col>
+                    <v-col cols="1"
+                        style="display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                        <v-icon icon="mdi-information-outline" size="20" @click="showInfo"></v-icon>
+                    </v-col>
+                </v-row>
+
+                <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
+                    {{ t('button.save') }}
+                </v-btn>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.addItem {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+
+    width: 68px;
+    height: 68px;
+
+    border-radius: 50%;
+    background-color: var(--action-color);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+    cursor: pointer;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, .4);
+    z-index: 998;
+}
+
+.dialog {
+    position: relative;
+
+    width: min(520px, 90%);
+    max-height: 80vh;
+
+    padding: 24px;
+
+    overflow-y: auto;
+
+    background: var(--main-color);
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
+}
+
+.closeBtn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+
+    cursor: pointer;
+}
+
+.box {
+    position: relative;
+
+    width: 100%;
+    min-width: 380px;
+
+    margin: 16px 0;
+    padding: 18px;
+
+    background: var(--middle-color);
+    border-radius: 14px;
+
+    transition: .2s ease;
+}
+
+.box:hover {
+    transform: translateY(-2px);
+}
+
+.imgBox {
+    width: 72px;
+    height: 72px;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+    background: var(--dark-color);
+
+    object-fit: cover;
+}
+
+.card-title {
+    position: relative;
+    flex: 1;
+}
+
+.place {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    opacity: .6;
+    font-size: .85rem;
+    font-style: italic;
+}
+
+.card-title h3 {
+    margin: 0;
+    padding-right: 60px;
+
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin-top: 4px;
+
+    opacity: .75;
+    font-size: .95rem;
+}
+
+.quantity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 14px;
+}
+
+.status {
+    font-weight: 600;
+}
+
+.details-toggle {
+    display: flex;
+    justify-content: center;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin-top: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 2px 0;
+}
+
+.detail-row span {
+    opacity: .65;
+}
+
+.detail-row strong {
+    text-align: right;
+}
+
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.card-actions .v-btn {
+    opacity: 0;
+    transition: .2s;
+}
+
+.box:hover .card-actions .v-btn {
+    opacity: 1;
+}
+
+@media (max-width: 480px) {
+
+    .box {
+        min-width: auto;
+        padding: 16px;
+    }
+
+    .imgBox {
+        width: 60px;
+        height: 60px;
+    }
+
+    .card-title h3 {
+        font-size: 1.15rem;
+    }
+
+    .quantity,
+    .detail-row {
+        font-size: .95rem;
+    }
+
+}
+</style>

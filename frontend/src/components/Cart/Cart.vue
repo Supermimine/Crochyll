@@ -42,13 +42,13 @@ const saveAddress = (addr: Address) => {
 }
 
 const applyPromoCode = async () => {
-    const promoCodes = await api.getPromoCodes();
-    const promo: Promo | null = promoCodes.find((code) => code.code === promoCode.value) || null;
-    if (promoCode.value === promo?.code) {
-        discount.value = promo.discount || 0;
-        promoCode.value = "";
+    const inputCode = promoCode.value.trim();
+    if (!inputCode) return;
 
-        console.log(`Code promo appliqué : ${promo.code}, réduction de ${promo.discount}%`);
+    const data: { isValid: boolean; discount: number } = (await api.checkPromoCode(inputCode)).data;
+    if (data && data.isValid) {
+        discount.value = data.discount;
+        promoCode.value = "";
     }
 }
 
@@ -90,6 +90,10 @@ const shipping = computed(() => {
 
     return price;
 });
+
+const confirm = async () => {
+    paypalRef.value?.open();
+}
 </script>
 
 
@@ -135,7 +139,7 @@ const shipping = computed(() => {
             <div style="margin-top: 20px;">
                 <div style="display: flex;">
                     <v-text-field style="width: 60%;" v-model="promoCode" :label="t('cart.promoCode')"
-                        variant="outlined" density="compact" hideDetails />
+                        variant="outlined" density="compact" hideDetails maxlength="36" />
                     <v-btn class="buttonColor" style="width: 40%; margin-left: 10px;" @click="applyPromoCode">{{
                         t('button.apply') }}</v-btn>
                 </div>
@@ -152,7 +156,7 @@ const shipping = computed(() => {
             </div>
 
             <v-btn :disabled="carts.length === 0 || addressSelected == null" class="buttonColor"
-                style="width: 100%; margin: 2px; margin-top: 50px;" @click="paypalRef?.open()">
+                style="width: 100%; margin: 2px; margin-top: 50px;" @click="confirm()">
                 {{ t('cart.placeOrder') }}
             </v-btn>
         </div>

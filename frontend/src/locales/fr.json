@@ -50,6 +50,10 @@
             "0": "Crochet",
             "1": "Crochet Tunisien",
             "2": "Tricot"
+        },
+        "stateProject": {
+            "0": "En cours",
+            "1": "Terminé"
         }
     },
     "searchBar": {

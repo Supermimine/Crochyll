@@ -114,21 +114,18 @@ class ApiService {
 
   // ============ PROMO CODES ============
     /**
-   * Get promo code
+   * Check if promo code is valid and discount assosiate
    * -------------------------------------
-   * @returns An array of promo codes or an error message if the request fails
+   * @returns A boolean promo codes is valid and discount or an error message if the request fails
    * @throws Will throw an error if the promo codes are not found or if there is an issue with the API request
    * @example
-   * const promoCodes = await api.getPromoCodes();
+   * const isPromoCodeValid = await api.checkPromoCode(promoCode);
    */
-  async getPromoCodes(): Promise<Promo[]> {
-    const response: ApiResponse<Promo[]> = await this.request('/api/promoCodes');
-
-      if (!response.success || !response.data) {
-        throw new Error('Promo codes not found');
-      }
-
-    return response.data;    
+  async checkPromoCode(code: string): Promise<ApiResponse<any>> {
+    return this.request('/api/promoCodes/check', {
+      method: 'POST',
+      body: JSON.stringify({code}),
+    });
   }
 
   // ============ EMAILS ============

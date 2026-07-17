@@ -22,19 +22,29 @@ const getFilteredProducts = () => {
 };
 
 const getNewProducts = () => {
-    return getFilteredProducts().slice(-5);
+    const products = getFilteredProducts();
+    return [
+        ...products.filter(item => item.category == Category.Amigurumi).slice(-2),
+        ...products.filter(item => item.category == Category.AccessoiresAmigurumi).slice(-1),
+        ...products.filter(item => item.category == Category.Accessoires).slice(-1),
+        ...products.filter(item => item.category == Category.Clothes).slice(-1)
+    ]
 };
 const getAmigurumiProducts = () => {
-    return getFilteredProducts().filter(item => item.category == Category.Amigurumi || item.category == Category.AccessoiresAmigurumi).slice(0, 10);
+    return getFilteredProducts().filter(item => item.category == Category.Amigurumi || item.category == Category.AccessoiresAmigurumi).sort(() => 0.5 - Math.random())
+        .slice(0, 10);
 };
 const getClotheProducts = () => {
-    return getFilteredProducts().filter(item => item.category == Category.Clothes).slice(0, 10);
+    return getFilteredProducts().filter(item => item.category == Category.Clothes).sort(() => 0.5 - Math.random())
+        .slice(0, 10);
 };
 const getAccessoriesProducts = () => {
-    return getFilteredProducts().filter(item => item.category == Category.Accessoires).slice(0, 10);
+    return getFilteredProducts().filter(item => item.category == Category.Accessoires).sort(() => 0.5 - Math.random())
+        .slice(0, 10);
 };
 const getPatternProducts = () => {
-    return getFilteredProducts().filter(item => item.category == Category.Pattern).slice(0, 10);
+    return getFilteredProducts().filter(item => item.category == Category.Pattern).sort(() => 0.5 - Math.random())
+        .slice(0, 10);
 };
 
 const dynamicUrl = (item: Product) => {

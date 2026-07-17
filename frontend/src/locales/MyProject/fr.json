@@ -1,16 +1,47 @@
 {
+    "myProfil": {
+        "hello": "Bonjour",
+        "subTitleCreateAccount": "Avant de commencer, créons ton profil.",
+        "subTitle": "Envie de donner vie à votre prochaine idée?",
+        "createAccount": "Créer mon profil",
+        "policy": "A des fin confidentialité nous ne stockons aucune donnée personnelle dans nos infrastructures. Les informations suivantes seront sauvegardées dans votre navigateur.",
+        "username": "Nom d'utilisateur",
+        "confirm": "Confirmer",
+        "myProject": "Mes projets",
+        "subTitleMyProject": "Gardez le fil de toutes vos créations",
+        "myReserve": "Ma réserve",
+        "subTitleMyReserve": "Votre collection de laine prend vie ici",
+        "delete": "Êtes-vous sûr de vouloir supprimer cet élément ?"
+    },
     "myProject": {
-        
+        "title": "Mes projets",
+        "empty": "Il ne manque plus que votre premier projet",
+        "infoNoPlace": "Cette information sert à tout ceux qui souhaiterais organiser leurs inventaire ou ceux qui ont tendance à perdre leurs projets (ont ce reconnais hahahha)",
+        "projectModel": {
+            "title": "Projet",
+            "name": "Nom",
+            "description": "Description",
+            "type": "Type",
+            "hookSize": "Taille",
+            "state": "État",
+            "noPlace": "No Emplacement"
+        }
     },
     "myReserve": {
+        "title": "Ma réserve",
+        "empty": "C'est étrange, n'est-ce pas ? Votre stock est vide.",
+        "infoNoPlace": "Cette information sert à tout ceux qui souhaiterais organiser leurs inventaire ou ceux qui ont tendance à perdre leurs laine (ont ce reconnais hahahha)",
         "yarnModel": {
+            "title": "Laine",
             "name": "Nom",
             "compagny": "Compagnie",
             "color": "Couleur",
             "size": "Taille",
-            "length": "longueur",
-            "weight": "poids",
+            "length": "Longueur",
+            "weight": "Poids",
+            "hook": "Crochet",
             "hookSize": "Taille crochet",
+            "needle": "Aiguille",
             "needleSize": "Taille aiguille",
             "noPlace": "No Emplacement",
             "quantity": "Quantité"

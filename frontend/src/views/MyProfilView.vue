@@ -1,10 +1,10 @@
 <script setup type="ts">
-    import MyProject from '../components/MyProject/MyProject.vue';
+    import MyProfil from '../components/MyProfil/MyProfil.vue';
 </script>
 
 <template>
     <Suspense>
-        <MyProject/>
+        <MyProfil/>
         <template #fallback>
             <div style="padding: 40px; text-align: center;">Chargement...</div>
         </template>
