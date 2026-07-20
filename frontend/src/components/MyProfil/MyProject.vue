@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n'
+import { safeStorageGet, safeStorageSetJSON } from '@/tools/appTools';
 
 const { t } = useI18n()
 
 import type { Project } from '@core/model/myProject/project';
+import type { Yarn } from '@core/model/myProject/yarn';
+
 import { StateProject, TypeMaking } from '@core';
 
 const lstProjects = ref<Project[]>([]);
+const lstYarn = ref<Yarn[]>([]);
 
 const typeList = ref<{ name: string; code: number }[]>(
     Object.keys(TypeMaking)
@@ -41,7 +45,7 @@ const showDialog = ref<boolean>(false);
 const openItems = ref<Record<number, boolean>>({});
 
 onMounted(async () => {
-    const storageValue = localStorage.getItem("myProfil:project")
+    const storageValue = safeStorageGet("myProfil:project")
     lstProjects.value = storageValue ? JSON.parse(storageValue) : []
 });
 
@@ -58,6 +62,8 @@ const openDialog = () => {
         image: undefined,
         noPlace: undefined
     }
+
+    getYarns()
 }
 
 const checkForm = () => {
@@ -70,7 +76,7 @@ const checkForm = () => {
 const save = () => {
     console.log(projectModel);
 
-    const storageValue = localStorage.getItem("myProfil:project");
+    const storageValue = safeStorageGet("myProfil:project");
     lstProjects.value = storageValue ? JSON.parse(storageValue) : [];
 
     const existingIndex = lstProjects.value.findIndex(
@@ -84,7 +90,7 @@ const save = () => {
         lstProjects.value.push({ ...projectModel.value });
     }
 
-    localStorage.setItem('myProfil:project', JSON.stringify(lstProjects.value));
+    safeStorageSetJSON('myProfil:project', lstProjects.value);
     showDialog.value = false;
 };
 
@@ -97,7 +103,7 @@ const deleteProject = (project: Project) => {
     const isConfirmed: boolean = window.confirm(t('myProfil.delete'));
 
     if (isConfirmed) {
-        const storageValue = localStorage.getItem("myProfil:project");
+        const storageValue = safeStorageGet("myProfil:project");
         const storedYarn = storageValue ? JSON.parse(storageValue) as Project[] : [];
 
         const indexToRemove = storedYarn.findIndex(
@@ -108,7 +114,7 @@ const deleteProject = (project: Project) => {
         if (indexToRemove !== -1) {
             storedYarn.splice(indexToRemove, 1);
             lstProjects.value = storedYarn;
-            localStorage.setItem('myProfil:project', JSON.stringify(storedYarn));
+            safeStorageSetJSON('myProfil:project', storedYarn);
         }
     }
 }
@@ -119,6 +125,40 @@ const showInfo = () => {
 
 const toggleOpen = (index: number) => {
     openItems.value[index] = !openItems.value[index];
+};
+
+const getYarns = (): void => {
+    const storageValue = safeStorageGet("myProfil:reserve")
+    lstYarn.value = storageValue ? JSON.parse(storageValue) : []
+}
+const availableYarns = computed(() => {
+    return lstYarn.value.filter(yarn =>
+        !projectModel.value.yarns.some(projectYarn =>
+            projectYarn.name === yarn.name &&
+            projectYarn.color === yarn.color &&
+            projectYarn.size === yarn.size
+        )
+    );
+});
+const addYarnToProject = (yarn: Yarn, projectYarns: Yarn[]): void => {
+    projectYarns.push({ ...yarn });
+};
+
+const onDragStart = (event: DragEvent, index: number): void => {
+    if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', index.toString());
+    }
+};
+
+const onDrop = (event: DragEvent, targetIndex: number): void => {
+    if (!event.dataTransfer) return;
+
+    const sourceIndex = parseInt(event.dataTransfer.getData('text/plain'), 10);
+    if (isNaN(sourceIndex) || sourceIndex === targetIndex) return;
+
+    const [movedProject] = projectModel.value.yarns.splice(sourceIndex, 1);
+    projectModel.value.yarns.splice(targetIndex, 0, movedProject);
 };
 </script>
 
@@ -218,6 +258,46 @@ const toggleOpen = (index: number) => {
                     <v-col cols="1"
                         style="display: flex; justify-content: center; align-items: center; cursor: pointer;">
                         <v-icon icon="mdi-information-outline" size="20" @click="showInfo"></v-icon>
+                    </v-col>
+                </v-row>
+
+                <v-row>
+                    <v-col cols="12">
+                        <div style="display: flex; justify-content: space-between;">
+                            <v-label style="display: block;">Laine</v-label>
+
+                            <v-menu>
+                                <template v-slot:activator="{ props }">
+                                    <v-btn color="primary" v-bind="props">
+                                        Associer laine
+                                    </v-btn>
+                                </template>
+
+                                <v-list>
+                                    <v-list-item v-for="(yarn, index) in availableYarns"
+                                        :key="`${yarn.color}-${yarn.name}-${yarn.size}-${index}`"
+                                        @click="addYarnToProject(yarn, projectModel.yarns)">
+                                        <v-list-item-title>{{ yarn.name }} - {{ yarn.color }} ({{ yarn.quantity
+                                        }})</v-list-item-title>
+                                    </v-list-item>
+
+                                    <v-list-item v-if="availableYarns.length === 0">
+                                        <v-list-item-title class="text-grey">Aucune autre laine
+                                            disponible</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </div>
+
+                        <v-list v-if="projectModel.yarns.length > 0" style="margin-top: 25px;">
+                            <v-list-item v-for="(item, index) in projectModel.yarns" :key="index" draggable="true"
+                                @dragstart="onDragStart($event, index)" @dragover.prevent @drop="onDrop($event, index)">
+                                <template #prepend>
+                                    <v-icon style="cursor: move;">mdi-drag-vertical</v-icon>
+                                </template>
+                                <v-list-item-title>{{ item.name }} - {{ item.color }} ({{ item.quantity }})</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
                     </v-col>
                 </v-row>
 

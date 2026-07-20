@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { currentLocale, setLocale } from "@/i18n"
+import { safeStorageSet } from "@/tools/appTools"
 
 const isFr = computed(() => currentLocale.value === "fr")
 
@@ -9,7 +10,7 @@ const toggleLanguage = async () => {
 
   await setLocale(newLang)
 
-  localStorage.setItem("language", newLang)
+  safeStorageSet("language", newLang)
 }
 </script>
 

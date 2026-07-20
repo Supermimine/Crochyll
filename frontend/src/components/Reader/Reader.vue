@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
-import { useScreen } from '@/tools/appTools';
+import { safeStorageGet, safeStorageGetJSON, safeStorageSetJSON, useScreen } from '@/tools/appTools';
 
 const { t } = useI18n()
 const { isMobile } = useScreen();
@@ -26,7 +26,7 @@ import Counter from "./Counter.vue";
 import type { FilePattern } from "@core/model/filepattern";
 import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";
 
-const filesList = ref<FilePattern[]>(JSON.parse(localStorage.getItem("files") || "[]"));
+const filesList = ref<FilePattern[]>(safeStorageGetJSON<FilePattern[]>("files", []));
 const filesSectionShow = ref(filesList.value.length > 0);
 const filesSectionOpen = ref(true);
 const maxState = ref(0);
@@ -77,22 +77,20 @@ const importFile = async () => {
   input.click();
 };
 const addFile = (file: FilePattern) => {
-  const storageValue = localStorage.getItem("files");
-  const files: FilePattern[] = storageValue ? JSON.parse(storageValue) : [];
+  const files: FilePattern[] = safeStorageGetJSON<FilePattern[]>("files", []);
 
   files.push(file);
   filesList.value = files;
 
-  localStorage.setItem("files", JSON.stringify(files));
+  safeStorageSetJSON("files", files);
 };
 const removeFile = (index: number) => {
-  const storageValue = localStorage.getItem("files");
-  const files: FilePattern[] = storageValue ? JSON.parse(storageValue) : [];
+  const files: FilePattern[] = safeStorageGetJSON<FilePattern[]>("files", []);
 
   files.splice(index, 1);
   filesList.value = files;
 
-  localStorage.setItem("files", JSON.stringify(files));
+  safeStorageSetJSON("files", files);
 
   unSelectedFile();
 
@@ -115,8 +113,7 @@ const unSelectedFile = () => {
 };
 
 const editFile = () => {
-  const storageValue = localStorage.getItem("files");
-  const files: FilePattern[] = storageValue ? JSON.parse(storageValue) : [];
+  const files: FilePattern[] = safeStorageGetJSON<FilePattern[]>("files", []);
 
   if (!selectedFile.value) return;
 
@@ -124,7 +121,7 @@ const editFile = () => {
 
   if (index !== -1) {
     files[index] = selectedFile.value;
-    localStorage.setItem("files", JSON.stringify(files));
+    safeStorageSetJSON("files", files);
   }
 };
 const changeState = (state: number) => {

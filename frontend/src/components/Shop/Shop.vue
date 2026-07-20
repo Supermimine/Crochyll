@@ -4,7 +4,7 @@ import Footer from '../Footer/Footer.vue';
 import Searchbar from '../Custom/Searchbar.vue';
 import Tiles from './Tiles.vue';
 import { useI18n } from 'vue-i18n'
-import { useScreen } from '@/tools/appTools';
+import { safeStorageSet, useScreen } from '@/tools/appTools';
 
 import { api } from '@/service/api';
 
@@ -63,7 +63,7 @@ const dynamicUrl = (item: Product) => {
 };
 
 const changeSelectedIndex = (index: number) => {
-    localStorage.setItem('menuIndex', index.toString());
+    safeStorageSet('menuIndex', index.toString());
 };
 </script>
 

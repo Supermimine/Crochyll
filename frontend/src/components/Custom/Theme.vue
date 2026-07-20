@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useTheme } from "vuetify";
-import { getTheme } from "@/tools/appTools";
+import { getTheme, safeStorageSet } from "@/tools/appTools";
 
 const theme = useTheme();
 
@@ -16,7 +16,7 @@ const toggleTheme = () => {
   const newTheme = isDark.value ? "light" : "dark";
 
   theme.change(newTheme);
-  localStorage.setItem("theme", newTheme);
+  safeStorageSet("theme", newTheme);
 
   document.documentElement.setAttribute("data-theme", newTheme);
 };

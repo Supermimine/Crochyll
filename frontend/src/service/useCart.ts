@@ -2,13 +2,13 @@ import { ref } from 'vue';
 import type { CartItem } from '@core/model/cartItem';
 import type { Size } from '@core/enum/size';
 import type { Product } from '@core/model/product';
+import { safeStorageGetJSON, safeStorageSetJSON } from '@/tools/appTools';
 
 const carts = ref<CartItem[]>([]);
 
 const setCarts = () => {
-  const cartData = localStorage.getItem("cart");
-  carts.value = cartData ? JSON.parse(cartData) : [];
-}
+  carts.value = safeStorageGetJSON<CartItem[]>("cart", []);
+};
 
 const addCart = async (
   item: any = null,
@@ -18,11 +18,11 @@ const addCart = async (
   itemsList: Product[] = [],
   allCart: boolean = true
 ) => {
-  const storageValue = localStorage.getItem('cart');
-  let cart: CartItem[] = storageValue ? JSON.parse(storageValue) : [];
+  const cart = safeStorageGetJSON<CartItem[]>("cart", []);
+  const updatedCart = [...cart];
 
   if (allCart && item) {
-    const existingEntry = cart.find(
+    const existingEntry = updatedCart.find(
       entry =>
         entry.item.id === item.id &&
         entry.color === colorSelected &&
@@ -32,7 +32,7 @@ const addCart = async (
     if (existingEntry) {
       existingEntry.quantity += quantity;
     } else {
-      cart.push({
+      updatedCart.push({
         quantity,
         item,
         color: colorSelected,
@@ -43,7 +43,7 @@ const addCart = async (
 
   if (itemsList.length > 0) {
     itemsList.forEach((accessory: Product) => {
-      cart.push({
+      updatedCart.push({
         quantity: 1,
         item: accessory,
         color: null,
@@ -52,15 +52,13 @@ const addCart = async (
     });
   }
 
-  localStorage.setItem('cart', JSON.stringify(cart));
+  safeStorageSetJSON("cart", updatedCart);
   setCarts();
-}
+};
 
 const removeCart = (cartItem: CartItem) => {
-  const storageValue = localStorage.getItem('cart');
-  let cart: CartItem[] = storageValue ? JSON.parse(storageValue) : [];
-
-  cart = cart.filter(
+  const cart = safeStorageGetJSON<CartItem[]>("cart", []);
+  const updatedCart = cart.filter(
     entry =>
       !(
         entry.item.id === cartItem.item.id &&
@@ -69,35 +67,34 @@ const removeCart = (cartItem: CartItem) => {
       )
   );
 
-  localStorage.setItem('cart', JSON.stringify(cart));
+  safeStorageSetJSON("cart", updatedCart);
   setCarts();
-}
+};
 
 const cleanCart = () => {
-  localStorage.removeItem('cart');
+  safeStorageSetJSON('cart', []);
   setCarts();
-}
+};
 
 const updateQuantityCart = (isUp: boolean, cartItem: CartItem) => {
-  const storageValue = localStorage.getItem("cart");
-  let cart: CartItem[] = storageValue ? JSON.parse(storageValue) : [];
-
-  const existingEntry = cart.find(entry => entry.item.id === cartItem.item.id && entry.color === cartItem.color && entry.size === cartItem.size);
-
-  if (existingEntry) {
-    if (isUp) {
-      existingEntry.quantity++;
-    } else {
-      existingEntry.quantity = Math.max(1, existingEntry.quantity - 1);
+  const cart = safeStorageGetJSON<CartItem[]>("cart", []);
+  const updatedCart = cart.map(entry => {
+    if (entry.item.id === cartItem.item.id && entry.color === cartItem.color && entry.size === cartItem.size) {
+      return {
+        ...entry,
+        quantity: isUp ? entry.quantity + 1 : Math.max(1, entry.quantity - 1)
+      };
     }
-  }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+    return entry;
+  });
+
+  safeStorageSetJSON("cart", updatedCart);
   setCarts();
-}
+};
 
 export const useCart = () => {
   setCarts();
 
   return { carts, addCart, removeCart, cleanCart, updateQuantityCart };
-}
+};

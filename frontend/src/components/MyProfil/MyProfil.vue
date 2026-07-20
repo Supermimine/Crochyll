@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import MyReserve from './MyReserve.vue';
 import MyProject from './MyProject.vue'
+import { safeStorageGet, safeStorageSet } from '@/tools/appTools.ts';
 
 const { t } = useI18n()
 
@@ -17,7 +18,7 @@ const showMyProjects = ref<boolean>(false);
 const showMyReserve = ref<boolean>(false);
 
 onMounted(async () => {
-    const storageValue = localStorage.getItem("myProfil:userName");
+    const storageValue = safeStorageGet("myProfil:userName");
 
     showCreateAccount.value = true;
 
@@ -33,7 +34,7 @@ const showCreation = async () => {
 };
 
 const createAccount = async () => {
-    localStorage.setItem("myProfil:userName", userName.value);
+    safeStorageSet("myProfil:userName", userName.value);
     showCreateAccount.value = false;
     showCreateAccountForm.value = false;
     showAccount.value = true;
@@ -76,7 +77,7 @@ const myReserve = async () => {
                 <p class="pb-5">***{{ t('myProfil.policy') }}</p>
 
                 <v-text-field variant="outlined" density="compact" hide-details="auto" :label="t('myProfil.username')"
-                    v-model="userName" />
+                    v-model="userName" maxlength="36" />
 
                 <v-btn @click="createAccount" class="mt-4">
                     {{ t('myProfil.confirm') }}

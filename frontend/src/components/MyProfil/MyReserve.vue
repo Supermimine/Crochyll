@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n'
+import { safeStorageGet, safeStorageSetJSON } from '@/tools/appTools';
 
 const { t } = useI18n()
 
@@ -34,7 +35,7 @@ const showDialog = ref<boolean>(false);
 const openItems = ref<Record<number, boolean>>({});
 
 onMounted(async () => {
-    const storageValue = localStorage.getItem("myProfil:reserve")
+    const storageValue = safeStorageGet("myProfil:reserve")
     lstYarn.value = storageValue ? JSON.parse(storageValue) : []
 });
 
@@ -67,7 +68,7 @@ const checkForm = () => {
 }
 
 const save = () => {
-    const storageValue = localStorage.getItem("myProfil:reserve");
+    const storageValue = safeStorageGet("myProfil:reserve");
     lstYarn.value = storageValue ? JSON.parse(storageValue) : [];
 
     const existingIndex = lstYarn.value.findIndex(
@@ -83,7 +84,7 @@ const save = () => {
         lstYarn.value.push({ ...yarnModel.value });
     }
 
-    localStorage.setItem('myProfil:reserve', JSON.stringify(lstYarn.value));
+    safeStorageSetJSON('myProfil:reserve', lstYarn.value);
     showDialog.value = false;
 };
 
@@ -96,7 +97,7 @@ const deleteYarn = (yarn: Yarn) => {
     const isConfirmed: boolean = window.confirm(t('myProfil.delete'));
 
     if (isConfirmed) {
-        const storageValue = localStorage.getItem("myProfil:reserve");
+        const storageValue = safeStorageGet("myProfil:reserve");
         const storedYarn = storageValue ? JSON.parse(storageValue) as Yarn[] : [];
 
         const indexToRemove = storedYarn.findIndex(
@@ -109,7 +110,7 @@ const deleteYarn = (yarn: Yarn) => {
         if (indexToRemove !== -1) {
             storedYarn.splice(indexToRemove, 1);
             lstYarn.value = storedYarn;
-            localStorage.setItem('myProfil:reserve', JSON.stringify(storedYarn));
+            safeStorageSetJSON('myProfil:reserve', storedYarn);
         }
     }
 }

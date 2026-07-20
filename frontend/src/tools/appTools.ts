@@ -1,7 +1,49 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
+const safeStorageGet = (key: string): string | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const safeStorageSet = (key: string, value: string): void => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    return;
+  }
+};
+
+const safeStorageGetJSON = <T>(key: string, fallback: T): T => {
+  const value = safeStorageGet(key);
+
+  if (!value) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+};
+
+const safeStorageSetJSON = (key: string, value: unknown): void => {
+  safeStorageSet(key, JSON.stringify(value));
+};
+
 const language = () => {
-  let lang = localStorage.getItem("language");
+  let lang = safeStorageGet("language");
 
   if (lang != null) {
     return lang;
@@ -32,12 +74,12 @@ const language = () => {
       lang = "fr";
   }
 
-  localStorage.setItem("language", lang);
+  safeStorageSet("language", lang);
   return lang;
 }
 
 const getTheme = (): "light" | "dark" => {
-  let stored = localStorage.getItem("theme") as "light" | "dark" | null;
+  let stored = safeStorageGet("theme") as "light" | "dark" | null;
 
   if (stored === "light" || stored === "dark") {
     return stored;
@@ -46,7 +88,7 @@ const getTheme = (): "light" | "dark" => {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const theme = prefersDark ? "dark" : "light";
 
-  localStorage.setItem("theme", theme);
+  safeStorageSet("theme", theme);
   return theme;
 };
 
@@ -72,4 +114,4 @@ const sleep = async (ms: number): Promise<void> => {
   await new Promise(resolve => setTimeout(resolve, ms));
 };
 
-export { useScreen, language, getTheme, sleep };
+export { useScreen, language, getTheme, sleep, safeStorageGet, safeStorageSet, safeStorageGetJSON, safeStorageSetJSON };

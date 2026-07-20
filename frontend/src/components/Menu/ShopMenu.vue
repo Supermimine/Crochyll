@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useScreen } from '@/tools/appTools';
+import { safeStorageGet, safeStorageSet, useScreen } from '@/tools/appTools';
 import { useI18n } from 'vue-i18n'
 import logo from '../Custom/Logo.vue';
 import theme from '../Custom/Theme.vue';
@@ -10,7 +10,7 @@ const { t } = useI18n()
 const { isMobile } = useScreen();
 
 const mobileDetailShow = ref(false);
-const savedIndex = localStorage.getItem('menuIndex');
+const savedIndex = safeStorageGet('menuIndex');
 let selectedIndex = savedIndex !== null ? parseInt(savedIndex) : 0;
 
 import { useCart } from '@/service/useCart';
@@ -25,7 +25,7 @@ const menus = [
 
 const changeSelectedIndex = (index: number) => {
   selectedIndex = index;
-  localStorage.setItem('menuIndex', index.toString());
+  safeStorageSet('menuIndex', index.toString());
 };
 </script>
 

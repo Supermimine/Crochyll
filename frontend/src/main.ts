@@ -9,7 +9,7 @@ import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 import { router } from './router/router'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
-import { getTheme, language } from "@/tools/appTools";
+import { getTheme, safeStorageGet } from "@/tools/appTools";
 import { createHead } from '@unhead/vue/client'
 import { setLocale } from './i18n/index'
 import i18n from './i18n';
@@ -29,7 +29,7 @@ const vuetify = createVuetify({
   },
 })
 
-const savedLang = (localStorage.getItem("language") as "fr" | "en") || "fr"
+const savedLang = (safeStorageGet("language") as "fr" | "en") || "fr"
 await setLocale(savedLang)
 
 const app = createApp(App)

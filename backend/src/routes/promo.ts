@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import type { ApiResponse } from '../types';
 import type { Promo } from "@core/model/promo";
+import { validatePromoCode } from '../security';
 
 const router = Router();
 
@@ -16,15 +17,15 @@ router.post('/promoCodes/check', (req: Request, res: Response) => {
     try {
         const { code } = req.body;
 
-        if (!code || typeof code !== 'string') {
+        const cleanCode = validatePromoCode(code);
+
+        if (!cleanCode) {
             return res.status(400).json({
                 success: false,
-                error: "Le code promo est requis et doit être une chaîne de caractères.",
+                error: "Le code promo est requis et doit être une chaîne de caractères valide.",
                 timestamp: new Date().toISOString()
             });
         }
-
-        const cleanCode = code.trim().toUpperCase();
 
         const promoCodes = getPromoCodes();
         const foundPromo = promoCodes.find((p) => p.code === cleanCode);

@@ -14,6 +14,7 @@ import productRoutes from './routes/products';
 import promoRoutes from './routes/promo';
 import emailRoutes from './routes/email';
 import { mailerService } from './services/mailer.service';
+import { applySecurityHeaders, createRateLimiter, isAllowedOrigin } from './security';
 
 // Réinitialiser le service Mailer avec les variables d'environnement chargées
 mailerService.reinitialize();
@@ -21,17 +22,29 @@ mailerService.reinitialize();
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = [FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+const globalLimiter = createRateLimiter(200, 60_000);
+const emailLimiter = createRateLimiter(20, 60_000);
 
-// Middleware
+app.disable('x-powered-by');
+app.use(applySecurityHeaders);
+app.use(globalLimiter);
 app.use(cors({
-  origin: FRONTEND_URL,
+  origin: (origin, callback) => {
+    if (!origin || isAllowedOrigin(origin, allowedOrigins)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Origin not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Routes de base
 app.get('/api/health', (req: Request, res: Response) => {
@@ -43,9 +56,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 });
 
 // Utiliser les routes
-// app.use('/api', healthRoutes);
 app.use('/api', productRoutes);
 app.use('/api', promoRoutes);
+app.use('/api/email', emailLimiter);
 app.use('/api', emailRoutes);
 
 // Middleware pour les erreurs 404
