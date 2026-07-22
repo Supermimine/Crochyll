@@ -6,6 +6,7 @@ import { safeStorageGet, safeStorageSetJSON } from '@/tools/appTools';
 const { t } = useI18n()
 
 import type { Yarn } from '@core/model/myProject/yarn.ts';
+import type { Project } from '@core/model/myProject/project.ts';
 import { SizeWool } from '@core';
 
 const lstYarn = ref<Yarn[]>([]);
@@ -28,6 +29,7 @@ const yarnModel = ref<Yarn>({
     needleSize: undefined,
     noPlace: undefined,
     quantity: 1,
+    useQuantity: 0,
     matter: []
 });
 
@@ -52,6 +54,7 @@ const openDialog = () => {
         needleSize: undefined,
         noPlace: undefined,
         quantity: 1,
+        useQuantity: 0,
         matter: []
     }
 }
@@ -122,6 +125,17 @@ const showInfo = () => {
 const toggleOpen = (index: number) => {
     openItems.value[index] = !openItems.value[index];
 };
+
+const getUseQuantity = (yarn: Yarn) => {
+    const storageValue = safeStorageGet("myProfil:project");
+    const lstProjects: Project[] = storageValue ? JSON.parse(storageValue) : [];
+
+    const allProjectYarns = lstProjects.flatMap(project => project.yarns);
+
+    return allProjectYarns
+        .filter((y: Yarn) => y.name === yarn.name && y.size === yarn.size && y.color === yarn.color)
+        .reduce((sum: number, y: Yarn) => sum + y.useQuantity, 0);
+}
 </script>
 
 <template>
@@ -142,7 +156,7 @@ const toggleOpen = (index: number) => {
                     <div class="quantity">
                         <span>{{ yarn.quantity }} pelote{{ yarn.quantity > 1 ? 's' : '' }}</span>
 
-                        <span>0 utilisé{{ yarn.quantity > 1 ? 's' : '' }}</span>
+                        <span>{{ getUseQuantity(yarn) }} utilisé{{ yarn.quantity > 1 ? 's' : '' }}</span>
                     </div>
                 </div>
             </div>

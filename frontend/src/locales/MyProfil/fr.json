@@ -24,7 +24,13 @@
             "type": "Type",
             "hookSize": "Taille",
             "state": "État",
-            "noPlace": "No Emplacement"
+            "noPlace": "No Emplacement",
+            "yarn": "Laine",
+            "yarns": "Laines",
+            "paring": "Associer laine",
+            "empty": "Aucune autre laine disponible",
+            "notes": "Notes",
+            "note": "Note"
         }
     },
     "myReserve": {

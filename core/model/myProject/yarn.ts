@@ -15,5 +15,6 @@ export interface Yarn {
     hookSize?: number;
     needleSize?: number;
     quantity: number;
+    useQuantity: number;
     noPlace?: string;
 }

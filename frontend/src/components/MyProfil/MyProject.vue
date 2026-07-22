@@ -40,9 +40,12 @@ const projectModel = ref<Project>({
     image: undefined,
     noPlace: undefined
 });
+const noteModel = ref<string>("");
+const currentProject = ref<Project>();
 
 const showDialog = ref<boolean>(false);
 const openItems = ref<Record<number, boolean>>({});
+const showDialogNote = ref<boolean>(false);
 
 onMounted(async () => {
     const storageValue = safeStorageGet("myProfil:project")
@@ -73,21 +76,19 @@ const checkForm = () => {
     return true;
 }
 
-const save = () => {
-    console.log(projectModel);
-
+const save = (project: Project) => {
     const storageValue = safeStorageGet("myProfil:project");
     lstProjects.value = storageValue ? JSON.parse(storageValue) : [];
 
     const existingIndex = lstProjects.value.findIndex(
         (entry: Project) =>
-            entry.name === projectModel.value.name
+            entry.name === project.name
     );
 
     if (existingIndex !== -1) {
-        lstProjects.value[existingIndex] = { ...projectModel.value };
+        lstProjects.value[existingIndex] = { ...project };
     } else {
-        lstProjects.value.push({ ...projectModel.value });
+        lstProjects.value.push({ ...project });
     }
 
     safeStorageSetJSON('myProfil:project', lstProjects.value);
@@ -97,6 +98,8 @@ const save = () => {
 const editProject = (project: Project) => {
     showDialog.value = true;
     projectModel.value = project;
+
+    getYarns()
 }
 
 const deleteProject = (project: Project) => {
@@ -130,6 +133,11 @@ const toggleOpen = (index: number) => {
 const getYarns = (): void => {
     const storageValue = safeStorageGet("myProfil:reserve")
     lstYarn.value = storageValue ? JSON.parse(storageValue) : []
+
+    lstYarn.value = lstYarn.value.map(item => ({
+        ...item,
+        useQuantity: 1
+    }));
 }
 const availableYarns = computed(() => {
     return lstYarn.value.filter(yarn =>
@@ -140,6 +148,16 @@ const availableYarns = computed(() => {
         )
     );
 });
+const getRemainingQuantity = (yarn: Yarn, currentUseQuantity: number): number => {
+    const allProjectYarns = lstProjects.value.flatMap(project => project.yarns);
+
+    const totalUsed = allProjectYarns
+        .filter((y: Yarn) => y.name === yarn.name && y.size === yarn.size && y.color === yarn.color)
+        .reduce((sum: number, y: Yarn) => sum + y.useQuantity, 0);
+
+    return yarn.quantity - (totalUsed + currentUseQuantity);
+};
+
 const addYarnToProject = (yarn: Yarn, projectYarns: Yarn[]): void => {
     projectYarns.push({ ...yarn });
 };
@@ -160,6 +178,40 @@ const onDrop = (event: DragEvent, targetIndex: number): void => {
     const [movedProject] = projectModel.value.yarns.splice(sourceIndex, 1);
     projectModel.value.yarns.splice(targetIndex, 0, movedProject);
 };
+
+const showNote = (project: Project) => {
+    showDialogNote.value = true
+    noteModel.value = ""
+    currentProject.value = project
+}
+const addNote = () => {
+    if (currentProject.value == null)
+        return;
+
+    currentProject.value.notes.push(noteModel.value)
+    showDialogNote.value = false
+
+    save(currentProject.value)
+}
+const deleteNote = (note: string, project: Project) => {
+    const isConfirmed: boolean = window.confirm(t('myProfil.delete'));
+
+    if (isConfirmed) {
+        const storedNotes = project.notes
+
+        const indexToRemove = storedNotes.findIndex(
+            (entry: string) =>
+                entry === note
+        );
+
+        if (indexToRemove !== -1) {
+            storedNotes.splice(indexToRemove, 1);
+            project.notes = storedNotes;
+        }
+    }
+
+    save(project)
+}
 </script>
 
 <template>
@@ -202,6 +254,28 @@ const onDrop = (event: DragEvent, targetIndex: number): void => {
                 <div v-if="project.description" class="detail-row">
                     <span>{{ t('myProject.projectModel.description') }}</span>
                     <strong>{{ project.description }}</strong>
+                </div>
+
+                <div v-if="project.yarns.length > 0" class="detail-row">
+                    <span style="margin-bottom: auto;">{{ t('myProject.projectModel.yarns') }}</span>
+                    <div style="display: grid;">
+                        <strong v-for="yarn in project.yarns">{{ yarn.name }} - {{ yarn.color }} (x{{ yarn.useQuantity
+                            }})</strong>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <span style="margin-bottom: auto;">{{ t('myProject.projectModel.notes') }}</span>
+                    <div style="display: grid;">
+                        <div v-for="note in project.notes" style="display: flex; margin-bottom: 5px;"
+                            class="note-actions">
+                            <v-btn icon="mdi-delete-outline" variant="text" size="small" style="margin-right: 10px;"
+                                @click="deleteNote(note, project)"></v-btn>
+                            <strong style="margin: auto;">{{ note }}</strong>
+                        </div>
+                        <v-btn @click="showNote(project)" style="max-width: 70px; margin-left: auto;">{{ t('button.add')
+                            }}</v-btn>
+                    </div>
                 </div>
             </div>
         </v-expand-transition>
@@ -264,26 +338,39 @@ const onDrop = (event: DragEvent, targetIndex: number): void => {
                 <v-row>
                     <v-col cols="12">
                         <div style="display: flex; justify-content: space-between;">
-                            <v-label style="display: block;">Laine</v-label>
+                            <v-label style="display: block;">{{ t('myProject.projectModel.yarn') }}</v-label>
 
                             <v-menu>
                                 <template v-slot:activator="{ props }">
                                     <v-btn color="primary" v-bind="props">
-                                        Associer laine
+                                        {{ t('myProject.projectModel.paring') }}
                                     </v-btn>
                                 </template>
 
                                 <v-list>
                                     <v-list-item v-for="(yarn, index) in availableYarns"
-                                        :key="`${yarn.color}-${yarn.name}-${yarn.size}-${index}`"
-                                        @click="addYarnToProject(yarn, projectModel.yarns)">
-                                        <v-list-item-title>{{ yarn.name }} - {{ yarn.color }} ({{ yarn.quantity
-                                        }})</v-list-item-title>
+                                        :key="`${yarn.color}-${yarn.name}-${yarn.size}-${index}`">
+                                        <v-list-item-title @click="addYarnToProject(yarn, projectModel.yarns)"
+                                            style="cursor: pointer;">
+                                            {{ yarn.name }} - {{ yarn.color }} (x{{ yarn.useQuantity }})
+                                        </v-list-item-title>
+
+                                        <template #append>
+                                            <v-btn icon="mdi-minus" variant="text" :disabled="yarn.useQuantity <= 1"
+                                                @click.stop="yarn.useQuantity > 1 ? yarn.useQuantity-- : null"
+                                                class="mx-3"></v-btn>
+
+                                            <v-btn icon="mdi-plus" variant="text"
+                                                :disabled="getRemainingQuantity(yarn, yarn.useQuantity) <= 0"
+                                                @click.stop="getRemainingQuantity(yarn, yarn.useQuantity) > 0 ? yarn.useQuantity++ : null"></v-btn>
+
+                                        </template>
                                     </v-list-item>
 
                                     <v-list-item v-if="availableYarns.length === 0">
-                                        <v-list-item-title class="text-grey">Aucune autre laine
-                                            disponible</v-list-item-title>
+                                        <v-list-item-title class="text-grey">
+                                            {{ t('myProject.projectModel.empty') }}
+                                        </v-list-item-title>
                                     </v-list-item>
                                 </v-list>
                             </v-menu>
@@ -295,13 +382,42 @@ const onDrop = (event: DragEvent, targetIndex: number): void => {
                                 <template #prepend>
                                     <v-icon style="cursor: move;">mdi-drag-vertical</v-icon>
                                 </template>
-                                <v-list-item-title>{{ item.name }} - {{ item.color }} ({{ item.quantity }})</v-list-item-title>
+                                <v-list-item-title>{{ item.name }} - {{ item.color }} ({{ item.useQuantity
+                                }})</v-list-item-title>
+
+                                <template #append>
+                                    <v-btn icon="mdi-delete" variant="text"
+                                        @click.stop="projectModel.yarns.splice(index, 1)"></v-btn>
+                                </template>
                             </v-list-item>
                         </v-list>
                     </v-col>
                 </v-row>
 
-                <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="save" :disabled="!checkForm()">
+                <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="save(projectModel)" :disabled="!checkForm()">
+                    {{ t('button.save') }}
+                </v-btn>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="showDialogNote" class="overlay">
+        <div class="dialog" @click.stop>
+            <div class="closeBtn action-text" @click="showDialogNote = false;">
+                <v-icon icon="mdi-close" size="30"></v-icon>
+            </div>
+
+            <div style="width:100%">
+                <h3 class="title">{{ t('myProject.projectModel.note') }}</h3>
+
+                <v-row>
+                    <v-col cols="12">
+                        <v-text-field v-model="noteModel" variant="outlined" density="compact" hide-details="auto" />
+                    </v-col>
+                </v-row>
+
+                <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="addNote()"
+                    :disabled="noteModel == null || noteModel == ''">
                     {{ t('button.save') }}
                 </v-btn>
             </div>
@@ -496,7 +612,16 @@ const onDrop = (event: DragEvent, targetIndex: number): void => {
     transition: .2s;
 }
 
+.note-actions .v-btn {
+    opacity: 0;
+    transition: .2s;
+}
+
 .box:hover .card-actions .v-btn {
+    opacity: 1;
+}
+
+.note-actions:hover .v-btn {
     opacity: 1;
 }
 
