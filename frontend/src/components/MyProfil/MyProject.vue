@@ -47,6 +47,8 @@ const showDialog = ref<boolean>(false);
 const openItems = ref<Record<number, boolean>>({});
 const showDialogNote = ref<boolean>(false);
 
+const selectedFile = ref<File | null>(null)
+
 onMounted(async () => {
     const storageValue = safeStorageGet("myProfil:project")
     lstProjects.value = storageValue ? JSON.parse(storageValue) : []
@@ -97,7 +99,7 @@ const save = (project: Project) => {
 
 const editProject = (project: Project) => {
     showDialog.value = true;
-    projectModel.value = project;
+    projectModel.value = JSON.parse(JSON.stringify(project));
 
     getYarns()
 }
@@ -212,6 +214,28 @@ const deleteNote = (note: string, project: Project) => {
 
     save(project)
 }
+
+const onFileSelected = (files: File | File[] | null) => {
+    if (!files) return
+
+    const file = Array.isArray(files) ? files[0] : files
+    if (!file) return
+
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+        if (e.target?.result) {
+            projectModel.value.image = e.target.result as string
+        }
+    }
+
+    reader.readAsDataURL(file)
+    selectedFile.value = null
+}
+
+const removeImage = () => {
+    projectModel.value.image = null
+}
 </script>
 
 <template>
@@ -221,7 +245,7 @@ const deleteNote = (note: string, project: Project) => {
     <div v-else v-for="(project, index) in lstProjects" :key="index" class="box">
         <div class="card-top">
             <div class="card-header">
-                <img src="/img/no-picture.png" :alt="`${project.name}.png`" class="imgBox">
+                <img :src="project.image || '/img/no-picture.png'" :alt="`${project.name}.png`" class="imgBox">
 
                 <div class="card-title">
                     <span v-if="project.noPlace" class="place">#{{ project.noPlace }}</span>
@@ -260,7 +284,7 @@ const deleteNote = (note: string, project: Project) => {
                     <span style="margin-bottom: auto;">{{ t('myProject.projectModel.yarns') }}</span>
                     <div style="display: grid;">
                         <strong v-for="yarn in project.yarns">{{ yarn.name }} - {{ yarn.color }} (x{{ yarn.useQuantity
-                            }})</strong>
+                        }})</strong>
                     </div>
                 </div>
 
@@ -274,7 +298,7 @@ const deleteNote = (note: string, project: Project) => {
                             <strong style="margin: auto;">{{ note }}</strong>
                         </div>
                         <v-btn @click="showNote(project)" style="max-width: 70px; margin-left: auto;">{{ t('button.add')
-                            }}</v-btn>
+                        }}</v-btn>
                     </div>
                 </div>
             </div>
@@ -303,6 +327,23 @@ const deleteNote = (note: string, project: Project) => {
                             :label="t('myProject.projectModel.description') + ' *'" variant="outlined" density="compact"
                             hide-details="auto" />
                     </v-col>
+
+                    <v-row>
+                        <v-col cols="12">
+                            <v-file-input v-if="!projectModel.image" v-model="selectedFile" :label="t('myProject.projectModel.image')"
+                                accept="image/*" prepend-icon="" variant="outlined" density="compact"
+                                hide-details="auto" class="centered-label-input custom-file-color"
+                                @update:model-value="onFileSelected" style="cursor: pointer !important;"></v-file-input>
+
+                            <v-card v-else height="160" width="100%" class="position-relative">
+                                <v-img :src="projectModel.image" height="160" cover class="bg-grey-lighten-2 rounded">
+                                    <v-btn icon="mdi-close" size="small" color="error"
+                                        class="position-absolute top-0 right-0 ma-2" style="z-index: 1;"
+                                        @click="removeImage"></v-btn>
+                                </v-img>
+                            </v-card>
+                        </v-col>
+                    </v-row>
 
                     <v-col cols="12">
                         <v-autocomplete v-model="projectModel.type" :items="typeList" item-title="name"
@@ -342,7 +383,7 @@ const deleteNote = (note: string, project: Project) => {
 
                             <v-menu>
                                 <template v-slot:activator="{ props }">
-                                    <v-btn color="primary" v-bind="props">
+                                    <v-btn v-bind="props">
                                         {{ t('myProject.projectModel.paring') }}
                                     </v-btn>
                                 </template>
@@ -383,7 +424,7 @@ const deleteNote = (note: string, project: Project) => {
                                     <v-icon style="cursor: move;">mdi-drag-vertical</v-icon>
                                 </template>
                                 <v-list-item-title>{{ item.name }} - {{ item.color }} ({{ item.useQuantity
-                                }})</v-list-item-title>
+                                    }})</v-list-item-title>
 
                                 <template #append>
                                     <v-btn icon="mdi-delete" variant="text"
@@ -394,7 +435,8 @@ const deleteNote = (note: string, project: Project) => {
                     </v-col>
                 </v-row>
 
-                <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="save(projectModel)" :disabled="!checkForm()">
+                <v-btn style="width: 100%;" class="mt-4 buttonColor" @click="save(projectModel)"
+                    :disabled="!checkForm()">
                     {{ t('button.save') }}
                 </v-btn>
             </div>
@@ -623,6 +665,20 @@ const deleteNote = (note: string, project: Project) => {
 
 .note-actions:hover .v-btn {
     opacity: 1;
+}
+
+:deep(.centered-label-input) {
+    height: 160px;
+}
+
+:deep(.centered-label-input .v-label) {
+    width: 100%;
+    justify-content: center;
+}
+
+:deep(.centered-label-input .v-field__field) {
+    justify-content: center;
+    text-align: center;
 }
 
 @media (max-width: 480px) {

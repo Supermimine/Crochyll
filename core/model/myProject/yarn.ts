@@ -10,6 +10,7 @@ export interface Yarn {
         type: Matter;
         percentage: number;
     }[];
+    image?: string | null;
     length?: number;
     weight?: number;
     hookSize?: number;

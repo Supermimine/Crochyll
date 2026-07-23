@@ -203,6 +203,16 @@ button[disabled] {
   min-width: 350px;
 }
 
+.v-list {
+  background-color: var(--dark-color);
+  color: var(--text-color);
+}
+
+.v-field {
+  background-color: var(--dark-color);
+  color: var(--text-color);
+}
+
 .v-text-field .v-field {
   background-color: var(--dark-color);
   color: var(--text-color);

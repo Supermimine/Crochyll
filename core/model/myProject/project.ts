@@ -7,7 +7,7 @@ export interface Project {
     description: string;
     type: TypeMaking;
     hookSize: number;
-    image?: string;
+    image?: string | null;
     state: StateProject;
     notes: string[];
     yarns: Yarn[];

@@ -30,7 +30,8 @@
             "paring": "Associer laine",
             "empty": "Aucune autre laine disponible",
             "notes": "Notes",
-            "note": "Note"
+            "note": "Note",
+            "image": "Choisir une image"
         }
     },
     "myReserve": {
@@ -50,7 +51,8 @@
             "needle": "Aiguille",
             "needleSize": "Taille aiguille",
             "noPlace": "No Emplacement",
-            "quantity": "Quantité"
+            "quantity": "Quantité",
+            "image": "Choisir une image"
         }
     }
 }

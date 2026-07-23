@@ -30,7 +30,8 @@
             "paring": "Pairing yarn",
             "empty": "No other yarn available",
             "notes": "Notes",
-            "note": "Note"
+            "note": "Note",
+            "image": "Choose image"
         }
     },
     "myReserve": {
@@ -50,7 +51,8 @@
             "needle": "Needle",
             "needleSize": "Needle size",
             "noPlace": "No Place",
-            "quantity": "Quantity"
+            "quantity": "Quantity",
+            "image": "Choose image"
         }
     }
 }

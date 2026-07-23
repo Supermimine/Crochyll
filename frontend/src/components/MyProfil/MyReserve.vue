@@ -35,6 +35,7 @@ const yarnModel = ref<Yarn>({
 
 const showDialog = ref<boolean>(false);
 const openItems = ref<Record<number, boolean>>({});
+const selectedFile = ref<File | null>(null)
 
 onMounted(async () => {
     const storageValue = safeStorageGet("myProfil:reserve")
@@ -93,7 +94,7 @@ const save = () => {
 
 const editYarn = (yarn: Yarn) => {
     showDialog.value = true;
-    yarnModel.value = yarn;
+    yarnModel.value = JSON.parse(JSON.stringify(yarn));
 }
 
 const deleteYarn = (yarn: Yarn) => {
@@ -136,6 +137,28 @@ const getUseQuantity = (yarn: Yarn) => {
         .filter((y: Yarn) => y.name === yarn.name && y.size === yarn.size && y.color === yarn.color)
         .reduce((sum: number, y: Yarn) => sum + y.useQuantity, 0);
 }
+
+const onFileSelected = (files: File | File[] | null) => {
+    if (!files) return
+
+    const file = Array.isArray(files) ? files[0] : files
+    if (!file) return
+
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+        if (e.target?.result) {
+            yarnModel.value.image = e.target.result as string
+        }
+    }
+
+    reader.readAsDataURL(file)
+    selectedFile.value = null
+}
+
+const removeImage = () => {
+    yarnModel.value.image = null
+}
 </script>
 
 <template>
@@ -145,7 +168,7 @@ const getUseQuantity = (yarn: Yarn) => {
     <div v-else v-for="(yarn, index) in lstYarn" :key="index" class="box">
         <div class="card-top">
             <div class="card-header">
-                <img src="/img/no-picture.png" :alt="`${yarn.name}.png`" class="imgBox">
+                <img :src="yarn.image || '/img/no-picture.png'" :alt="`${yarn.name}.png`" class="imgBox">
 
                 <div class="card-title">
                     <span v-if="yarn.noPlace" class="place">#{{ yarn.noPlace }}</span>
@@ -243,6 +266,23 @@ const getUseQuantity = (yarn: Yarn) => {
                         <v-autocomplete v-model="yarnModel.size" :items="sizeWoolList" item-title="name"
                             item-value="code" :label="t('myReserve.yarnModel.size') + ' *'" variant="outlined"
                             density="compact" hide-details="auto" />
+                    </v-col>
+                </v-row>
+
+                <v-row>
+                    <v-col cols="12">
+                        <v-file-input v-if="!yarnModel.image" v-model="selectedFile" :label="t('myReserve.yarnModel.image')"
+                            accept="image/*" prepend-icon="" variant="outlined" density="compact" hide-details="auto"
+                            class="centered-label-input custom-file-color"
+                            @update:model-value="onFileSelected" style="cursor: pointer !important;"></v-file-input>
+
+                        <v-card v-else height="160" width="100%" class="position-relative">
+                            <v-img :src="yarnModel.image" height="160" cover class="bg-grey-lighten-2 rounded">
+                                <v-btn icon="mdi-close" size="small" color="error"
+                                    class="position-absolute top-0 right-0 ma-2" style="z-index: 1;"
+                                    @click="removeImage"></v-btn>
+                            </v-img>
+                        </v-card>
                     </v-col>
                 </v-row>
 
@@ -488,6 +528,20 @@ const getUseQuantity = (yarn: Yarn) => {
 
 .box:hover .card-actions .v-btn {
     opacity: 1;
+}
+
+:deep(.centered-label-input) {
+    height: 160px;
+}
+
+:deep(.centered-label-input .v-label) {
+    width: 100%;
+    justify-content: center;
+}
+
+:deep(.centered-label-input .v-field__field) {
+    justify-content: center;
+    text-align: center;
 }
 
 @media (max-width: 480px) {
