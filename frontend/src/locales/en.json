@@ -83,6 +83,7 @@
     "stitchAction": {
         "NULL": "",
         "INC": "INC (increase)",
-        "DEC": "DEC (decrease)"
+        "DEC": "DEC (decrease)",
+        "TRANSITION": "TRANS. (to next row)"
     }
 }

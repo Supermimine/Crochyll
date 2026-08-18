@@ -83,6 +83,7 @@
     "stitchAction": {
         "NULL": "",
         "INC": "AUG (augmenter)",
-        "DEC": "DIM (diminuer)"
+        "DEC": "DIM (diminuer)",
+        "TRANSITION": "TRANS. (vers prochain rang)"
     }
 }

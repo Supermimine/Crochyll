@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useScreen } from '@/tools/appTools';
 import BasicMenu from '../Menu/BasicMenu.vue';
 import Pattern3D from './Pattern3D.vue';
 
@@ -11,6 +12,7 @@ import type { Row } from '@core/model/maker/row';
 import type { Pattern } from '@core/model/maker/pattern';
 
 const { t } = useI18n();
+const { isMobile } = useScreen();
 
 const pattern = ref<Pattern>({
     rows: [],
@@ -39,11 +41,31 @@ const stitchOrientations = computed(() => [
     { value: StitchOrientation.BL, label: t('stitchOrientation.BL') }
 ]);
 
-const stitchActions = computed(() => [
-    { value: StitchAction.NULL, label: t('stitchAction.NULL') },
-    { value: StitchAction.INC, label: t('stitchAction.INC') },
-    { value: StitchAction.DEC, label: t('stitchAction.DEC') },
-]);
+const stitchActions = computed(() => {
+    const actions = [
+        {
+            value: StitchAction.NULL,
+            label: t('stitchAction.NULL')
+        },
+        {
+            value: StitchAction.INC,
+            label: t('stitchAction.INC')
+        },
+        {
+            value: StitchAction.DEC,
+            label: t('stitchAction.DEC')
+        }
+    ];
+
+    if (selectedRow.value > 0) {
+        actions.push({
+            value: StitchAction.TRANSITION,
+            label: t('stitchAction.TRANSITION')
+        });
+    }
+
+    return actions;
+});
 
 // Variables pour les outils
 const selectedRow = ref<number>(0);
@@ -53,20 +75,35 @@ const selectedStitchAction = ref<StitchAction>(StitchAction.NULL);
 const stitchCount = ref<number>(1);
 const stitchInStitchCount = ref<number>(2);
 const viewMode = ref<'2d' | '3d' | null>(null);
+const openInfo = ref<boolean>(false);
+const mobileMode = ref<'stitch' | 'row'>('row')
+
+const translateY = ref(0)
+const isDragging = ref(false)
+
+let startY = 0
+let initialTranslateY = 0
+
+const minTranslate = 0
+const maxTranslate = ref(460)
 
 // Gestion des raccourcis clavier
 const handleKeydown = (event: KeyboardEvent) => {
-    if (event.altKey) {
+    if (event.ctrlKey && event.shiftKey) {
         switch (event.key) {
-            case 'a':
+            case 'A':
                 event.preventDefault();
                 addRow();
                 break;
-            case 's':
+            case 'L':
+                addStitch()
+                break;
+            case 'S':
                 event.preventDefault();
                 exportPattern();
                 break;
-            case 'r':
+            case 'R':
+                event.preventDefault();
                 if (selectedRow.value < pattern.value.rows.length) {
                     removeRow(selectedRow.value);
                 }
@@ -105,8 +142,13 @@ const duplicateRow = (index: number) => {
 const addStitch = () => {
     if (selectedRow.value < pattern.value.rows.length) {
         const row = pattern.value.rows[selectedRow.value];
+
+        if (selectedStitchAction.value === StitchAction.TRANSITION) {
+            selectedStitchType.value = StitchType.CH;
+        }
+
         if (selectedStitchType.value === StitchType.MC) {
-            row.isCircular = true; // MC force les rangs circulaires
+            row.isCircular = true;
         }
 
         const newStitch = {
@@ -189,6 +231,7 @@ const onDragLeave = (event: DragEvent) => {
 
 const removeRow = (rowIndex: number) => {
     pattern.value.rows.splice(rowIndex, 1);
+    selectedRow.value = pattern.value.rows.length - 1;
 };
 
 const removeStitch = (rowIndex: number, stitchIndex: number) => {
@@ -480,7 +523,11 @@ const getIndividualStitches = (row: Row) => {
     return result;
 };
 
-const getStitchStyle = (row: Row, stitchIndex: number, rowIndex: number) => {
+const getStitchStyle = (
+    row: Row,
+    stitchIndex: number,
+    rowIndex: number
+) => {
     if (!row.isCircular) return '';
 
     const stitches = getIndividualStitches(row);
@@ -489,8 +536,11 @@ const getStitchStyle = (row: Row, stitchIndex: number, rowIndex: number) => {
     const centerX = 100;
     const centerY = 100;
 
-    // --- Trouver le premier rang circulaire
+    // --------------------------------------------------
+    // Trouver le premier rang circulaire
+    // --------------------------------------------------
     let firstCircularRow: Row | null = null;
+
     for (let i = 0; i < pattern.value.rows.length; i++) {
         if (pattern.value.rows[i].isCircular) {
             firstCircularRow = pattern.value.rows[i];
@@ -502,28 +552,45 @@ const getStitchStyle = (row: Row, stitchIndex: number, rowIndex: number) => {
         ? getIndividualStitches(firstCircularRow).length
         : totalStitches;
 
-    const baseRadius = Math.max(10, (firstCircularStitches * 12) / (2 * Math.PI));
+    const stitchSpacing = 15;
 
-    // --- Calcul du radius dynamique basé sur les rangs précédents
+    const baseRadius = Math.max(
+        10,
+        (firstCircularStitches * stitchSpacing) / (2 * Math.PI)
+    );
+
+    // --------------------------------------------------
+    // Calcul du radius dynamique basé sur les rangs
+    // précédents
+    // --------------------------------------------------
     let dynamicOffset = 0;
     let circularRowsBefore = 0;
 
     for (let i = 0; i < rowIndex; i++) {
-        const r = pattern.value.rows[i];
-        if (!r.isCircular) continue;
+        const previousRow = pattern.value.rows[i];
+
+        if (!previousRow.isCircular) {
+            continue;
+        }
 
         circularRowsBefore++;
 
-        const stitchesPrev = getIndividualStitches(r);
+        const stitchesPrev = getIndividualStitches(previousRow);
 
-        let nullCountPrev = 0;
-        for (const s of stitchesPrev) {
-            if (s.action === StitchAction.NULL) nullCountPrev++;
-            else break;
+        // Compter les TRANSITION au début du rang précédent
+        let transitionCountPrev = 0;
+
+        for (const stitch of stitchesPrev) {
+            if (stitch.action === StitchAction.TRANSITION) {
+                transitionCountPrev++;
+            } else {
+                break;
+            }
         }
 
-        if (nullCountPrev > 0) {
-            dynamicOffset += (nullCountPrev - 1) * 12;
+        // Les transitions créent l'espace entre les rangs.
+        if (transitionCountPrev > 0) {
+            dynamicOffset += (transitionCountPrev - 1) * stitchSpacing;
         } else {
             dynamicOffset += 18;
         }
@@ -531,62 +598,126 @@ const getStitchStyle = (row: Row, stitchIndex: number, rowIndex: number) => {
 
     const radius = baseRadius + dynamicOffset;
 
-    // --- Compter les NULL du début du rang courant
-    let firstNullGroupCount = 0;
+    // --------------------------------------------------
+    // Compter les TRANSITION du début du rang courant
+    // --------------------------------------------------
+    let firstTransitionGroupCount = 0;
+
     for (const stitch of stitches) {
-        if (stitch.action === StitchAction.NULL) {
-            firstNullGroupCount++;
+        if (stitch.action === StitchAction.TRANSITION) {
+            firstTransitionGroupCount++;
         } else {
             break;
         }
     }
 
-    const nullBlockHeight =
-        firstNullGroupCount > 0
-            ? (firstNullGroupCount - 1) * 12
+    // --------------------------------------------------
+    // Hauteur occupée par le groupe de transition
+    // --------------------------------------------------
+    const transitionBlockHeight =
+        firstTransitionGroupCount > 0
+            ? (firstTransitionGroupCount - 1) * 12
             : 0;
 
-    // --- Placement des mailles NULL entre deux rangs
-    if (circularRowsBefore > 0 && stitchIndex < firstNullGroupCount) {
-        const prevRadius = radius - (
-            firstNullGroupCount > 0
-                ? nullBlockHeight
-                : 18
-        );
+    // --------------------------------------------------
+    // Placement des mailles TRANSITION entre deux rangs
+    // --------------------------------------------------
+    if (
+        circularRowsBefore > 0 &&
+        stitchIndex < firstTransitionGroupCount &&
+        stitches[stitchIndex].action === StitchAction.TRANSITION
+    ) {
+        const prevRadius =
+            radius +
+            (
+                firstTransitionGroupCount > 0
+                    ? transitionBlockHeight
+                    : 18
+            );
 
-        const visualOffset = 3; // ajuste entre 2 et 5 selon rendu
+        //const transitionOffset = firstTransitionGroupCount * 5;
+        
+        console.log('firstTransitionGroupCount:', firstTransitionGroupCount);
+        console.log('centerY:', centerY);
+        console.log('prevRadius:', prevRadius);
+        console.log('radius:', radius);
 
-        const gapMiddle = centerY - ((radius + prevRadius) / 2) + visualOffset;
+        const gapMiddle =
+            centerY -
+            ((radius + prevRadius) / 2);
+
+        console.log('gapMiddle:', gapMiddle);
+
 
         const spacing = 12;
-        const totalHeight = spacing * (firstNullGroupCount - 1);
+
+        const totalHeight =
+            spacing * (firstTransitionGroupCount - 1);
 
         const x = centerX;
-        const y = gapMiddle - totalHeight / 2 + (stitchIndex * spacing);
+
+        const y =
+            gapMiddle -
+            totalHeight / 2 +
+            (stitchIndex * spacing);
 
         const rotation = 90;
 
-        return `position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%) rotate(${rotation}deg);`;
+        return `
+            position: absolute;
+            left: ${x}px;
+            top: ${y}px;
+            transform:
+                translate(-50%, -50%)
+                rotate(${rotation}deg);
+        `;
     }
 
-    // --- Placement circulaire classique
-    const remainingCount = totalStitches - firstNullGroupCount;
+    // --------------------------------------------------
+    // Placement circulaire classique
+    // --------------------------------------------------
+
+    // Les TRANSITION ne doivent pas être comptées dans
+    // les mailles qui tournent autour du cercle.
+    const remainingCount =
+        totalStitches - firstTransitionGroupCount;
+
     const startAngle = 270;
+
     let angle: number;
 
     if (remainingCount <= 0) {
-        angle = startAngle + (stitchIndex / totalStitches) * 360;
+        angle =
+            startAngle +
+            (stitchIndex / totalStitches) * 360;
     } else {
-        const remainingIndex = stitchIndex - firstNullGroupCount;
-        angle = startAngle + (remainingIndex / remainingCount) * 360;
+        const remainingIndex =
+            stitchIndex - firstTransitionGroupCount;
+
+        angle =
+            startAngle +
+            (remainingIndex / remainingCount) * 360;
     }
 
-    const radian = (angle * Math.PI) / 180;
+    const radian =
+        (angle * Math.PI) / 180;
 
-    const x = centerX + radius * Math.cos(radian);
-    const y = centerY + radius * Math.sin(radian);
+    const x =
+        centerX +
+        radius * Math.cos(radian);
 
-    return `position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%) rotate(${angle + 90}deg);`;
+    const y =
+        centerY +
+        radius * Math.sin(radian);
+
+    return `
+        position: absolute;
+        left: ${x}px;
+        top: ${y}px;
+        transform:
+            translate(-50%, -50%)
+            rotate(${angle + 90}deg);
+    `;
 };
 
 const generatePattern = () => {
@@ -594,6 +725,9 @@ const generatePattern = () => {
 };
 
 onMounted(() => {
+    maxTranslate.value = window.innerHeight * 0.50
+    translateY.value = maxTranslate.value
+
     window.addEventListener('keydown', handleKeydown);
 });
 
@@ -627,161 +761,419 @@ const exportPattern = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 };
+
+const onTouchStart = (event: TouchEvent) => {
+    startY = event.touches[0].clientY
+    initialTranslateY = translateY.value
+    isDragging.value = true
+}
+
+const onTouchMove = (event: TouchEvent) => {
+    if (!isDragging.value) return
+
+    const currentY = event.touches[0].clientY
+    const deltaY = currentY - startY
+
+    const newTranslate = initialTranslateY + deltaY
+
+    translateY.value = Math.max(minTranslate, Math.min(maxTranslate.value, newTranslate))
+}
+
+const onTouchEnd = () => {
+    isDragging.value = false
+
+    const midpoint = maxTranslate.value / 2
+
+    if (translateY.value > midpoint) {
+        translateY.value = maxTranslate.value
+    } else {
+        translateY.value = minTranslate
+    }
+}
+
+watch(
+    [selectedStitchAction, selectedRow],
+    ([action, rowIndex]) => {
+
+        if (
+            action === StitchAction.TRANSITION &&
+            rowIndex > 0
+        ) {
+            selectedStitchType.value = StitchType.CH;
+        }
+    }
+);
 </script>
 
 <template>
-    <div class="maker-page">
+    <div class="maker-page disable-text-select">
         <BasicMenu />
 
         <div class="maker-content">
-            <!-- Menu d'outils -->
-            <aside v-if="viewMode !== null" class="tools-menu">
-                <h3>Outils de création</h3>
-                <div class="shortcuts">
-                    <small>Raccourcis: ALT+A (nouveau rang), ALT+S (exporter), ALT+R (supprimer rang)</small>
-                </div>
-                <div class="info-box">
-                    <small><strong>💡 Conseils:</strong></small><br />
-                    <small>• <strong>Cercle (🔄):</strong> Cliquez pour fermer le rang en cercle (joint première et
-                        dernière maille)</small><br />
-                    <small>• <strong>Déplacement de mailles:</strong> Cliquer et déplacer pour reclasser les
-                        mailles</small><br />
-                    <small>• <strong>Modifier quantité:</strong> Utilisez les flèches ◀▶ dans chaque maille pour
-                        modifier leurs quantité</small><br />
-                    <small>• <strong>Sélection:</strong> Cliquez sur un rang pour ajouter des mailles dedans</small>
-                </div>
-                <v-btn class="buttonOutsideInverted" @click="addRow">Ajouter un rang</v-btn>
-                <div class="stitch-tools">
-                    <h4>Ajouter une maille</h4>
-                    <div class="row-selector">
-                        <label>Sélectionner le rang :</label>
-                        <div class="row-buttons" v-if="pattern.rows.length > 0">
-                            <button v-for="(row, index) in pattern.rows" :key="index" class="row-btn"
-                                :class="{ active: selectedRow === index }" @click="selectedRow = index">
-                                Rang {{ index + 1 }} {{ row.isCircular ? '🔄' : '' }}
-                            </button>
+            <div v-if="viewMode === null" class="view-toggle">
+                <div>Veuillez choisir une vue pour commencer à créer votre patron :</div>
+                <v-btn class="buttonOutsideInverted ma-2" @click="viewMode = '2d'"
+                    :class="{ active: viewMode === '2d' }">Patron 2D</v-btn>
+                <v-btn class="buttonOutsideInverted ma-2" @click="viewMode = '3d'"
+                    :class="{ active: viewMode === '3d' }">Patron 3D</v-btn>
+            </div>
+
+            <div v-if="viewMode" style="width: 100%;">
+                <!-- ZONE DESKTOP -->
+                <div v-if="!isMobile">
+                    <aside class="tools-menu">
+                        <h3>{{ t('maker.menu.title') }}</h3>
+
+                        <!-- Raccourcis -->
+                        <div class="shortcuts">
+                            <small>
+                                {{ t('maker.menu.shortcut.title') }}: <br />
+                                {{ t('maker.menu.shortcut.addRow') }}, {{ t('maker.menu.shortcut.delete') }},<br />
+                                {{ t('maker.menu.shortcut.addStitch') }}, {{ t('maker.menu.shortcut.export') }}
+                            </small>
                         </div>
-                        <div v-else style="color: #999; font-size: 12px;">Créez un rang d'abord</div>
-                    </div>
-                    <label>Type de maille :</label>
-                    <v-select v-model="selectedStitchType" :items="stitchTypes" item-title="label" item-value="value"
-                        density="compact" variant="solo" hide-details="auto" />
 
-                    <label>Orientation :</label>
-                    <v-select v-model="selectedStitchOritentation" :items="stitchOrientations" item-title="label"
-                        item-value="value" density="compact" variant="solo" hide-details="auto" />
+                        <!-- Boîte d'information pliable -->
+                        <div class="info-box mb-4">
+                            <small class="d-flex align-center justify-space-between">
+                                <strong>💡 {{ t('maker.menu.info.title') }}:</strong>
+                                <a href="#" @click.prevent="openInfo = !openInfo">
+                                    <v-icon :icon="openInfo ? 'mdi-chevron-double-up' : 'mdi-chevron-double-down'" />
+                                </a>
+                            </small>
 
-                    <div class="mt-6 mb-6">
-                        <label>Action :</label>
-                        <v-select v-model="selectedStitchAction" :items="stitchActions" item-title="label"
-                            item-value="value" density="compact" variant="solo" hide-details="auto" />
-
-                        <div v-if="selectedStitchAction != StitchAction.NULL" class="d-flex mt-2">
-                            <v-icon icon="mdi-close" size="15" class="ml-1 ma-auto"></v-icon>
-                            <v-text-field v-model.number="stitchInStitchCount" type="number" min="2" density="compact"
-                                variant="solo" hide-details="auto" style="width: 50%;" label="Nb dans 1 maille" />
+                            <ul v-if="openInfo" class="mt-2 pa-0 list-none">
+                                <li><small>• <strong>Cercle (🔄):</strong> Joint la première et dernière maille pour
+                                        fermer
+                                        le rang.</small></li>
+                                <li><small>• <strong>Déplacement:</strong> Glissez-déposez pour reclasser les
+                                        mailles.</small></li>
+                                <li><small>• <strong>Quantité:</strong> Modifiez via les flèches ◀▶ de chaque
+                                        maille.</small></li>
+                                <li><small>• <strong>Sélection:</strong> Cliquez sur un rang pour y ajouter des
+                                        mailles.</small></li>
+                            </ul>
                         </div>
-                    </div>
 
-                    <label>Nb de fois :</label>
-                    <v-text-field v-model.number="stitchCount" type="number" min="1" density="compact" variant="solo"
-                        hide-details="auto" />
+                        <!-- Panneau : Gestion des Rangs -->
+                        <v-expansion-panels class="mb-4">
+                            <v-expansion-panel class="panel">
+                                <v-expansion-panel-title class="title">
+                                    {{ t('maker.menu.tool.row.title') }}
+                                </v-expansion-panel-title>
 
-                    <v-btn :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0"
-                        class="buttonOutsideInverted" @click="addStitch">
-                        Ajouter maille
-                    </v-btn>
-                </div>
-                <div class="yarn-size">
-                    <label>Taille du fil :</label>
-                    <v-select v-model="pattern.yarnSize" :items="yarnSizes" density="compact" variant="solo"
-                        hide-details="auto" />
-                </div>
-                <div class="project-size">
-                    <p>Taille du projet : {{ calculateProjectSize }}</p>
-                </div>
-                <v-btn @click="generatePattern" class="buttonColor">Générer</v-btn>
-                <v-btn @click="exportPattern" class="buttonOutsideInverted">Exporter TXT</v-btn>
-            </aside>
+                                <v-expansion-panel-text class="small-text">
+                                    <div v-if="pattern.rows.length > 0" class="row-selection">
+                                        <button v-for="(row, index) in pattern.rows" :key="index"
+                                            :class="{ active: selectedRow === index }" @click="selectedRow = index">
+                                            Rang {{ index + 1 }} {{ row.isCircular ? '🔄' : '' }}
+                                        </button>
+                                    </div>
+                                    <div v-else class="empty-row-text mb-2">Créez un rang d'abord</div>
 
-            <!-- Section principale : visualisation du patron -->
-            <main class="pattern-view" :style="{ marginLeft: viewMode !== null ? '300px' : '0' }">
-                <h2>Patron de crochet <span v-if="viewMode !== null">{{ viewMode.toUpperCase() }}</span></h2>
-                <div v-if="viewMode === null" class="view-toggle">
-                    <div>Veuillez choisir une vue pour commencer à créer votre patron :</div>
-                    <v-btn class="buttonOutsideInverted" @click="viewMode = '2d'"
-                        :class="{ active: viewMode === '2d' }">Patron 2D</v-btn>
-                    <v-btn class="buttonOutsideInverted" @click="viewMode = '3d'"
-                        :class="{ active: viewMode === '3d' }">Patron 3D</v-btn>
-                </div>
-                <div v-if="pattern.rows.length === 0 && viewMode !== null" class="empty-pattern">
-                    Aucun rang ajouté. Utilisez les outils pour commencer.
-                </div>
-                <div v-else>
-                    <!-- Prévisualisation visuelle -->
-                    <div v-if="viewMode === '2d'" class="preview-section">
-                        <h3>Prévisualisation</h3>
-                        <div class="stitch-grid">
-                            <div v-for="(row, rowIndex) in pattern.rows.slice().reverse()"
-                                :key="`grid-row-${pattern.rows.length - 1 - rowIndex}`"
-                                :class="{ 'grid-row-circular': row.isCircular, 'grid-row': !row.isCircular }">
-                                <div v-for="(stitchInfo, index) in getIndividualStitches(row)" :key="index"
-                                    class="stitch-circle"
-                                    :style="getStitchStyle(row, index, pattern.rows.length - 1 - rowIndex)"
-                                    :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
-                                    :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
-                                    v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
+                                    <div class="d-flex align-center">
+                                        <v-select v-model="pattern.yarnSize" :items="yarnSizes" label="Taille du fil"
+                                            density="compact" variant="solo" hide-details class="ma-2" />
+                                        <v-btn class="buttonColor ma-2" @click="addRow">
+                                            Ajouter un rang
+                                        </v-btn>
+                                    </div>
+                                </v-expansion-panel-text>
+                            </v-expansion-panel>
+                        </v-expansion-panels>
+
+                        <!-- Panneau : Gestion des Mailles -->
+                        <v-expansion-panels class="mb-4">
+                            <v-expansion-panel class="panel">
+                                <v-expansion-panel-title class="title">
+                                    {{ t('maker.menu.tool.stitch.title') }}
+                                </v-expansion-panel-title>
+
+                                <v-expansion-panel-text class="small-text">
+                                    <div class="d-flex">
+                                        <v-select v-model="selectedStitchType" :items="stitchTypes" item-title="label"
+                                            item-value="value" label="Type de maille" density="compact" variant="solo"
+                                            hide-details class="ma-2" />
+                                        <v-select v-model="selectedStitchOritentation" :items="stitchOrientations"
+                                            item-title="label" item-value="value" label="Orientation" density="compact"
+                                            variant="solo" hide-details class="ma-2" />
+                                    </div>
+
+                                    <div class="d-flex align-center">
+                                        <v-select v-model="selectedStitchAction" :items="stitchActions"
+                                            item-title="label" item-value="value" label="Action" density="compact"
+                                            variant="solo" hide-details class="ma-2" />
+                                        <div v-if="selectedStitchAction !== StitchAction.NULL"
+                                            class="d-flex align-center ma-2" style="width: 50%;">
+                                            <v-icon icon="mdi-close" size="15" class="mr-2" />
+                                            <v-text-field v-model.number="stitchInStitchCount" type="number" :min="2"
+                                                label="Nb dans 1 maille" density="compact" variant="solo"
+                                                hide-details />
+                                        </div>
+                                    </div>
+
+                                    <v-text-field v-model.number="stitchCount" type="number" :min="1" label="Nb de fois"
+                                        density="compact" variant="solo" hide-details class="ma-2" />
+
+                                    <v-btn :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0"
+                                        class="buttonColor w-100 mt-2" @click="addStitch">
+                                        Ajouter maille
+                                    </v-btn>
+                                </v-expansion-panel-text>
+                            </v-expansion-panel>
+                        </v-expansion-panels>
+
+                        <!-- Actions & Stats -->
+                        <div class="project-size my-2">
+                            <p>Taille du projet : {{ calculateProjectSize }}</p>
+                        </div>
+                        <v-btn class="buttonColor ma-1" @click="generatePattern">Générer PDF</v-btn>
+                        <v-btn class="buttonOutsideInverted ma-1" @click="exportPattern">Exporter TXT</v-btn>
+                    </aside>
+
+                    <main style=" margin-left: 300px; padding: 20px;">
+                        <div v-if="pattern.rows.length === 0 && viewMode !== null" class="empty-pattern">
+                            Aucun rang ajouté. Utilisez les outils pour commencer.
+                        </div>
+                        <div v-else>
+                            <!-- Prévisualisation visuelle -->
+                            <div v-if="viewMode === '2d'" class="preview-section">
+                                <h3>Prévisualisation</h3>
+                                <div class="stitch-grid">
+                                    <div v-for="(row, rowIndex) in pattern.rows.slice().reverse()"
+                                        :key="`grid-row-${pattern.rows.length - 1 - rowIndex}`"
+                                        :class="{ 'grid-row-circular': row.isCircular, 'grid-row': !row.isCircular }">
+                                        <div v-for="(stitchInfo, index) in getIndividualStitches(row)" :key="index"
+                                            class="stitch-circle"
+                                            :style="getStitchStyle(row, index, pattern.rows.length - 1 - rowIndex)"
+                                            :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
+                                            :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
+                                            v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else-if="viewMode === '3d'" class="preview-section">
+                                <h3>Prévisualisation</h3>
+                                <Pattern3D :pattern="pattern" />
+                            </div>
+
+                            <!-- Liste des rangs -->
+                            <div class="rows-container">
+                                <div v-for="(row, rowIndex) in pattern.rows" :key="rowIndex" class="row">
+                                    <div class="row-header">
+                                        <h4>Rang {{ rowIndex + 1 }} {{ row.isCircular ? '🔄' : '' }}</h4>
+                                        <div class="row-actions">
+                                            <v-btn class="buttonOutsideInverted small"
+                                                @click="insertRowBefore(rowIndex)">Insérer avant</v-btn>
+                                            <v-btn class="buttonOutsideInverted small"
+                                                @click="insertRowAfter(rowIndex)">Insérer
+                                                après</v-btn>
+                                            <v-btn class="buttonOutsideInverted small"
+                                                @click="duplicateRow(rowIndex)">Dupliquer</v-btn>
+                                            <v-btn class="buttonOutsideInverted small"
+                                                :class="{ active: row.isCircular }" @click="toggleCircular(rowIndex)">🔄
+                                                Cercle</v-btn>
+                                            <v-btn class="buttonColor" @click="removeRow(rowIndex)">Supprimer</v-btn>
+                                        </div>
+                                    </div>
+                                    <div class="stitches">
+                                        <span v-for="(stitch, stitchIndex) in row.stitches" :key="stitchIndex"
+                                            class="stitch" draggable="true"
+                                            @dragstart="onDragStart($event, rowIndex, stitchIndex)"
+                                            @dragover="onDragOverEntry($event)" @dragleave="onDragLeave($event)"
+                                            @drop="onDrop($event, rowIndex, stitchIndex)">
+                                            <v-btn class="stitch-move" :disabled="stitch.count <= 1"
+                                                @click="decreaseStitchCount(rowIndex, stitchIndex)">◀</v-btn>
+                                            <strong>{{ t(`stitchType.${stitch.type}`).split("(")[0] || stitch.type }}
+                                                x{{
+                                                    stitch.count }}</strong>
+                                            <small v-if="stitch.orientation !== StitchOrientation.AL"
+                                                style="opacity:0.7">[{{
+                                                    stitch.orientation }}]</small>
+                                            <small v-if="stitch.action !== StitchAction.NULL"
+                                                style="opacity:0.7; color:#f39c12">{{ stitch.action }}({{ stitch.nbTime
+                                                }})</small>
+                                            <v-btn class="stitch-move"
+                                                @click="increaseStitchCount(rowIndex, stitchIndex)">▶</v-btn>
+                                            <a style="cursor: pointer;" @click="removeStitch(rowIndex, stitchIndex)">
+                                                <v-icon icon="mdi-close" size="20"></v-icon>
+                                            </a>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div v-else-if="viewMode === '3d'" class="preview-section">
-                        <h3>Prévisualisation</h3>
-                        <Pattern3D :pattern="pattern" />
-                    </div>
+                    </main>
+                </div>
 
-                    <!-- Liste des rangs -->
-                    <div class="rows-container">
-                        <div v-for="(row, rowIndex) in pattern.rows" :key="rowIndex" class="row">
-                            <div class="row-header">
-                                <h4>Rang {{ rowIndex + 1 }} {{ row.isCircular ? '🔄' : '' }}</h4>
-                                <div class="row-actions">
-                                    <v-btn class="buttonOutsideInverted small"
-                                        @click="insertRowBefore(rowIndex)">Insérer avant</v-btn>
-                                    <v-btn class="buttonOutsideInverted small"
-                                        @click="insertRowAfter(rowIndex)">Insérer après</v-btn>
-                                    <v-btn class="buttonOutsideInverted small"
-                                        @click="duplicateRow(rowIndex)">Dupliquer</v-btn>
-                                    <v-btn class="buttonOutsideInverted small" :class="{ active: row.isCircular }"
-                                        @click="toggleCircular(rowIndex)">🔄 Cercle</v-btn>
-                                    <v-btn class="buttonColor" @click="removeRow(rowIndex)">Supprimer</v-btn>
+                <!-- ZONE MOBILE -->
+                <v-layout v-else style="height: 94vh; width: 100vw; overflow: hidden; position: relative;">
+                    <v-main class="d-flex align-center justify-center">
+                        <div class="text-center" style="width: 100%;">
+                            <div v-if="pattern.rows.length === 0 && viewMode !== null" class="empty-pattern">
+                                Aucun rang ajouté. Utilisez les outils pour commencer.
+                            </div>
+                            <div v-else>
+                                <!-- Prévisualisation visuelle -->
+                                <div v-if="viewMode === '2d'" class="preview-section preview-section-mobile">
+                                    <h3>Prévisualisation</h3>
+                                    <div class="stitch-grid">
+                                        <div v-for="(row, rowIndex) in pattern.rows.slice().reverse()"
+                                            :key="`grid-row-${pattern.rows.length - 1 - rowIndex}`"
+                                            :class="{ 'grid-row-circular': row.isCircular, 'grid-row': !row.isCircular }">
+                                            <div v-for="(stitchInfo, index) in getIndividualStitches(row)" :key="index"
+                                                class="stitch-circle"
+                                                :style="getStitchStyle(row, index, pattern.rows.length - 1 - rowIndex)"
+                                                :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
+                                                :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
+                                                v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p>{{ calculateProjectSize }}</p>
+                                </div>
+                                <div v-else-if="viewMode === '3d'" class="preview-section preview-section-mobile">
+                                    <h3>Prévisualisation</h3>
+                                    <Pattern3D :pattern="pattern" />
+                                </div>
+
+                                <!-- Liste des rangs -->
+                                <div class="rows-container rows-container-mobile">
+                                    <div v-for="(row, rowIndex) in pattern.rows" :key="rowIndex" class="row"
+                                        @click="selectedRow = rowIndex">
+                                        <div class="row-header">
+                                            <h4 :class="{ active: rowIndex == selectedRow }">Rang {{ rowIndex + 1 }} {{
+                                                row.isCircular ? '🔄' : '' }}</h4>
+                                        </div>
+                                        <div class="stitches">
+                                            <span v-for="(stitch, stitchIndex) in row.stitches" :key="stitchIndex"
+                                                class="stitch" draggable="true"
+                                                @dragstart="onDragStart($event, rowIndex, stitchIndex)"
+                                                @dragover="onDragOverEntry($event)" @dragleave="onDragLeave($event)"
+                                                @drop="onDrop($event, rowIndex, stitchIndex)">
+                                                <v-btn class="stitch-move" :disabled="stitch.count <= 1"
+                                                    @click="decreaseStitchCount(rowIndex, stitchIndex)">◀</v-btn>
+                                                <strong>{{ t(`stitchType.${stitch.type}`).split("(")[0] || stitch.type
+                                                }}
+                                                    x{{
+                                                        stitch.count }}</strong>
+                                                <small v-if="stitch.orientation !== StitchOrientation.AL"
+                                                    style="opacity:0.7">[{{
+                                                        stitch.orientation }}]</small>
+                                                <small v-if="stitch.action !== StitchAction.NULL"
+                                                    style="opacity:0.7; color:#f39c12">{{ stitch.action }}({{
+                                                        stitch.nbTime
+                                                    }})</small>
+                                                <v-btn class="stitch-move"
+                                                    @click="increaseStitchCount(rowIndex, stitchIndex)">▶</v-btn>
+                                                <a style="cursor: pointer;"
+                                                    @click="removeStitch(rowIndex, stitchIndex)">
+                                                    <v-icon icon="mdi-close" size="20"></v-icon>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="stitches">
-                                <span v-for="(stitch, stitchIndex) in row.stitches" :key="stitchIndex" class="stitch"
-                                    draggable="true" @dragstart="onDragStart($event, rowIndex, stitchIndex)"
-                                    @dragover="onDragOverEntry($event)" @dragleave="onDragLeave($event)"
-                                    @drop="onDrop($event, rowIndex, stitchIndex)">
-                                    <v-btn class="stitch-move" :disabled="stitch.count <= 1"
-                                        @click="decreaseStitchCount(rowIndex, stitchIndex)">◀</v-btn>
-                                    <strong>{{ t(`stitchType.${stitch.type}`).split("(")[0] || stitch.type }} x{{
-                                        stitch.count }}</strong>
-                                    <small v-if="stitch.orientation !== StitchOrientation.AL" style="opacity:0.7">[{{
-                                        stitch.orientation }}]</small>
-                                    <small v-if="stitch.action !== StitchAction.NULL"
-                                        style="opacity:0.7; color:#f39c12">{{ stitch.action }}({{ stitch.nbTime
-                                        }})</small>
-                                    <v-btn class="stitch-move"
-                                        @click="increaseStitchCount(rowIndex, stitchIndex)">▶</v-btn>
-                                    <a style="cursor: pointer;" @click="removeStitch(rowIndex, stitchIndex)">
-                                        <v-icon icon="mdi-close" size="20"></v-icon>
-                                    </a>
-                                </span>
-                            </div>
                         </div>
+                    </v-main>
+
+                    <div class="sub-menu-mobile">
+                        <a class="ma-auto" @click="insertRowBefore(selectedRow)">
+                            <v-icon icon="mdi-arrow-u-left-top" size="30"></v-icon>
+                            <p>Avant</p>
+                        </a>
+                        <a class="ma-auto" @click="insertRowAfter(selectedRow)">
+                            <v-icon icon="mdi-arrow-u-right-top" size="30"></v-icon>
+                            <p>Après</p>
+                        </a>
+                        <a class="ma-auto" @click="toggleCircular(selectedRow)">
+                            <v-icon icon="mdi-checkbox-blank-circle-outline" size="30"></v-icon>
+                            <p>Cercle</p>
+                        </a>
+                        <a class="ma-auto" @click="duplicateRow(selectedRow)">
+                            <v-icon icon="mdi-content-duplicate" size="30"></v-icon>
+                            <p>Dupl.</p>
+                        </a>
+                        <a class="ma-auto" @click="removeRow(selectedRow)">
+                            <v-icon icon="mdi-trash-can-outline" size="30"></v-icon>
+                            <p>Supp.</p>
+                        </a>
                     </div>
-                </div>
-            </main>
+
+                    <div class="custom-slider-panel" :style="{
+                        transform: `translateY(${translateY}px)`,
+                        transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+                    }">
+                        <v-card class="rounded-t-xl h-100 pa-4" elevation="16" flat
+                            style="background-color: var(--light-color); box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5) !important;">
+                            <div class="drag-zone py-2" @touchstart="onTouchStart" @touchmove="onTouchMove"
+                                @touchend="onTouchEnd">
+                                <div class="drag-handle mx-auto rounded bg-grey" style="width: 50px; height: 6px;" />
+
+                                <div class="d-flex" style="justify-content: center; margin-top: 50px;">
+                                    <a class="mx-8" @click="mobileMode = 'row'"
+                                        :class="{ active: mobileMode == 'row' }">Rangs</a>
+                                    <a class="mx-8" @click="mobileMode = 'stitch'"
+                                        :class="{ active: mobileMode == 'stitch' }">Mailles</a>
+                                </div>
+                                <hr />
+
+                                <div v-if="mobileMode == 'stitch'">
+                                    <v-select v-model="selectedStitchType" :items="stitchTypes" item-title="label"
+                                        item-value="value" label="Type de maille" density="compact" variant="solo"
+                                        hide-details class="ma-2"
+                                        :disabled="selectedStitchAction === StitchAction.TRANSITION" />
+
+                                    <v-select v-model="selectedStitchOritentation" :items="stitchOrientations"
+                                        item-title="label" item-value="value" label="Orientation" density="compact"
+                                        variant="solo" hide-details class="ma-2" />
+
+                                    <div class="d-flex align-center">
+                                        <v-select v-model="selectedStitchAction" :items="stitchActions"
+                                            item-title="label" item-value="value" label="Action" density="compact"
+                                            variant="solo" hide-details class="ma-2" />
+                                        <div v-if="selectedStitchAction !== StitchAction.NULL && selectedStitchAction !== StitchAction.TRANSITION"
+                                            class="d-flex align-center ma-2" style="width: 50%;">
+                                            <v-icon icon="mdi-close" size="15" class="mr-2" />
+                                            <v-text-field v-model.number="stitchInStitchCount" type="number" :min="2"
+                                                label="Nb dans 1 maille" density="compact" variant="solo"
+                                                hide-details />
+                                        </div>
+                                    </div>
+
+                                    <v-text-field v-model.number="stitchCount" type="number" :min="1" label="Nb de fois"
+                                        density="compact" variant="solo" hide-details class="ma-2" />
+
+                                    <v-btn :disabled="selectedRow >= pattern.rows.length || pattern.rows.length === 0"
+                                        class="buttonColor w-100 mt-2" @click="addStitch">
+                                        Ajouter maille
+                                    </v-btn>
+                                </div>
+
+                                <div v-if="mobileMode == 'row'">
+                                    <div v-if="pattern.rows.length > 0" class="row-selection">
+                                        <button v-for="(row, index) in pattern.rows" :key="index" style="margin: 5px;"
+                                            :class="{ active: selectedRow === index }" @click="selectedRow = index">
+                                            Rang {{ index + 1 }} {{ row.isCircular ? '🔄' : '' }}
+                                        </button>
+                                    </div>
+                                    <div v-else class="empty-row-text mb-2">Créez un rang d'abord</div>
+
+                                    <v-select v-model="pattern.yarnSize" :items="yarnSizes" label="Taille du fil"
+                                        density="compact" variant="solo" hide-details class="ma-2" />
+
+                                    <v-btn class="buttonColor w-100" @click="addRow">
+                                        Ajouter un rang
+                                    </v-btn>
+                                </div>
+                            </div>
+                        </v-card>
+                    </div>
+                </v-layout>
+            </div>
         </div>
     </div>
 </template>
@@ -790,7 +1182,6 @@ const exportPattern = () => {
 .maker-page {
     display: flex;
     flex-direction: column;
-    height: 100vh;
 }
 
 .maker-content {
@@ -799,13 +1190,16 @@ const exportPattern = () => {
 }
 
 .tools-menu {
-    width: 300px;
+    width: 300px !important;
     padding: 20px;
     background-color: var(--dark-color);
     border-right: 1px solid #ccc;
     left: 0;
     position: absolute;
     top: 45px;
+    height: auto;
+    min-height: 93.5vh;
+    overflow-x: visible !important;
 }
 
 .tools-menu h3,
@@ -827,16 +1221,11 @@ const exportPattern = () => {
 }
 
 .tools-menu button {
-    margin: 5px 0;
     padding: 8px 12px;
 }
 
 .stitch-tools {
     margin: 20px 0;
-}
-
-.row-selector {
-    margin-bottom: 15px;
 }
 
 .row-selector label {
@@ -850,7 +1239,6 @@ const exportPattern = () => {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    margin-bottom: 10px;
 }
 
 .row-btn {
@@ -865,7 +1253,7 @@ const exportPattern = () => {
 
 .row-btn.active {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--action-color);
     border-color: var(--primary-color);
     font-weight: bold;
 }
@@ -890,9 +1278,13 @@ const exportPattern = () => {
 }
 
 .pattern-view {
-    flex: 1;
+    position: absolute;
     padding: 20px;
     overflow-y: auto;
+    bottom: 0;
+    right: 0;
+    left: 30px;
+    top: 50px;
 }
 
 .empty-pattern {
@@ -905,6 +1297,20 @@ const exportPattern = () => {
     padding: 20px;
     background-color: var(--light-color);
     border-radius: 8px;
+}
+
+.preview-section-mobile {
+    position: relative;
+    /* Au lieu d'absolute pour rester dans le flux */
+    top: 0;
+    /* On annule le top fixe */
+    left: 0;
+    right: 0;
+    margin: 10px;
+    width: calc(100% - 20px);
+    /* On force le conteneur à rester carré proprement sur tous les navigateurs */
+    aspect-ratio: 1 / 1;
+    box-sizing: border-box;
 }
 
 .preview-section h3 {
@@ -986,6 +1392,13 @@ const exportPattern = () => {
     gap: 20px;
 }
 
+.rows-container-mobile {
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 200px;
+    max-height: 180px;
+}
+
 .row {
     border: 1px solid #ddd;
     padding: 15px;
@@ -1042,5 +1455,93 @@ const exportPattern = () => {
 .small {
     font-size: 11px;
     padding: 3px 6px;
+}
+
+.row-selection .active {
+    color: var(--action-color);
+}
+
+:deep(.v-expansion-panels) {
+    width: 100% !important;
+    position: relative;
+    transition: width 0.3s ease-in-out;
+}
+
+:deep(.v-expansion-panels:has(.v-expansion-panel--active)) {
+    width: 460px !important;
+    z-index: 999;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.small-text {
+    font-size: small;
+}
+
+.panel .title {
+    background-color: var(--light-color) !important;
+}
+
+.panel {
+    background-color: var(--dark-color) !important;
+    border-radius: 8px;
+    border: 1px solid white;
+}
+
+
+
+
+
+
+.v-layout {
+    display: flex;
+    flex-direction: column;
+    height: 94vh;
+    width: 100vw;
+    overflow-y: auto;
+    /* Permet le défilement global si l'écran est très petit */
+    overflow-x: hidden;
+}
+
+.active {
+    color: var(--action-color);
+}
+
+.sub-menu-mobile {
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+    padding-bottom: 120px;
+    display: flex;
+    width: 100%;
+    background-color: var(--dark-color)
+}
+
+.view-toggle {
+    margin: auto;
+    margin-top: 45px;
+}
+
+.list-none {
+    list-style-type: none;
+}
+
+.custom-slider-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60vh;
+    z-index: 999;
+    will-change: transform;
+}
+
+.drag-zone {
+    width: 100%;
+    cursor: grab;
+    touch-action: none;
+}
+
+.drag-zone:active {
+    cursor: grabbing;
 }
 </style>

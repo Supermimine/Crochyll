@@ -1,5 +1,5 @@
-import type { ShippingPackage } from '@/model/shippingPackage';
-import type { ShippingAddress } from '@/model/shippingAddress';
+import type { ShippingPackage } from '@core/model/shippingPackage';
+import type { ShippingAddress } from '@core/model/shippingAddress';
 import { countries } from '@/tools/country';
 
 const shippingZones = {

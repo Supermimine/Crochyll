@@ -1,3 +1,25 @@
 {
-
+    "maker": {
+        "menu": {
+            "title": "Outils de création",
+            "shortcut": {
+                "title": "Raccourcis",
+                "addRow": "CTRL + SHIFT + A (nouveau rang)",
+                "addStitch": "CTRL + SHIFT + L (nouvelle maille)",
+                "delete": "CTRL + SHIFT + R (supprimer rang)",
+                "export": "CTRL + SHIFT + S (exporter)"
+            },
+            "info": {
+                "title": "Conseil"
+            },
+            "tool": {
+                "row": {
+                    "title": "Gestion des rangs"
+                },
+                "stitch": {
+                    "title": "Gestion des mailles"
+                }
+            }
+        }
+    }
 }

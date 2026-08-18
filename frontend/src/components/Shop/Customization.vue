@@ -49,11 +49,19 @@ const selectItem = async (item: Product) => {
   itemSelected.value = await api.getProductById(item.id);
   isTilesPage.value = false;
   imgSelected.value = `/img/${itemSelected.value.image[0]}`;
-  if (itemSelected.value.shade && item.shade.length > 0) {
-    colorSelected.value = item.shade[0];
-    sizeSelected.value = item.size[0];
+  if (itemSelected.value.shade && itemSelected.value.shade.length > 0) {
+    colorSelected.value = itemSelected.value.shade[0];
+    sizeSelected.value = itemSelected.value.size[0];
   }
 }
+
+const selectColor = (shade: string) => {
+  colorSelected.value = colorData.some(c => c.no === shade) ? shade : null;
+}
+
+const selectedColorName = computed(() =>
+  colorData.find(c => c.no === colorSelected.value)?.name ?? ''
+)
 
 const addCart = () => {
   const itemToAdd = itemSelected.value;
@@ -122,12 +130,12 @@ watch(isOpen, (val) => {
             }}</p>
 
           <div v-if="itemSelected?.shade?.length != 0" style="margin-bottom: 20px;">
-            <p style="margin-top: 20px;"><strong>{{ t('customization.color') }}</strong></p>
-            <div style="display: flex;">
-              <div v-for="shade in itemSelected?.shade" :key="shade">
+            <p style="margin-top: 20px;"><strong>{{ t('customization.color') }}</strong> <span v-if="selectedColorName">({{selectedColorName}})</span></p>
+            <div class="shadeGrid">
+              <div v-for="shade in itemSelected?.shade">
                 <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                  @click="colorSelected = shade"
-                  :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
+                  @click="selectColor(shade)"
+                  :style="`background-image: url(${colorData.find(c => c.no === shade)?.img ?? ''}); background-size: cover;`"></span>
               </div>
             </div>
           </div>
@@ -289,6 +297,13 @@ watch(isOpen, (val) => {
   width: 50%;
   max-width: 450px;
   text-align: left;
+}
+
+.shadeGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 30px);
+  gap: 8px;
+  align-items: center;
 }
 
 .colorOption {

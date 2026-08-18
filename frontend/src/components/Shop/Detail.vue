@@ -44,6 +44,14 @@ const saveItem = (items: Product[]) => {
   itemsList.value = items;
 }
 
+const selectColor = (shade: string) => {
+  colorSelected.value = colorData.some(c => c.no === shade) ? shade : null;
+}
+
+const selectedColorName = computed(() =>
+  colorData.find(c => c.no === colorSelected.value)?.name ?? ''
+)
+
 const description = computed(() =>
   item?.description?.[locale.value as 'fr' | 'en']
   ?? item?.description?.fr
@@ -127,12 +135,12 @@ useHead({
         </div>
 
         <div v-if="item?.shade?.length != 0" style="margin-bottom: 20px;">
-          <p><strong>{{ t('detail.color') }}</strong></p>
+          <p><strong>{{ t('detail.color') }}</strong> <span v-if="selectedColorName">({{selectedColorName}})</span></p>
           <div class="shadeGrid">
-            <div v-for="shade in item?.shade" :key="shade">
+            <div v-for="shade in item?.shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                @click="colorSelected = shade"
-                :style="`background-image: url(${colorData.find(c => c.no === shade)?.img});`"></span>
+                @click="selectColor(shade)"
+                :style="`background-image: url(${colorData.find(c => c.no === shade)?.img ?? ''}); background-size: cover;`"></span>
             </div>
           </div>
         </div>

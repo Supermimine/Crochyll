@@ -5,7 +5,6 @@ import type { Matter } from "../enum/matter";
 import type { Size } from "../enum/size";
 import type { SizeWool } from "../enum/sizeWool";
 import type { TypeMaking } from "../enum/typeMaking";
-
 export interface Product {
     id: string;
     name: string;

@@ -1,3 +1,13 @@
 {
-
+    "maker": {
+        "menu": {
+            "title": "Outils de création",
+            "shortcut": {
+                "title": "Raccourcis:",
+                "add": "ALT+A (nouveau rang)",
+                "delete": "ALT+R (supprimer rang)",
+                "export": "ALT+S (exporter)"
+            }
+        }
+    }
 }

@@ -27,7 +27,7 @@ const getProducts = (): Product[] => {
             typeMaking: TypeMaking.Crochet,
             creator: Creator.WolfSoph,
             size: [Size.XS, Size.S, Size.M, Size.L],
-            shade: ["03", "04"],
+            shade: ["000-001", "000-002"],
             matter: [
                 Matter.Cotton,
                 Matter.Acrylic,
@@ -123,7 +123,7 @@ const getProducts = (): Product[] => {
         },
         {
             id: "2732d19e-b5cd-4c1c-ad97-7fa17f8560b5",
-            name: "Veste granny",
+            name: "Veste granny - Tea time",
             price: [60.00, 60.00, 85.00],
             category: Category.Clothes,
             description: {
@@ -133,7 +133,7 @@ const getProducts = (): Product[] => {
             typeMaking: TypeMaking.Crochet,
             creator: Creator.WolfSoph,
             size: [ Size.S, Size.M, Size.L],
-            shade: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
+            shade: ["000-003", "000-004", "000-005", "000-006", "000-007", "000-008", "000-009", "000-010", "000-011", "000-012", "000-013", "000-014", "000-015", "000-016", "000-017", "000-018", "000-019", "000-020", "000-021", "000-022", "000-023", "000-024", "000-025"],
             matter: [
                 Matter.Acrylic
             ],
@@ -145,9 +145,9 @@ const getProducts = (): Product[] => {
             wool: [
                 {
                     compagny: "Hobbii",
-                    name: "Tea time",
+                    name: "Tea time - Chrismas",
                     size: SizeWool.Medium,
-                    color: "",
+                    color: "03 - Christmas Tree",
                     matter: [
                         {
                             type: Matter.Acrylic,
@@ -376,7 +376,7 @@ const getProducts = (): Product[] => {
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
-            shade: ["Black", "Grey"],
+            shade: ["000-026", "000-027"],
             matter: [
                 Matter.Acrylic,
             ],
@@ -1037,7 +1037,7 @@ const getProducts = (): Product[] => {
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [Size.XS, Size.S],
-            shade: ["02", "03", "04", "05"],
+            shade: ["000-028", "000-029", "000-030", "000-031", "000-032", "000-033", "000-034", "000-035", "000-036", "000-037", "000-038", "000-039", "000-040", "000-041", "000-042", "000-043"],
             matter: [
                 Matter.Acrylic,
             ],

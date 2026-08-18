@@ -1,5 +1,6 @@
 export enum StitchAction {
     NULL = '',
     INC = 'INC',
-    DEC = 'DEC'
+    DEC = 'DEC',
+    TRANSITION = 'TRANSITION',
 }

@@ -1,6 +1,6 @@
 import { StateProject } from "../../enum/stateProject";
 import { TypeMaking } from "../../enum/typeMaking";
-import { Yarn } from "./yarn";
+import type { Yarn } from "./yarn";
 
 export interface Project {
     name: string;

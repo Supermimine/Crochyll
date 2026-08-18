@@ -1,6 +1,6 @@
 import { extractAdvancedPdfText } from "./pdfTextExtractor";
 import { detectLanguage } from "@/tools/languageDetector";
-import type { FilePattern } from "@/model/filepattern";
+import type { FilePattern } from "@core/model/filepattern";
 
 export async function importPdfFile(file: File): Promise<FilePattern | null> {
   const content = await extractAdvancedPdfText(file);

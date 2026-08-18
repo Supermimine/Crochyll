@@ -199,7 +199,7 @@ onUnmounted(() => {
         <div class="dash-box big-dash-box">
           <h2 style="margin-bottom: 0;" class="disable-text-select">{{ t('home.myProject') }}</h2>
           <p style="margin-bottom: 35px;" class="disable-text-select">{{ t('home.myProjectDescription') }}</p>
-          <router-link to="/myProject" class="buttonColor" style="padding: 20px 25px; border-radius: 30px;">
+          <router-link to="/myProfil" class="buttonColor" style="padding: 20px 25px; border-radius: 30px;">
             +
           </router-link>
         </div>
