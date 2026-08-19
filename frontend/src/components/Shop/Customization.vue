@@ -24,6 +24,16 @@ const colorSelected = ref<string | null>(null);
 const sizeSelected = ref<Size | null>(null);
 const imgSelected = ref<string | undefined>(undefined);
 
+const getImageShade = (image: string) => image.match(/^##([^#]+)##/)?.[1];
+
+const displayedImages = computed(() => {
+  const images = itemSelected.value?.image ?? [];
+  const selectedShadeImages = images.filter(image => getImageShade(image) === colorSelected.value);
+  const commonImages = images.filter(image => !getImageShade(image));
+
+  return [...selectedShadeImages, ...commonImages];
+});
+
 const itemsList = ref<Product[]>([]);
 
 const description = computed(() =>
@@ -31,6 +41,11 @@ const description = computed(() =>
   ?? itemSelected.value?.description?.fr
   ?? ''
 )
+
+const selectedPrice = computed(() => {
+  const sizeIndex = itemSelected.value?.size?.indexOf(sizeSelected.value as Size) ?? -1
+  return itemSelected.value?.price[sizeIndex] ?? itemSelected.value?.price[0] ?? ''
+})
 
 const open = () => {
   isOpen.value = true;
@@ -48,15 +63,21 @@ const close = () => {
 const selectItem = async (item: Product) => {
   itemSelected.value = await api.getProductById(item.id);
   isTilesPage.value = false;
-  imgSelected.value = `/img/${itemSelected.value.image[0]}`;
   if (itemSelected.value.shade && itemSelected.value.shade.length > 0) {
     colorSelected.value = itemSelected.value.shade[0];
     sizeSelected.value = itemSelected.value.size[0];
   }
+
+  imgSelected.value = `/img/${displayedImages.value[0] ?? ''}`;
 }
 
 const selectColor = (shade: string) => {
   colorSelected.value = colorData.some(c => c.no === shade) ? shade : null;
+  const firstImageForShade = displayedImages.value[0];
+
+  if (firstImageForShade) {
+    imgSelected.value = `/img/${firstImageForShade}`;
+  }
 }
 
 const selectedColorName = computed(() =>
@@ -72,6 +93,7 @@ const addCart = () => {
   itemsList.value.push(itemToAdd as Product);
 
   isTilesPage.value = true;
+  close();
 }
 
 const removeCart = () => {
@@ -118,27 +140,16 @@ watch(isOpen, (val) => {
       <div class="mainSection">
         <div class="backgroundImg">
           <div class="imgList">
-            <img v-for="(image, index) in itemSelected?.image" :key="index" :src="`/img/${image}`" class="imgItem"
-              @click="imgSelected = `/img/${image}`" :alt="image" :title="image" />
+            <img v-for="(image, index) in displayedImages" :key="index" :src="`/img/${image}`" class="imgItem"
+              @click="imgSelected = `/img/${image}`"
+              :class="imgSelected == `/img/${image}` ? 'action-border-outside' : ''" :alt="image" :title="image" />
           </div>
           <img :src="imgSelected" class="imgDetail" :alt="imgSelected" :title="imgSelected" />
         </div>
 
         <div class="infoDetail">
           <p style="font-size: 20px;">{{ itemSelected?.name }}</p>
-          <p style="font-size: 30px;">+ ${{ itemSelected?.price[(sizeSelected ?? 0)] ?? itemSelected?.price[0] ?? ''
-            }}</p>
-
-          <div v-if="itemSelected?.shade?.length != 0" style="margin-bottom: 20px;">
-            <p style="margin-top: 20px;"><strong>{{ t('customization.color') }}</strong> <span v-if="selectedColorName">({{selectedColorName}})</span></p>
-            <div class="shadeGrid">
-              <div v-for="shade in itemSelected?.shade">
-                <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
-                  @click="selectColor(shade)"
-                  :style="`background-image: url(${colorData.find(c => c.no === shade)?.img ?? ''}); background-size: cover;`"></span>
-              </div>
-            </div>
-          </div>
+          <p style="font-size: 30px;">+ ${{ selectedPrice }}</p>
 
           <div v-if="itemSelected?.size?.length != 0" style="margin-bottom: 20px;">
             <p><strong>{{ t('detail.size') }}</strong></p>
@@ -146,6 +157,18 @@ watch(isOpen, (val) => {
               :class="sizeSelected === size ? 'action-border-outside' : ''" @click="sizeSelected = size">
               {{ t(`enum.size.${size}`) }}
             </v-btn>
+          </div>
+
+          <div v-if="itemSelected?.shade?.length != 0" style="margin-bottom: 20px;">
+            <p style="margin-top: 20px;"><strong>{{ t('customization.color') }}</strong> <span
+                v-if="selectedColorName">({{ selectedColorName }})</span></p>
+            <div class="shadeGrid">
+              <div v-for="shade in itemSelected?.shade">
+                <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
+                  @click="selectColor(shade)"
+                  :style="`background-image: url(${colorData.find(c => c.no === shade)?.img ?? ''}); background-size: cover;`"></span>
+              </div>
+            </div>
           </div>
 
           <v-btn v-if="!itemsList.some(i => i.id === itemSelected?.id)"
@@ -338,7 +361,6 @@ watch(isOpen, (val) => {
   }
 
   .imgList {
-    display: flex;
     max-width: 100%;
     margin: auto;
     margin-top: 10px;

@@ -275,8 +275,7 @@ onUnmounted(() => {
   cursor: none;
   touch-action: none;
   overflow-x: visible;
-  padding: 0.5rem;
-  padding-bottom: 0;
+
 }
 
 .home-component.mobile-normal {

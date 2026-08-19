@@ -71,7 +71,13 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["no-picture.png"]
+            image: [
+                "products/148f32ca-0aa2-4716-b5f9-92c93dc9483a-1.jpg",
+                "products/148f32ca-0aa2-4716-b5f9-92c93dc9483a-2.jpg",
+                "products/148f32ca-0aa2-4716-b5f9-92c93dc9483a-3.jpg",
+                "products/148f32ca-0aa2-4716-b5f9-92c93dc9483a-4.jpg",
+                "products/148f32ca-0aa2-4716-b5f9-92c93dc9483a-5.jpg"
+            ]
         },
         {
             id: "ee2b74c8-0958-4b52-9772-4cfdc1807792",
@@ -919,7 +925,7 @@ const getProducts = (): Product[] => {
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
             size: [],
-            shade: [],
+            shade: ["000-044", "000-045", "000-046", "000-047"],
             matter: [
                 Matter.Acrylic,
             ],
@@ -966,7 +972,14 @@ const getProducts = (): Product[] => {
                     ]
                 },
             ],
-            image: ["no-picture.png"]
+            image: [
+                "no-picture.png",
+                "no-picture.png",
+                "no-picture.png",
+                "##000-045##no-picture.png",
+                "##000-046##no-picture.png",
+                "##000-047##no-picture.png"
+            ]
         },
         {
             id: "725f771c-5e82-4507-9f32-58e27561a07a",

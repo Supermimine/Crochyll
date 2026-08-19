@@ -23,7 +23,17 @@ const quantity = ref(1);
 const colorSelected = ref<string | null>(item?.shade && item.shade.length > 0 ? item.shade[0] : null);
 const sizeSelected = ref<Size | null>(item?.size && item.size.length > 0 ? item.size[0] : null);
 
-const imgSelected = ref<string>(`/img/${item?.image[0]}`);
+const getImageShade = (image: string) => image.match(/^##([^#]+)##/)?.[1];
+
+const displayedImages = computed(() => {
+  const images = item?.image ?? [];
+  const selectedShadeImages = images.filter(image => getImageShade(image) === colorSelected.value);
+  const commonImages = images.filter(image => !getImageShade(image));
+
+  return [...selectedShadeImages, ...commonImages];
+});
+
+const imgSelected = ref<string>(`/img/${displayedImages.value[0] ?? ''}`);
 const loading = ref(false);
 
 const itemsList = ref<Product[]>([]);
@@ -46,6 +56,11 @@ const saveItem = (items: Product[]) => {
 
 const selectColor = (shade: string) => {
   colorSelected.value = colorData.some(c => c.no === shade) ? shade : null;
+  const firstImageForShade = displayedImages.value[0];
+
+  if (firstImageForShade) {
+    imgSelected.value = `/img/${firstImageForShade}`;
+  }
 }
 
 const selectedColorName = computed(() =>
@@ -57,6 +72,11 @@ const description = computed(() =>
   ?? item?.description?.fr
   ?? ''
 )
+
+const selectedPrice = computed(() => {
+  const sizeIndex = item?.size?.indexOf(sizeSelected.value as Size) ?? -1
+  return item?.price[sizeIndex] ?? item?.price[0] ?? ''
+})
 
 const schemaOrg = computed(() => {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
@@ -103,7 +123,7 @@ useHead({
     <div class="mainSection">
       <div class="backgroundImg">
         <div class="imgList">
-          <img v-for="(image, index) in item?.image" :key="index" :src="`/img/${image}`" class="imgItem"
+          <img v-for="(image, index) in displayedImages" :key="index" :src="`/img/${image}`" class="imgItem"
             @click="imgSelected = `/img/${image}`"
             :class="imgSelected == `/img/${image}` ? 'action-border-outside' : ''" :alt="image" :title="image" />
         </div>
@@ -112,7 +132,7 @@ useHead({
 
       <div class="infoDetail">
         <p style="font-size: 26px;">{{ item?.name ?? '' }}</p>
-        <p style="font-size: 30px; margin-bottom: 20px;">${{ item?.price[(sizeSelected ?? 1) - 1] ?? item?.price[0] ?? '' }}</p>
+        <p style="font-size: 30px; margin-bottom: 20px;">${{ selectedPrice }}</p>
 
 
         <div v-if="item?.category == Category.Amigurumi">
@@ -349,7 +369,6 @@ useHead({
   }
 
   .imgList {
-    display: flex;
     max-width: 100%;
     margin: auto;
     margin-top: 10px;

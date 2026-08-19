@@ -31,6 +31,7 @@ const { t } = useI18n()
 <style scoped lang="css">
 .menu-bar {
     align-items: center;
+    margin: 0.5rem;
 }
 
 .menu-links {

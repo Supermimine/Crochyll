@@ -45,4 +45,9 @@ export const colorData: { no: string, name: string; img: string }[] = [
     { no: '000-041', name: '14 - Carotte', img: '/img/colors/000-041.png' },
     { no: '000-042', name: '15 - Bleu Chaud', img: '/img/colors/000-042.png' },
     { no: '000-043', name: '16 - Bleu Chaud', img: '/img/colors/000-043.png' },
+
+    { no: '000-044', name: '01 - Base', img: '/img/colors/000-044.png' },
+    { no: '000-045', name: '02 - Noël', img: '/img/colors/000-045.png' },
+    { no: '000-046', name: '03 - Halloween', img: '/img/colors/000-046.png' },
+    { no: '000-047', name: '04 - Pâques', img: '/img/colors/000-047.png' },
 ]
