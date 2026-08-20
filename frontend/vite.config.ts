@@ -30,7 +30,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['flier-estrogen-explore.ngrok-free.dev'],
+    allowedHosts: ['localhost:5173'],
     headers: securityHeaders,
     proxy: {
       '/api': {
