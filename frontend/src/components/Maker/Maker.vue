@@ -135,7 +135,10 @@ const insertRowAfter = (index: number) => {
 
 const duplicateRow = (index: number) => {
     const row = pattern.value.rows[index];
-    pattern.value.rows.splice(index + 1, 0, { stitches: [...row.stitches], isCircular: row.isCircular || false });
+    pattern.value.rows.splice(index + 1, 0, {
+        stitches: row.stitches.map(stitch => ({ ...stitch })),
+        isCircular: row.isCircular || false
+    });
     selectedRow.value = index + 1;
 };
 
@@ -559,6 +562,12 @@ const getStitchStyle = (
         (firstCircularStitches * stitchSpacing) / (2 * Math.PI)
     );
 
+    // Jusqu'a 9 mailles, le premier rang circulaire definit un polygone.
+    // A partir de 10 mailles, le rendu reste circulaire.
+    const polygonSides = firstCircularStitches >= 3 && firstCircularStitches < 10
+        ? firstCircularStitches
+        : null;
+
     // --------------------------------------------------
     // Calcul du radius dynamique basé sur les rangs
     // précédents
@@ -635,19 +644,9 @@ const getStitchStyle = (
                     : 18
             );
 
-        //const transitionOffset = firstTransitionGroupCount * 5;
-        
-        console.log('firstTransitionGroupCount:', firstTransitionGroupCount);
-        console.log('centerY:', centerY);
-        console.log('prevRadius:', prevRadius);
-        console.log('radius:', radius);
-
         const gapMiddle =
             centerY -
             ((radius + prevRadius) / 2);
-
-        console.log('gapMiddle:', gapMiddle);
-
 
         const spacing = 12;
 
@@ -702,13 +701,26 @@ const getStitchStyle = (
     const radian =
         (angle * Math.PI) / 180;
 
-    const x =
-        centerX +
-        radius * Math.cos(radian);
+    let displayRadius = radius;
 
-    const y =
-        centerY +
-        radius * Math.sin(radian);
+    if (polygonSides) {
+        const sectorAngle = 360 / polygonSides;
+        const angleFromStart = ((angle - startAngle) % 360 + 360) % 360;
+        const angleInSector = angleFromStart % sectorAngle;
+        const distanceFromVertex = Math.min(
+            angleInSector,
+            sectorAngle - angleInSector
+        );
+        const apothem = radius * Math.cos(Math.PI / polygonSides);
+
+        // La distance au centre varie entre les sommets et les cotes.
+        displayRadius = apothem / Math.cos(
+            (distanceFromVertex * Math.PI) / 180
+        );
+    }
+
+    const x = centerX + displayRadius * Math.cos(radian);
+    const y = centerY + displayRadius * Math.sin(radian);
 
     return `
         position: absolute;
