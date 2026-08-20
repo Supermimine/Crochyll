@@ -158,7 +158,7 @@ onUnmounted(() => {
     -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 0%, transparent 100%); z-index: 3;"></div>
 
-  <div class="home-component"
+  <div class="home-component h-card"
     :class="{ 'mobile-normal': isMobile && !isTouchModeActive, 'mobile-touch-active': isMobile && isTouchModeActive }">
     <Menu />
 
