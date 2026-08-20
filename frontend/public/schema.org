@@ -1,0 +1,68 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://flier-estrogen-explore.ngrok-free.dev/#organization",
+      "name": "Crochyll",
+      "url": "https://flier-estrogen-explore.ngrok-free.dev/",
+      "description": "Crochyll propose des produits en crochet, des créations personnalisées ainsi que des outils pour lire et créer des patrons de crochet.",
+      "email": "info.crochyll@gmail.com",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "info.crochyll@gmail.com",
+        "availableLanguage": ["fr", "en"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://flier-estrogen-explore.ngrok-free.dev/#website",
+      "url": "https://flier-estrogen-explore.ngrok-free.dev/",
+      "name": "Crochyll",
+      "inLanguage": ["fr-CA", "en"],
+      "publisher": {
+        "@id": "https://flier-estrogen-explore.ngrok-free.dev/#organization"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://flier-estrogen-explore.ngrok-free.dev/#webpage",
+      "url": "https://flier-estrogen-explore.ngrok-free.dev/",
+      "name": "Crochyll | Crochet, patrons et créations faites main",
+      "description": "Découvrez les créations en crochet de Crochyll et utilisez ses outils pour lire ou créer des patrons.",
+      "isPartOf": {
+        "@id": "https://flier-estrogen-explore.ngrok-free.dev/#website"
+      },
+      "about": {
+        "@id": "https://flier-estrogen-explore.ngrok-free.dev/#organization"
+      },
+      "inLanguage": "fr-CA"
+    },
+    {
+      "@type": "Service",
+      "name": "Boutique de créations en crochet",
+      "serviceType": "Vente de produits faits main en crochet",
+      "provider": {
+        "@id": "https://flier-estrogen-explore.ngrok-free.dev/#organization"
+      },
+      "areaServed": "CA"
+    },
+    {
+      "@type": "Service",
+      "name": "Lecture de patrons de crochet",
+      "serviceType": "Outil de lecture et d'assistance pour patrons de crochet",
+      "provider": {
+        "@id": "https://flier-estrogen-explore.ngrok-free.dev/#organization"
+      }
+    },
+    {
+      "@type": "Service",
+      "name": "Création de patrons de crochet",
+      "serviceType": "Outil de création de patrons de crochet",
+      "provider": {
+        "@id": "https://flier-estrogen-explore.ngrok-free.dev/#organization"
+      }
+    }
+  ]
+}

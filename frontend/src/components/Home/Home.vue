@@ -163,13 +163,14 @@ onUnmounted(() => {
     <Menu />
 
     <!-- Cursor -->
-    <img v-if="shouldUseCustomCursor" ref="cursorRef" src="/img/icon-noBG.png" alt="Cursor" class="custom-cursor" />
+    <img v-if="shouldUseCustomCursor" ref="cursorRef" src="/img/icon-noBG.png" alt="Cursor" title="Cursor" class="custom-cursor" />
     <div v-if="shouldUseCustomCursor" ref="containerRef" class="trail-container"></div>
 
     <button v-if="isMobile" type="button" class="touch-mode-toggle" :class="{ active: isTouchModeActive }"
       @click.stop.prevent="toggleTouchMode" @touchend.stop.prevent="toggleTouchMode"
       :aria-label="isTouchModeActive ? 'Désactiver le mode tactile' : 'Activer le mode tactile'">
-      <span>{{ isTouchModeActive ? '🔒' : '🔓' }}</span>
+      <v-icon v-if="isTouchModeActive" icon="mdi-lock-outline" size="25" />
+      <v-icon v-else icon="mdi-lock-open-variant-outline" size="25" />
     </button>
 
     <h2 style="margin-bottom: 0px; margin-top: 150px;" class="disable-text-select">{{ t('home.shop') }}</h2>
@@ -381,10 +382,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-.touch-mode-toggle.active {
-  background: var(--text-color);
-  color: var(--light-color);
-}
+
 </style>
 
 <style>
