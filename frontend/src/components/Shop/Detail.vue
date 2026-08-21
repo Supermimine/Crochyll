@@ -240,7 +240,7 @@ useHead(() => ({
           </p>
           <p style="display: flex;"><strong>{{ t('detail.maintenance') }}: </strong>
           <div v-for="maintenance in item?.maintenance" :key="maintenance">
-            <img :src="`/img/maintenance/${maintenance}.png`" style="height: 25px;" :alt="maintenance"
+            <img :src="`/img/maintenance/${maintenance}.png`" class="maintenance-icon" :alt="maintenance"
               :title="maintenance" />
           </div>
           </p>
@@ -267,7 +267,6 @@ useHead(() => ({
   <Share ref="shareRef" />
   <Customization ref="customRef" @save="saveItem" />
 </template>
-
 
 <style scoped>
 .overlay {

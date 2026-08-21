@@ -242,3 +242,11 @@ button[disabled] {
   border-radius: 8px;
   pointer-events: none;
 }
+
+.maintenance-icon {
+  height: 25px;
+}
+
+html[data-theme="dark"] .maintenance-icon {
+  filter: brightness(0) invert(1);
+}
