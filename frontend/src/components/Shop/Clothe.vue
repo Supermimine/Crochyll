@@ -22,7 +22,7 @@ const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
 };
 
-useHead({
+useHead(() => ({
   title: 'Crochyll - ' + t('menu.clothe'),
   meta: [
     {
@@ -34,7 +34,7 @@ useHead({
       content: 'Crochyll - ' + t('menu.clothe')
     }
   ]
-})
+}))
 </script>
 
 

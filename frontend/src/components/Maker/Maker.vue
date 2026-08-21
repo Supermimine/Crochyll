@@ -817,7 +817,7 @@ watch(
     }
 );
 
-useHead({
+useHead(() => ({
   title: 'Crochyll - ' + t('category.maker'),
   meta: [
     {
@@ -829,7 +829,7 @@ useHead({
       content: 'Crochyll - ' + t('category.maker')
     }
   ]
-})
+}))
 </script>
 
 <template>

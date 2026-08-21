@@ -67,7 +67,7 @@ const changeSelectedIndex = (index: number) => {
     safeStorageSet('menuIndex', index.toString());
 };
 
-useHead({
+useHead(() => ({
   title: 'Crochyll - ' + t('menu.offert'),
   meta: [
     {
@@ -79,7 +79,7 @@ useHead({
       content: 'Crochyll - ' + t('menu.offert')
     }
   ]
-})
+}))
 </script>
 
 

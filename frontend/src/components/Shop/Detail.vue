@@ -78,32 +78,6 @@ const selectedPrice = computed(() => {
   return item?.price[sizeIndex] ?? item?.price[0] ?? ''
 })
 
-useHead({
-  title: item?.name ? `Crochyll - ${item.name}` : 'Crochyll',
-  meta: [
-    {
-      name: 'keywords',
-      content: item?.keywords.join(', ') ?? ''
-    },
-    {
-      property: 'og:title',
-      content: item?.name ?? 'Crochyll'
-    },
-    {
-      property: 'og:image',
-      content: item?.image.length ? `/img/${item.image[0]}` : '/img/icon.png'
-    },
-    {
-      name: 'twitter:title',
-      content: item?.name ?? 'Crochyll'
-    },
-    {
-      name: 'twitter:image',
-      content: item?.image.length ? `/img/${item.image[0]}` : '/img/icon.png'
-    }
-  ]
-})
-
 const schemaOrg = computed(() => {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const pageUrl = typeof window !== 'undefined' ? window.location.href : ''
@@ -125,7 +99,7 @@ const schemaOrg = computed(() => {
     "offers": {
       "@type": "Offer",
       "url": pageUrl,
-      "price": item!.price[0],
+      "price": selectedPrice.value,
       "priceCurrency": "CAD",
       "availability": "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition"
@@ -133,14 +107,45 @@ const schemaOrg = computed(() => {
   }
 })
 
-useHead({
+useHead(() => ({
+  title: item?.name ? `Crochyll - ${item.name}` : 'Crochyll',
+  meta: [
+    {
+      name: 'keywords',
+      content: item?.keywords.join(', ') ?? ''
+    },
+    {
+      property: 'og:title',
+      content: item?.name ?? 'Crochyll'
+    },
+    {
+      property: 'og:url',
+      content: typeof window !== 'undefined' ? window.location.href : ''
+    },
+    {
+      property: 'og:image',
+      content: item?.image.length ? `/img/${item.image[0]}` : '/img/icon.png'
+    },
+    {
+      name: 'twitter:title',
+      content: item?.name ?? 'Crochyll'
+    },
+    {
+      name: 'twitter:url',
+      content: typeof window !== 'undefined' ? window.location.href : ''
+    },
+    {
+      name: 'twitter:image',
+      content: item?.image.length ? `/img/${item.image[0]}` : '/img/icon.png'
+    }
+  ],
   script: [
     {
       type: 'application/ld+json',
       innerHTML: JSON.stringify(schemaOrg.value)
     }
   ]
-})
+}))
 </script>
 
 <template>
@@ -182,7 +187,8 @@ useHead({
         </div>
 
         <div v-if="item?.shade?.length != 0" style="margin-bottom: 20px;">
-          <p><strong>{{ t('detail.color') }}</strong> <span v-if="selectedColorName">({{ selectedColorName }})</span></p>
+          <p><strong>{{ t('detail.color') }}</strong> <span v-if="selectedColorName">({{ selectedColorName }})</span>
+          </p>
           <div class="shadeGrid">
             <div v-for="shade in item?.shade">
               <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"

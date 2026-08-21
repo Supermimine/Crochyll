@@ -298,7 +298,7 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown);
 });
 
-useHead({
+useHead(() => ({
   title: 'Crochyll - ' + t('category.reader'),
   meta: [
     {
@@ -310,7 +310,7 @@ useHead({
       content: 'Crochyll - ' + t('category.reader')
     }
   ]
-})
+}))
 </script>
 
 <template>

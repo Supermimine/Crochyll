@@ -6,7 +6,7 @@ import { useHead } from "@unhead/vue";
 
 const { t } = useI18n()
 
-useHead({
+useHead(() => ({
   title: 'Crochyll - ' + t('category.learn'),
   meta: [
     {
@@ -18,7 +18,7 @@ useHead({
       content: 'Crochyll - ' + t('category.learn')
     }
   ]
-})
+}))
 </script>
 
 <template>
