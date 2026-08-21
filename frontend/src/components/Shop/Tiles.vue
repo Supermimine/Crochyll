@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { Product } from '@core/model/product';
 import { useScreen } from '@/tools/appTools';
+import { useI18n } from 'vue-i18n'
 
 const { isMobile } = useScreen();
+const { locale } = useI18n()
 
 const props = withDefaults(defineProps<{
     item: Product,
@@ -21,6 +23,12 @@ function onImgLoad() {
 function onImgError() {
     imgLoading.value = false;
 }
+
+const name = computed(() =>
+  props.item?.name?.[locale.value as 'fr' | 'en']
+  ?? props.item?.name?.fr
+  ?? ''
+)
 </script>
 
 
@@ -39,7 +47,7 @@ function onImgError() {
         />
 
         <div style="width: 100%; text-align: left;">
-            <p class="titleItem">{{ props.item.name }}</p>
+            <p class="titleItem">{{ name }}</p>
             <p style="font-size: 18px;">${{ props.item.price[0] }}</p>
         </div>
     </div>

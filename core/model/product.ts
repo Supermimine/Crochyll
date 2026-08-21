@@ -7,7 +7,10 @@ import type { SizeWool } from "../enum/sizeWool";
 import type { TypeMaking } from "../enum/typeMaking";
 export interface Product {
     id: string;
-    name: string;
+    name: {
+        fr: string;
+        en: string;
+    };
     price: number[];
     category: Category;
     description: {

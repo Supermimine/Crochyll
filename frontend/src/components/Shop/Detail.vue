@@ -67,6 +67,12 @@ const selectedColorName = computed(() =>
   colorData.find(c => c.no === colorSelected.value)?.name ?? ''
 )
 
+const name = computed(() =>
+  item?.name?.[locale.value as 'fr' | 'en']
+  ?? item?.name?.fr
+  ?? ''
+)
+
 const description = computed(() =>
   item?.description?.[locale.value as 'fr' | 'en']
   ?? item?.description?.fr
@@ -108,7 +114,7 @@ const schemaOrg = computed(() => {
 })
 
 useHead(() => ({
-  title: item?.name ? `Crochyll - ${item.name}` : 'Crochyll',
+  title: item?.name ? `Crochyll - ${name.value}` : 'Crochyll',
   meta: [
     {
       name: 'keywords',
@@ -116,7 +122,7 @@ useHead(() => ({
     },
     {
       property: 'og:title',
-      content: item?.name ?? 'Crochyll'
+      content: name.value || 'Crochyll'
     },
     {
       property: 'og:url',
@@ -128,7 +134,7 @@ useHead(() => ({
     },
     {
       name: 'twitter:title',
-      content: item?.name ?? 'Crochyll'
+      content: name.value || 'Crochyll'
     },
     {
       name: 'twitter:url',
@@ -163,7 +169,7 @@ useHead(() => ({
       </div>
 
       <div class="infoDetail">
-        <p style="font-size: 26px;">{{ item?.name ?? '' }}</p>
+        <p style="font-size: 26px;">{{ name }}</p>
         <p style="font-size: 30px; margin-bottom: 20px;">${{ selectedPrice }}</p>
 
 

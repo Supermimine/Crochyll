@@ -36,6 +36,12 @@ const displayedImages = computed(() => {
 
 const itemsList = ref<Product[]>([]);
 
+const name = computed(() =>
+  itemSelected.value?.name?.[locale.value as 'fr' | 'en']
+  ?? itemSelected.value?.name?.fr
+  ?? ''
+)
+
 const description = computed(() =>
   itemSelected.value?.description?.[locale.value as 'fr' | 'en']
   ?? itemSelected.value?.description?.fr
@@ -148,7 +154,7 @@ watch(isOpen, (val) => {
         </div>
 
         <div class="infoDetail">
-          <p style="font-size: 20px;">{{ itemSelected?.name }}</p>
+          <p style="font-size: 20px;">{{ name}}</p>
           <p style="font-size: 30px;">+ ${{ selectedPrice }}</p>
 
           <div v-if="itemSelected?.size?.length != 0" style="margin-bottom: 20px;">

@@ -17,7 +17,10 @@ const getProducts = (): Product[] => {
         //Vêtements
         {
             id: "148f32ca-0aa2-4716-b5f9-92c93dc9483a",
-            name: "Châle douceur",
+            name: {
+                fr: "Châle douceur",
+                en: "Soft Shawl"
+            },
             price: [45.00, 45.00, 85.00, 85.00],
             category: Category.Clothes,
             description: {
@@ -81,7 +84,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "ee2b74c8-0958-4b52-9772-4cfdc1807792",
-            name: "Serviette à cheveaux",
+            name: {
+                fr: "Serviette à cheveaux",
+                en: "Hair Towel"
+            },
             price: [45.00],
             category: Category.Accessoires,
             description: {
@@ -129,7 +135,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "2732d19e-b5cd-4c1c-ad97-7fa17f8560b5",
-            name: "Veste granny - Tea time",
+            name: {
+                fr: "Veste granny - Tea time",
+                en: "Granny Jacket - Tea time"
+            },
             price: [60.00, 60.00, 85.00],
             category: Category.Clothes,
             description: {
@@ -175,7 +184,10 @@ const getProducts = (): Product[] => {
         //Amigurumi
         {
             id: "56265f9b-24a9-468f-824f-f16ee0aa049d",
-            name: "Tortue",
+            name: {
+                fr: "Tortue",
+                en: "Turtle"
+            },
             price: [14.99],
             category: Category.Amigurumi,
             description: {
@@ -230,7 +242,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "6c55960e-8887-4978-9f58-7225c95cbcba",
-            name: "Koala",
+            name: {
+                fr: "Koala",
+                en: "Koala"
+            },
             price: [24.99],
             category: Category.Amigurumi,
             description: {
@@ -298,7 +313,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "f8f262ff-07a0-4cf7-beb2-1be26902b788",
-            name: "Lapin",
+            name: {
+                fr: "Lapin",
+                en: "Rabbit"
+            },
             price: [17.99],
             category: Category.Amigurumi,
             description: {
@@ -335,7 +353,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "dd82c5b7-5c64-4a09-b8fc-c9a17fe4d099",
-            name: "Serpent",
+            name: {
+                fr: "Serpent",
+                en: "Snake"
+            },
             price: [29.99],
             category: Category.Amigurumi,
             description: {
@@ -372,7 +393,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "1c57a765-7d99-4ba4-a64a-df57fc396c2b",
-            name: "Arraignée",
+            name: {
+                fr: "Arraignée",
+                en: "Spider"
+            },
             price: [10.00],
             category: Category.Amigurumi,
             description: {
@@ -421,7 +445,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "95f8ca4f-34de-4d70-b8b3-fe183f012224",
-            name: "Arraignée géante",
+            name: {
+                fr: "Arraignée géante",
+                en: "Giant Spider"
+            },
             price: [79.99],
             category: Category.Amigurumi,
             description: {
@@ -471,7 +498,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "8bf9c02c-ed2e-4721-b32b-f24ca09f8f0a",
-            name: "Vachette",
+            name: {
+                fr: "Vachette",
+                en: "Calf"
+            },
             price: [21.99],
             category: Category.Amigurumi,
             description: {
@@ -539,7 +569,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "0133a43e-270c-42ce-bf5b-99f2b81b362e",
-            name: "Chèvre",
+            name: {
+                fr: "Chèvre",
+                en: "Goat"
+            },
             price: [11.99],
             category: Category.Amigurumi,
             description: {
@@ -606,7 +639,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "f5f5a251-7f5c-4f4f-acf7-379ea2546b54",
-            name: "Renard",
+            name: {
+                fr: "Renard",
+                en: "Fox"
+            },
             price: [49.99],
             category: Category.Amigurumi,
             description: {
@@ -667,7 +703,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "95be2d6f-5290-4ab5-b384-5af8a5ed7251",
-            name: "Pinguin",
+            name: {
+                fr: "Pinguin",
+                en: "Penguin"
+            },
             price: [19.99],
             category: Category.Amigurumi,
             description: {
@@ -746,7 +785,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "6cf964cf-f73a-4f96-832b-d2efca21282b",
-            name: "Souris",
+            name: {
+                fr: "Souris",
+                en: "Mouse"
+            },
             price: [15.00],
             category: Category.Amigurumi,
             description: {
@@ -799,7 +841,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "112a8609-7876-401c-882a-d54be6d6ac88",
-            name: "Raie manta",
+            name: {
+                fr: "Raie manta",
+                en: "Manta Ray"
+            },
             price: [15.00],
             category: Category.Amigurumi,
             description: {
@@ -854,7 +899,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "f3561426-f762-4164-b8a9-ce42623affb9",
-            name: "Requin baleine",
+            name: {
+                fr: "Requin baleine",
+                en: "Whale Shark"
+            },
             price: [74.99],
             category: Category.Amigurumi,
             description: {
@@ -915,7 +963,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "8b333ba4-3195-4923-a1a0-19c7478d03da",
-            name: "Gnome",
+            name: {
+                fr: "Gnome",
+                en: "Gnome"
+            },
             price: [40.00],
             category: Category.Amigurumi,
             description: {
@@ -983,7 +1034,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "725f771c-5e82-4507-9f32-58e27561a07a",
-            name: "Pieuvre",
+            name: {
+                fr: "Pieuvre",
+                en: "Octopus"
+            },
             price: [89.99],
             category: Category.Amigurumi,
             description: {
@@ -1040,7 +1094,10 @@ const getProducts = (): Product[] => {
         //Accessoires Amigurumi
         {
             id: "4c6f73ed-7d41-4f91-ac85-9e85869ecc2a",
-            name: "Couverture",
+            name: {
+                fr: "Couverture",
+                en: "Blanket"
+            },
             price: [5.00, 7.00],
             category: Category.AccessoiresAmigurumi,
             description: {
@@ -1069,7 +1126,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "db0625fe-cbd0-4ae7-a96e-ccf8e7b73689",
-            name: "Bambou",
+            name: {
+                fr: "Bambou",
+                en: "Bamboo"
+            },
             price: [7.00],
             category: Category.AccessoiresAmigurumi,
             description: {
@@ -1099,7 +1159,10 @@ const getProducts = (): Product[] => {
         },
         {
             id: "a91e8fbe-78a2-4c0f-87ea-fbfe7252027e",
-            name: "Fromage",
+            name: {
+                fr: "Fromage",
+                en: "Cheese"
+            },
             price: [15.00],
             category: Category.AccessoiresAmigurumi,
             description: {
