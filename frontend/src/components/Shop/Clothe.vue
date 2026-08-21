@@ -9,6 +9,7 @@ import { useScreen } from '@/tools/appTools';
 import { api } from '@/service/api';
 
 import { Category } from '@core/enum/category';
+import { useHead } from '@unhead/vue';
 
 const { t } = useI18n()
 const { isMobile } = useScreen();
@@ -20,6 +21,20 @@ const productsFilter = await api.getProductsByCategory([Category.Accessoires, Ca
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
 };
+
+useHead({
+  title: 'Crochyll - ' + t('menu.clothe'),
+  meta: [
+    {
+      property: 'og:title',
+      content: 'Crochyll - ' + t('menu.clothe')
+    },
+    {
+      name: 'twitter:title',
+      content: 'Crochyll - ' + t('menu.clothe')
+    }
+  ]
+})
 </script>
 
 
@@ -37,7 +52,7 @@ const getFilteredProducts = () => {
         <div v-if="getFilteredProducts().length == 0" style="margin: auto; margin-top: 20px; width: 100%;">
             {{ t('offert.allNoProduct') }}
         </div>
-        <router-link v-else v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/amigurumi/${item.id}`">
+        <router-link v-else v-for="item in getFilteredProducts()" :key="item.id" :to="`/shop/clothe/${item.id}`">
             <Tiles :item="item" class="tiles" />
         </router-link>
     </section>

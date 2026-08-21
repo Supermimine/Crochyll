@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
-import { safeStorageGet, safeStorageGetJSON, safeStorageSetJSON, useScreen } from '@/tools/appTools';
+import { safeStorageGetJSON, safeStorageSetJSON, useScreen } from '@/tools/appTools';
 
 const { t } = useI18n()
 const { isMobile } = useScreen();
@@ -25,6 +25,7 @@ import Counter from "./Counter.vue";
 
 import type { FilePattern } from "@core/model/filepattern";
 import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";
+import { useHead } from "@unhead/vue";
 
 const filesList = ref<FilePattern[]>(safeStorageGetJSON<FilePattern[]>("files", []));
 const filesSectionShow = ref(filesList.value.length > 0);
@@ -296,6 +297,20 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown);
 });
+
+useHead({
+  title: 'Crochyll - ' + t('category.reader'),
+  meta: [
+    {
+      property: 'og:title',
+      content: 'Crochyll - ' + t('category.reader')
+    },
+    {
+      name: 'twitter:title',
+      content: 'Crochyll - ' + t('category.reader')
+    }
+  ]
+})
 </script>
 
 <template>

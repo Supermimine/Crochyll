@@ -8,6 +8,7 @@ import { useScreen } from '@/tools/appTools';
 import { Category } from '@core/enum/category';
 
 import { api } from '@/service/api';
+import { useHead } from '@unhead/vue';
 
 const { t } = useI18n()
 const { isMobile } = useScreen();
@@ -18,6 +19,20 @@ const productsFilter = await api.getProductsByCategory([Category.Amigurumi]);
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
 };
+
+useHead({
+  title: 'Crochyll - Amigurumi',
+  meta: [
+    {
+      property: 'og:title',
+      content: 'Crochyll - Amigurumi'
+    },
+    {
+      name: 'twitter:title',
+      content: 'Crochyll - Amigurumi'
+    }
+  ]
+})
 </script>
 
 

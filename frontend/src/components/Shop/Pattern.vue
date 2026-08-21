@@ -11,6 +11,7 @@ const { t } = useI18n()
 const { isMobile } = useScreen();
 import { Category } from '@core/enum/category';
 import { ref } from 'vue';
+import { useHead } from '@unhead/vue';
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
 const productsFilter = (await api.getProductsByCategory([Category.Pattern])) || [];
@@ -18,6 +19,20 @@ const productsFilter = (await api.getProductsByCategory([Category.Pattern])) || 
 const getFilteredProducts = () => {
     return searchRef.value ? searchRef.value.filteredProducts : productsFilter;
 };
+
+useHead({
+  title: 'Crochyll - ' + t('menu.pattern'),
+  meta: [
+    {
+      property: 'og:title',
+      content: 'Crochyll - ' + t('menu.pattern')
+    },
+    {
+      name: 'twitter:title',
+      content: 'Crochyll - ' + t('menu.pattern')
+    }
+  ]
+})
 </script>
 
 

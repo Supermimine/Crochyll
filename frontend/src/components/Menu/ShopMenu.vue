@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { safeStorageGet, safeStorageSet, useScreen } from '@/tools/appTools';
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router';
+
 import logo from '../Custom/Logo.vue';
 import theme from '../Custom/Theme.vue';
 import language from '../Custom/Language.vue';
 
 const { t } = useI18n()
 const { isMobile } = useScreen();
+const route = useRoute();
 
 const mobileDetailShow = ref(false);
 const savedIndex = safeStorageGet('menuIndex');
@@ -27,6 +30,25 @@ const changeSelectedIndex = (index: number) => {
   selectedIndex = index;
   safeStorageSet('menuIndex', index.toString());
 };
+
+onBeforeMount(() => {
+  const currentPath = route.path;
+
+  const exactSubMenuIndex = menus.findIndex(menu =>
+    menu.link !== '/shop' && currentPath.startsWith(menu.link)
+  );
+
+  if (exactSubMenuIndex !== -1) {
+    changeSelectedIndex(exactSubMenuIndex);
+    return;
+  }
+
+  const foundIndex: number = menus.findIndex(menu => menu.link === currentPath || currentPath === '/shop/');
+
+  if (foundIndex !== -1) {
+    changeSelectedIndex(foundIndex);
+  }
+});
 </script>
 
 <template>
@@ -157,10 +179,6 @@ ul li a.selected:not(.unSelectable) {
   margin: 10px 10px 5px 10px;
   cursor: pointer;
 }
-
-
-
-
 
 .logo {
   cursor: pointer;

@@ -10,6 +10,7 @@ import { StitchOrientation } from '@core/enum/stitchOrientation';
 import { StitchAction } from '@core/enum/stitchAction';
 import type { Row } from '@core/model/maker/row';
 import type { Pattern } from '@core/model/maker/pattern';
+import { useHead } from '@unhead/vue';
 
 const { t } = useI18n();
 const { isMobile } = useScreen();
@@ -815,6 +816,20 @@ watch(
         }
     }
 );
+
+useHead({
+  title: 'Crochyll - ' + t('category.maker'),
+  meta: [
+    {
+      property: 'og:title',
+      content: 'Crochyll - ' + t('category.maker')
+    },
+    {
+      name: 'twitter:title',
+      content: 'Crochyll - ' + t('category.maker')
+    }
+  ]
+})
 </script>
 
 <template>

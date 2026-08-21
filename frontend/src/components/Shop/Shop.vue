@@ -13,6 +13,7 @@ const { isMobile } = useScreen();
 import { ref } from 'vue';
 import { Category } from '@core/enum/category';
 import type { Product } from '@core/model/product';
+import { useHead } from '@unhead/vue';
 
 const searchRef = ref<InstanceType<typeof Searchbar> | null>(null);
 
@@ -65,6 +66,20 @@ const dynamicUrl = (item: Product) => {
 const changeSelectedIndex = (index: number) => {
     safeStorageSet('menuIndex', index.toString());
 };
+
+useHead({
+  title: 'Crochyll - ' + t('menu.offert'),
+  meta: [
+    {
+      property: 'og:title',
+      content: 'Crochyll - ' + t('menu.offert')
+    },
+    {
+      name: 'twitter:title',
+      content: 'Crochyll - ' + t('menu.offert')
+    }
+  ]
+})
 </script>
 
 
