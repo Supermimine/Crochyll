@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { CartItem } from '@core/model/cartItem';
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 const props = defineProps<{
     cart: CartItem;
@@ -19,13 +22,19 @@ const removeQuantity = () => {
     quantity.value = Math.max(1, quantity.value - 1);
     updateQuantityCart(false, props.cart);
 }
+
+const name = computed(() =>
+  props.cart.item.name[locale.value as 'fr' | 'en']
+  ?? props.cart.item.name.fr
+  ?? ''
+)
 </script>
 
 <template>
     <div class="cartItem">
         <img :src="`/img/${cart.item.image[0]}`" class="cartItemImg" :alt="cart.item.image[0]" :title="cart.item.image[0]" />
 
-        <p class="cartItemName">{{ cart.item.name }}</p>
+        <p class="cartItemName">{{ name }}</p>
 
         <div class="cartItemEnd">
             <div class="cartItemQuantity ">
