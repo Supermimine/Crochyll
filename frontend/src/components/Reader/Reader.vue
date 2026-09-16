@@ -21,7 +21,7 @@ import { getPatternGauge } from "@/tools/pdf/reader/pdfGauge";
 import { getPatternTips } from "@/tools/pdf/reader/pdfTips";
 
 import BasicMenu from "../Menu/BasicMenu.vue";
-import Counter from "./Counter.vue";
+import Counter from "../Custom/Tools/Counter.vue";
 
 import type { FilePattern } from "@core/model/filepattern";
 import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";

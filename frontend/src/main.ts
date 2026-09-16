@@ -5,6 +5,7 @@ import App from './App.vue'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import * as labsComponents from 'vuetify/labs/components'
 import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 import { router } from './router/router'
@@ -15,7 +16,10 @@ import { setLocale } from './i18n/index'
 import i18n from './i18n';
 
 const vuetify = createVuetify({
-  components,
+  components: {
+    ...components,
+    ...labsComponents
+  },
   directives,
   icons: {
     defaultSet: 'mdi',
