@@ -9,9 +9,9 @@ const props = defineProps<{
     isActive: boolean
 }>()
 
-let isWaiting = false;
 const isSpeachMode = ref<boolean>(false)
 const counter = ref(0);
+let isWaiting = false
 
 const micStream = ref<MediaStream | null>(null)
 const permissionState = ref<string>('Inconnu')
@@ -21,18 +21,10 @@ const isProcessingEvent = ref<boolean>(false)
 const addwordToDetect = t('tools.counter.add')
 const reducewordToDetect = t('tools.counter.reduce')
 
-const emit = defineEmits<{
-    (e: 'remove', id: number): void
-}>()
-
 const changeCounter = (value: number) => {
     if (counter.value + value < 0) return;
     counter.value += value;
 };
-
-const removeCounter = () => {
-    emit('remove', props.id)
-}
 
 const resetCounter = () => {
     counter.value = 0;
@@ -204,7 +196,6 @@ const stopSpeechDetection = (): void => {
     }
 }
 
-
 const textToNumbersBilingual = (text: string): number | null => {
     const clean = text.toLowerCase().trim().replace(/-/g, ' ');
 
@@ -261,7 +252,6 @@ const textToNumbersBilingual = (text: string): number | null => {
     return isNumberFound ? total + currentGroup : null;
 };
 
-
 const handleKeyDown = async (event: KeyboardEvent) => {
     if (event.code === 'Space' && props.isActive && !isWaiting) {
         event.preventDefault();
@@ -285,60 +275,43 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="box" :class="{ active: isActive }">
-        <a style="right: 10px; top: 5px; position: absolute; cursor: pointer" @click.stop="removeCounter()">
-            <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
-        </a>
+    <div>
+        <div class="px-2 text-center">
+            <h3 class="text-title-medium text-truncate w-100 ma-0 disable-text-select">
+                {{ t('reader.counter.title') }}
+            </h3>
 
-        <h4 style="margin: 15px 0;">{{ t('reader.counter.title') }}</h4>
+            <p class="text-title-large font-weight-black pa-2 line-height-none">
+                {{ counter }}
+            </p>
 
-        <p style="font-size: 1.8em; margin: 20px 0;">{{ counter }}</p>
+            <div class="d-flex justify-center w-100">
+                <v-btn class="buttonColor mx-1" variant="tonal" size="small" icon @click="toggleSpeachMode">
+                    <v-icon :icon="isSpeachMode ? 'mdi-microphone-off' : 'mdi-microphone'" size="20"></v-icon>
+                </v-btn>
 
-        <div>
-            <v-btn class="buttonColor ma-3" variant="tonal" size="medium" icon @click="toggleSpeachMode">
-                <v-icon :icon="isSpeachMode ? 'mdi-microphone-off' : 'mdi-microphone'" size="20"></v-icon>
-            </v-btn>
-
-            <v-btn class="buttonColor ma-3" variant="tonal" size="medium" icon :disabled="counter === 0"
-                @click="resetCounter">
-                <v-icon icon="mdi-refresh" size="20"></v-icon>
-            </v-btn>
+                <v-btn class="buttonColor mx-1" variant="tonal" size="small" icon :disabled="counter === 0"
+                    @click="resetCounter">
+                    <v-icon icon="mdi-refresh" size="20"></v-icon>
+                </v-btn>
+            </div>
         </div>
 
-        <div style="font-size: 1.5em; display: flex; justify-content: space-around; ">
-            <div style="border-right: 1.5px solid rgba(255,255,255,0.3); width: 50%;">
-                <v-btn style="width: 100%; border-radius: 0 0 0 5px; padding: 0;" class="buttonColorInverted"
-                    @click="changeCounter(-1)" :disabled="counter == 0">
-                    <v-icon icon="mdi-minus" size="20" class="ma-auto"></v-icon>
-                </v-btn>
-            </div>
+        <div class="d-flex w-100 mt-2" style="position: absolute; bottom: 0;">
+            <v-btn tile height="44" class="buttonColorInverted" style="width: 50%; border-radius: 0 0 0 12px;"
+                :disabled="counter === 0" @click="changeCounter(-1)">
+                <v-icon icon="mdi-minus" size="20"></v-icon>
+            </v-btn>
 
-            <div style="border-left: 1.5px solid rgba(255,255,255,0.3); width: 50%;">
-                <v-btn style="width: 100%; border-radius: 0 0 5px 0; padding: 0;" class="buttonColorInverted"
-                    @click="changeCounter(1)">
-                    <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
-                </v-btn>
-            </div>
+            <v-btn tile height="44" class="buttonColorInverted" style="width: 50%; border-radius: 0 0 12px 0;"
+                @click="changeCounter(1)">
+                <v-icon icon="mdi-plus" size="20"></v-icon>
+            </v-btn>
         </div>
     </div>
 </template>
 
+
 <style scoped>
-.box {
-    background-color: var(--dark-color);
-    border-radius: 5px;
-    border: 2px solid transparent;
-    margin: 0 0 15px 10px;
-    position: relative;
-}
 
-.box.active {
-    border-color: var(--action-color);
-}
-
-@media (max-width: 1250px) {
-    .box {
-        margin: 20px 0 5px 5px;
-    }
-}
 </style>

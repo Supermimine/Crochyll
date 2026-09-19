@@ -24,21 +24,12 @@ const selectedAction = ref<Action>(Action.Brush)
 const undoStack = ref<string[][]>([])
 const redoStack = ref<string[][]>([])
 const hasStateSavedInCurrentStroke = ref<boolean>(false)
-
-const emit = defineEmits<{
-    (e: 'remove', id: number): void
-}>()
-
-const removePixelArt = (): void => {
-    emit('remove', props.id)
-}
-
 const pixels = ref<string[]>([])
 
 const gridStyle = computed(() => ({
     display: 'grid',
-    gridTemplateColumns: `repeat(${gridSize.value}, 20px)`,
-    gridTemplateRows: `repeat(${gridSize.value}, 20px)`,
+    gridTemplateColumns: `repeat(${gridSize.value}, 14px)`,
+    gridTemplateRows: `repeat(${gridSize.value}, 14px)`,
     gap: '1px',
     cursor: 'crosshair',
     userSelect: 'none' as const
@@ -59,30 +50,31 @@ const saveState = (): void => {
 
 const undo = (): void => {
     if (undoStack.value.length === 0) return
-    
+
     redoStack.value.push([...pixels.value])
     pixels.value = undoStack.value.pop()!
 }
 
 const redo = (): void => {
     if (redoStack.value.length === 0) return
-    
+
     undoStack.value.push([...pixels.value])
     pixels.value = redoStack.value.pop()!
 }
 
 const handleKeyDown = (event: KeyboardEvent): void => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
-        event.preventDefault()
-        undo()
-    } else if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.shiftKey && event.key === 'z'))) {
-        event.preventDefault()
-        redo()
+    if (props.isActive) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+            event.preventDefault()
+            undo()
+        } else if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.shiftKey && event.key === 'z'))) {
+            event.preventDefault()
+            redo()
+        }
     }
 }
 
 const colorPixel = (index: number): void => {
-    // Sauvegarder l'état UNE SEULE FOIS au premier pixel de cette action
     if (!hasStateSavedInCurrentStroke.value && selectedAction.value !== Action.Fill) {
         saveState()
         hasStateSavedInCurrentStroke.value = true
@@ -107,7 +99,6 @@ const floodFill = (startIndex: number): void => {
 
     if (targetColor === fillColor) return
 
-    // Sauvegarder l'état AVANT le remplissage
     saveState()
     hasStateSavedInCurrentStroke.value = true
 
@@ -116,7 +107,7 @@ const floodFill = (startIndex: number): void => {
 
     while (queue.length > 0) {
         const index = queue.shift()!
-        
+
         if (visited.has(index)) continue
         visited.add(index)
 
@@ -179,96 +170,144 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="box" style="position: relative;">
-        <a style="right: 10px; top: 5px; position: absolute; cursor: pointer; z-index: 10;"
-            @click.stop="removePixelArt()">
-            <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
-        </a>
+    <div class="pixel-art-widget-wrapper d-flex flex-column justify-space-between pa-3">
+        <div class="text-subtitle-1 font-weight-bold text-center header-block">
+            Pixel Art
+        </div>
 
-        <div class="pa-4 text-center width-100">
-            <div class="text-subtitle-1 font-weight-bold mb-2">Pixel Art</div>
+        <div class="d-flex align-stretch justify-space-around flex-grow-1 w-100 main-content-row">
+            <div class="controls-sidebar d-flex flex-column align-center justify-space-between py-10">
+                <div class="picker-container" @mousedown.stop>
+                    <v-color-picker v-model="selectedColor" hide-inputs elevation="0" mode="hex"
+                        width="200"></v-color-picker>
+                </div>
 
-            <v-row>
-                <v-col cols="auto">
-                    <v-row class="align-center justify-center mb-6" no-gutters>
-                        <v-col cols="12" sm="auto" class="d-flex justify-center mb-4">
-                            <v-color-picker v-model="selectedColor" hide-inputs show-swatches elevation="0" mode="hex"
-                                width="200"></v-color-picker>
-                        </v-col>
+                <div class="tools-actions-block w-100 d-flex flex-column gap-1 align-center" @mousedown.stop>
+                    <v-text-field v-model="gridSize" label="Taille de grille" variant="outlined" density="compact"
+                        hide-details class="w-100 size-input"></v-text-field>
 
-                        <v-col cols="12" sm="auto" class="d-flex flex-column gap-2"
-                            style="max-width: 200px; width: 100%;">
-                            <v-text-field v-model="gridSize" label="Taille de grille" variant="outlined"
-                                density="compact" @update:model-value="initializeGrid"></v-text-field>
-
-                            <div>
-                                <a class="action-text" :class="{ active: selectedAction === Action.Brush }" @click="switchAction(Action.Brush)">
-                                    <v-icon icon="mdi-brush" size="24" class="mr-2"></v-icon>
-                                </a>
-                                <a class="action-text" :class="{ active: selectedAction === Action.Eraser }" @click="switchAction(Action.Eraser)">
-                                    <v-icon icon="mdi-eraser" size="24" class="mr-2"></v-icon>
-                                </a>
-                                <a class="action-text" :class="{ active: selectedAction === Action.Fill }" @click="switchAction(Action.Fill)">
-                                    <v-icon icon="mdi-format-color-fill" size="24" class="mr-2"></v-icon>
-                                </a>
-                            </div>
-
-                            <div class="d-flex gap-2" style="justify-content: center;">
-                                <v-btn variant="tonal" size="small" icon :disabled="undoStack.length === 0" @click="undo"
-                                    title="Ctrl+Z">
-                                    <v-icon icon="mdi-undo"></v-icon>
-                                </v-btn>
-                                <v-btn variant="tonal" size="small" icon :disabled="redoStack.length === 0" @click="redo"
-                                    title="Ctrl+Y">
-                                    <v-icon icon="mdi-redo"></v-icon>
-                                </v-btn>
-                            </div>
-
-                            <v-btn color="error" prepend-icon="mdi-delete" variant="flat" @click="initializeGrid"
-                                class="buttonColor">
-                                Effacer
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-
-                </v-col>
-
-                <v-col>
-                    <div class="grid-container pa-1 rounded shadow-inner" :style="gridStyle"
-                        @mousedown="startDrawing" @mouseup="stopDrawing" @mouseleave="stopDrawing">
-                        <div v-for="(color, index) in pixels" :key="index" class="pixel"
-                            :style="{ backgroundColor: color }" @mousedown.prevent="colorPixel(index)"
-                            @mouseover="drawOnHover(index)"></div>
+                    <div class="d-flex justify-center my-1 action-icons-row">
+                        <a class="action-text mx-1" :class="{ active: selectedAction === Action.Brush }"
+                            @click="switchAction(Action.Brush)">
+                            <v-icon icon="mdi-brush" size="20"></v-icon>
+                        </a>
+                        <a class="action-text mx-1" :class="{ active: selectedAction === Action.Eraser }"
+                            @click="switchAction(Action.Eraser)">
+                            <v-icon icon="mdi-eraser" size="20"></v-icon>
+                        </a>
+                        <a class="action-text mx-1" :class="{ active: selectedAction === Action.Fill }"
+                            @click="switchAction(Action.Fill)">
+                            <v-icon icon="mdi-format-color-fill" size="20"></v-icon>
+                        </a>
                     </div>
-                </v-col>
-            </v-row>
+
+                    <div class="d-flex gap-2 justify-center mb-1" @mousedown.stop>
+                        <v-btn variant="tonal" size="x-small" icon :disabled="undoStack.length === 0" @click="undo"
+                            title="Ctrl+Z">
+                            <v-icon icon="mdi-undo" size="14"></v-icon>
+                        </v-btn>
+                        <v-btn variant="tonal" size="x-small" icon :disabled="redoStack.length === 0" @click="redo"
+                            title="Ctrl+Y">
+                            <v-icon icon="mdi-redo" size="14"></v-icon>
+                        </v-btn>
+                    </div>
+
+                    <v-btn color="error" prepend-icon="mdi-delete" variant="flat" size="small" @click="initializeGrid"
+                        class="buttonColor w-100 delete-btn" @mousedown.stop>
+                        Effacer
+                    </v-btn>
+                </div>
+            </div>
+
+            <div class="canvas-area d-flex align-center justify-center">
+                <div class="grid-container pa-0 rounded shadow-inner" :style="[gridStyle, { '--grid-size': gridSize }]"
+                    @mousedown="startDrawing" @mouseup="stopDrawing" @mouseleave="stopDrawing" @mousedown.stop>
+                    <div v-for="(color, index) in pixels" :key="index" class="pixel" :style="{ backgroundColor: color }"
+                        @mousedown.prevent="colorPixel(index)" @mouseover="drawOnHover(index)"></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.box {
-    background-color: var(--dark-color);
-    border-radius: 5px;
-    border: 2px solid transparent;
-    margin: 0 0 15px 10px;
-    position: relative;
+.pixel-art-widget-wrapper {
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.header-block {
+    height: auto;
+}
+
+.main-content-row {
+    min-height: 0;
+    gap: 16px;
+}
+
+.controls-sidebar {
+    max-width: 180px;
+    width: 100%;
+    min-height: 0;
+}
+
+.picker-container {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+:deep(.v-color-picker) {
+    transform: scale(0.95);
+    transform-origin: top center;
+}
+
+.size-input :deep(.v-input__details) {
+    display: none !important;
+}
+
+.tools-actions-block {
+    width: 100%;
+}
+
+.action-icons-row {
+    gap: 12px;
+}
+
+.delete-btn {
+    text-transform: none;
+    font-size: 12px !important;
+    height: 32px !important;
+}
+
+.canvas-area {
+    flex-grow: 1;
+    min-height: 0;
+    min-width: 0;
 }
 
 .grid-container {
     display: inline-block;
     max-width: 100%;
+    max-height: 100%;
     overflow: auto;
 }
 
 .pixel {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
     transition: background-color 0.05s ease;
 }
 
 .pixel:hover {
     filter: brightness(0.9);
+}
+
+.gap-1 {
+    gap: 4px;
 }
 
 .gap-2 {
@@ -277,11 +316,5 @@ onUnmounted(() => {
 
 .active {
     color: var(--action-color);
-}
-
-@media (max-width: 1250px) {
-    .box {
-        margin: 20px 0 5px 5px;
-    }
 }
 </style>

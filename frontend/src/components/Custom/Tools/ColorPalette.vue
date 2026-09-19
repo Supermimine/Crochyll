@@ -31,14 +31,6 @@ interface HSL {
 
 type SwatchesMatrix = string[][]
 
-const emit = defineEmits<{
-    (e: 'remove', id: number): void
-}>()
-
-const removeColorPalette = (): void => {
-    emit('remove', props.id)
-}
-
 function hexToRgb(hex: string): RGB {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
     const fullHex = hex.replace(shorthandRegex, (_m, r, g, b) => r + r + g + g + b + b)
@@ -134,15 +126,7 @@ function generate603010Palette(baseColor: string): SwatchesMatrix {
         hslToHex({ h: 196, s: 84, l: 41 })
     ]
 
-    const row5 = [
-        baseColor,
-        hslToHex({ h: (hsl.h + 13) % 360, s: 57, l: 71 }),
-        hslToHex({ h: (hsl.h + 11) % 360, s: 31, l: 11 }),
-        hslToHex({ h: (hsl.h + 9) % 360, s: 43, l: 20 }),
-        hslToHex({ h: (hsl.h + 15) % 360, s: 15, l: 45 })
-    ]
-
-    return [row1, row2, row3, row4, row5]
+    return [row1, row2, row3, row4]
 }
 
 const staticPalette = ref<SwatchesMatrix>(generate603010Palette(selectedColor.value))
@@ -199,36 +183,35 @@ const matterList = computed(() =>
 </script>
 
 <template>
-    <div class="box" style="position: relative;">
-        <a style="right: 10px; top: 5px; position: absolute; cursor: pointer; z-index: 10;"
-            @click.stop="removeColorPalette()">
-            <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
-        </a>
+    <div class="palette-widget-wrapper d-flex flex-column justify-space-between pa-2">
+        <div class="px-2 text-center header-block">
+            <h3 class="text-subtitle-1 text-truncate w-100 ma-0 disable-text-select">
+                Générateur palette de couleurs
+            </h3>
+        </div>
 
-        <div class="pa-4 text-center width-100">
-            <div class="text-subtitle-1 font-weight-bold mb-4">Générateur palette de couleurs</div>
+        <div class="d-flex align-center justify-space-around flex-grow-1 w-100 main-content-row">
+            
+            <div class="input-container" @mousedown.stop>
+                <v-color-input v-model="selectedColor" color-pip pip-variant="outlined" label="Color input"
+                    variant="outlined" density="compact" hide-actions></v-color-input>
+            </div>
 
-            <v-row align="center" justify="center">
-                <v-col>
-                    <v-color-input v-model="selectedColor" color-pip pip-variant="outlined" label="Color input"
-                        variant="outlined" density="compact" hide-actions></v-color-input>
-                </v-col>
+            <div class="action-container">
+                <v-btn class="buttonColor" variant="tonal" size="small" icon @click="generatePalette()">
+                    <v-icon icon="mdi-arrow-right" size="20"></v-icon>
+                </v-btn>
+            </div>
 
-                <v-col class="d-flex justify-center">
-                    <v-btn class="buttonColor" variant="tonal" size="medium" icon @click="generatePalette()">
-                        <v-icon icon="mdi-arrow-right" size="24"></v-icon>
-                    </v-btn>
-                </v-col>
-
-                <v-col class="d-flex justify-center">
-                    <div class="palette-container">
-                        <div v-for="(row, rowIndex) in staticPalette" :key="rowIndex" class="swatches-row">
-                            <div v-for="(color) in row" :key="color" :style="{ backgroundColor: color }"
-                                class="swatch-item" :title="`Couleur : ${color}`" @click="getYarn(color)"></div>
-                        </div>
+            <div class="palette-grid-container">
+                <div class="palette-container">
+                    <div v-for="(row, rowIndex) in staticPalette" :key="rowIndex" class="swatches-row">
+                        <div v-for="(color) in row" :key="color" :style="{ backgroundColor: color }"
+                            class="swatch-item" :title="`Couleur : ${color}`" @click="getYarn(color)"></div>
                     </div>
-                </v-col>
-            </v-row>
+                </div>
+            </div>
+            
         </div>
 
         <v-dialog v-model="isModalOpen" max-width="600px">
@@ -260,49 +243,60 @@ const matterList = computed(() =>
 </template>
 
 <style scoped>
-.box {
-    background-color: var(--dark-color);
-    border-radius: 5px;
-    border: 2px solid transparent;
-    margin: 0 0 15px 10px;
-    position: relative;
+.palette-widget-wrapper {
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.header-block {
+    height: auto;
+}
+
+.main-content-row {
+    min-height: 0;
+}
+
+.input-container {
+    max-width: 170px;
+    width: 100%;
+}
+
+:deep(.v-input__details) {
+    display: none !important;
 }
 
 .palette-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
     background: rgba(255, 255, 255, 0.05);
-    padding: 12px;
-    border-radius: 6px;
+    padding: 6px;
+    border-radius: 8px;
     width: fit-content;
 }
 
 .swatches-row {
     display: flex;
-    gap: 10px;
+    gap: 4px;
 }
 
 .swatch-item {
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .swatch-item:hover {
-    transform: scale(1.15);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    transform: scale(1.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     z-index: 5;
     border-color: #ffffff;
 }
-
-@media (max-width: 1250px) {
-    .box {
-        margin: 20px 0 5px 5px;
-    }
-}
 </style>
+

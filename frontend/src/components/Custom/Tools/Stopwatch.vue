@@ -6,10 +6,6 @@ const props = defineProps<{
     isActive: boolean
 }>()
 
-const emit = defineEmits<{
-    (e: 'remove', id: number): void
-}>()
-
 interface Lap {
     id: number
     time: string
@@ -65,10 +61,6 @@ const resetTimer = (): void => {
     laps.value = []
 }
 
-const removeStopwatch = (): void => {
-    emit('remove', props.id)
-}
-
 onUnmounted(() => {
     if (timerInterval) clearInterval(timerInterval)
 })
@@ -76,16 +68,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="box" style="position: relative;">
-        <a style="right: 10px; top: 5px; position: absolute; cursor: pointer; z-index: 10;"
-            @click.stop="removeStopwatch()">
-            <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
-        </a>
+    <div>
+        <div class="px-2 text-center">
+            <h3 class="text-title-medium text-truncate w-100 ma-0 disable-text-select">
+                Chronomètre
+            </h3>
 
-        <div class="pa-4 text-center width-100">
-            <div class="text-subtitle-1 font-weight-bold mb-2">Chronomètre</div>
-
-            <div class="text-h3 font-weight-bold my-4 font-monospace">
+            <div class="text-title-large font-weight-bold my-6">
                 {{ formattedTime }}
             </div>
 
@@ -133,17 +122,5 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.box {
-    background-color: var(--dark-color);
-    border-radius: 5px;
-    border: 2px solid transparent;
-    margin: 0 0 15px 10px;
-    position: relative;
-}
 
-@media (max-width: 1250px) {
-    .box {
-        margin: 20px 0 5px 5px;
-    }
-}
 </style>
