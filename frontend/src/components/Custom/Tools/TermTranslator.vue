@@ -13,11 +13,11 @@ const termKeys = ['mr', 'ch', 'sc', 'hdc', 'dc', 'tr', 'tdr', 'slst', 'sk', 'clo
 
 const languageMap: Record<string, 'fr' | 'en' | 'uk'> = {
     'Français (FR)': 'fr',
-    'French': 'fr',
+    'French (FR)': 'fr',
     'Américaine (US)': 'en',
-    'American': 'en',
+    'American (US)': 'en',
     'Angleterre (UK)': 'uk',
-    'British': 'uk',
+    'British (UK)': 'uk',
 };
 
 const language = computed(() => [
@@ -60,15 +60,15 @@ const translateTerm = (): void => {
 <template>
     <div class="px-2 text-center">
         <h3 class="text-title-medium text-truncate w-100 ma-0 disable-text-select mb-4">
-            Traducteur de terme
+            {{ t('tools.tool.termTranslator') }}
         </h3>
 
         <v-row>
             <v-col cols="5">
-                <v-select label="Langue" v-model="selectedLanguageFrom" variant="outlined" density="compact"
+                <v-select :label="t('tools.termTranslator.language')" v-model="selectedLanguageFrom" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details :items="language">
                 </v-select>
-                <v-select label="Terme" v-model="termFrom" variant="outlined" density="compact"
+                <v-select :label="t('tools.termTranslator.term')" v-model="termFrom" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details :items="termList" item-title="title"
                     item-value="value" :disabled="selectedLanguageFrom == ''">
                 </v-select>
@@ -81,10 +81,10 @@ const translateTerm = (): void => {
             </v-col>
 
             <v-col cols="5">
-                <v-select label="Langue" v-model="selectedLanguageTo" variant="outlined" density="compact"
+                <v-select :label="t('tools.termTranslator.language')" v-model="selectedLanguageTo" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details :items="language">
                 </v-select>
-                <v-text-field label="Terme" v-model="termTo" variant="outlined" density="compact"
+                <v-text-field :label="t('tools.termTranslator.term')" v-model="termTo" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details readonly></v-text-field>
             </v-col>
         </v-row>

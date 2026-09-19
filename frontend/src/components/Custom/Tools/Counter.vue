@@ -278,7 +278,7 @@ onUnmounted(() => {
     <div>
         <div class="px-2 text-center">
             <h3 class="text-title-medium text-truncate w-100 ma-0 disable-text-select">
-                {{ t('reader.counter.title') }}
+                {{ t('tools.tool.counter') }}
             </h3>
 
             <p class="text-title-large font-weight-black pa-2 line-height-none">

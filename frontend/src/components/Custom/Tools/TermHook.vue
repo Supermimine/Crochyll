@@ -64,7 +64,6 @@ const convertSize = (): void => {
         return;
     }
 
-    // Find the size entry that matches the source value
     const sizeEntry = hookSizes.value.find(
         size => size[selectedSizeTypeFrom.value as SizeType] === selectedSizeValueFrom.value
     );
@@ -80,16 +79,16 @@ const convertSize = (): void => {
 <template>
     <div class="px-2 text-center">
         <h3 class="text-title-medium text-truncate w-100 ma-0 disable-text-select mb-4">
-            Convertisseur taille crochet
+            {{ t('tools.tool.termHook') }}
         </h3>
 
         <v-row>
             <v-col cols="5">
-                <v-select label="Type de taille" v-model="selectedSizeTypeFrom" variant="outlined" density="compact"
+                <v-select :label="t('tools.termHook.sizeType')" v-model="selectedSizeTypeFrom" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details :items="sizeOptions" item-title="title"
                     item-value="value">
                 </v-select>
-                <v-select label="Taille" v-model="selectedSizeValueFrom" variant="outlined" density="compact"
+                <v-select :label="t('tools.termHook.size')" v-model="selectedSizeValueFrom" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details :items="sizeListFrom" item-title="title"
                     item-value="value" :disabled="selectedSizeTypeFrom == ''">
                 </v-select>
@@ -102,11 +101,11 @@ const convertSize = (): void => {
             </v-col>
 
             <v-col cols="5">
-                <v-select label="Type de taille" v-model="selectedSizeTypeTo" variant="outlined" density="compact"
+                <v-select :label="t('tools.termHook.sizeType')" v-model="selectedSizeTypeTo" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details :items="sizeOptions" item-title="title"
                     item-value="value">
                 </v-select>
-                <v-text-field label="Taille" v-model="selectedSizeValueTo" variant="outlined" density="compact"
+                <v-text-field :label="t('tools.termHook.size')" v-model="selectedSizeValueTo" variant="outlined" density="compact"
                     style="margin: 10px; border-radius: 8px;" hide-details readonly></v-text-field>
             </v-col>
         </v-row>

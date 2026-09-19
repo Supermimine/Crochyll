@@ -186,14 +186,14 @@ const matterList = computed(() =>
     <div class="palette-widget-wrapper d-flex flex-column justify-space-between pa-2">
         <div class="px-2 text-center header-block">
             <h3 class="text-subtitle-1 text-truncate w-100 ma-0 disable-text-select">
-                Générateur palette de couleurs
+                {{ t('tools.tool.colorPalette') }}
             </h3>
         </div>
 
         <div class="d-flex align-center justify-space-around flex-grow-1 w-100 main-content-row">
             
             <div class="input-container" @mousedown.stop>
-                <v-color-input v-model="selectedColor" color-pip pip-variant="outlined" label="Color input"
+                <v-color-input v-model="selectedColor" color-pip pip-variant="outlined" :label="t('tools.colorPalette.color')"
                     variant="outlined" density="compact" hide-actions></v-color-input>
             </div>
 
@@ -217,7 +217,7 @@ const matterList = computed(() =>
         <v-dialog v-model="isModalOpen" max-width="600px">
             <v-card class="pa-4" style="background-color: var(--main-color);">
                 <v-card-title class="d-flex align-center justify-space-between border-b pb-2">
-                    Laine ayant la couleur la plus proche de {{ selectedSwatchColor }} :
+                    {{ t('tools.colorPalette.closest') }} {{ selectedSwatchColor }} :
                 </v-card-title>
                 <v-card-text>
                     <v-select v-model="selectedMatter" :items="matterList" density="compact" variant="outlined"
@@ -234,7 +234,7 @@ const matterList = computed(() =>
                         </div>
                     </div>
                     <div v-else>
-                        Aucune correspondance de fil trouvée.
+                        {{ t('tools.colorPalette.empty') }}
                     </div>
                 </v-card-text>
             </v-card>

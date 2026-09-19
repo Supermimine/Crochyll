@@ -122,6 +122,33 @@
                 { "mm": "9.00", "us": "M/N-13", "uk": "00" },
                 { "mm": "10.00", "us": "N/P-15", "uk": "000" }
             ]
+        },
+        "title": "Outils",
+        "addTool": "Ajouter un outil",
+        "tool": {
+            "counter": "Compteur",
+            "stopwatch": "Chronomètre",
+            "termTranslator": "Traducteur de terme",
+            "termHook": "Convertisseur taille crochet",
+            "pixelArt": "Pixel art",
+            "colorPalette": "Générateur palette de couleurs"
+        },
+        "colorPalette": {
+            "closest": "Laine ayant la couleur la plus proche de",
+            "empty": "Aucune correspondance de fil trouvée.",
+            "color": "Couleur"
+        },
+        "pixelArt": {
+            "gridSize": "Taille de grille",
+            "clean": "Effacer"
+        },
+        "termHook": {
+            "sizeType": "Type de taille",
+            "size": "Taille"
+        },
+        "termTranslator": {
+            "language": "Langue",
+            "term": "Terme"
         }
     }
 }

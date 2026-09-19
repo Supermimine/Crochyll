@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
     id: number,
@@ -71,7 +74,7 @@ onUnmounted(() => {
     <div>
         <div class="px-2 text-center">
             <h3 class="text-title-medium text-truncate w-100 ma-0 disable-text-select">
-                Chronomètre
+                {{ t('tools.tool.stopwatch') }}
             </h3>
 
             <div class="text-title-large font-weight-bold my-6">
@@ -99,7 +102,6 @@ onUnmounted(() => {
                     </v-btn>
                 </v-col>
             </v-row>
-
 
             <v-expand-transition>
                 <v-card v-if="laps.length > 0" class="mt-3" variant="outlined" max-height="120">

@@ -5,9 +5,9 @@
             "reduce": "reduce"
         },
         "language": {
-            "fr": "French",
-            "en": "American",
-            "uk": "British"
+            "fr": "French (FR)",
+            "en": "American (US)",
+            "uk": "British (UK)"
         },
         "term": {
             "fr": {
@@ -116,6 +116,33 @@
                 { "mm": "9.00", "us": "M/N-13", "uk": "00" },
                 { "mm": "10.00", "us": "N/P-15", "uk": "000" }
             ]
+        },
+        "title": "Tools",
+        "addTool": "Add tool",
+        "tool": {
+            "counter": "Counter",
+            "stopwatch": "Stopwatch",
+            "termTranslator": "Term Translator",
+            "termHook": "Term Hook",
+            "pixelArt": "Pixel Art",
+            "colorPalette": "Color Palette"
+        },
+        "colorPalette": {
+            "closest": "Yarn with the closest color to",
+            "empty": "No yarn match found.",
+            "color": "Color"
+        },
+        "pixelArt": {
+            "gridSize": "Grid size",
+            "clean": "Clean"
+        },
+        "termHook": {
+            "sizeType": "Size type",
+            "size": "Size"
+        },
+        "termTranslator": {
+            "language": "Language",
+            "term": "Term"
         }
     }
 }

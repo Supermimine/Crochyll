@@ -217,22 +217,22 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
   <BasicMenu />
 
   <div class="d-flex" style="justify-content: center;">
-    <h2 class="mt-0">Outils</h2>
+    <h2 class="mt-0">{{ t('tools.title') }}</h2>
   </div>
 
   <v-container fluid class="fill-screen pa-2 disable-text-select" @contextmenu.prevent>
     <v-menu v-model="menuShow" :style="menuStyle" :close-on-content-click="true" class="disable-text-select">
       <v-list density="compact">
         <v-list-subheader class="text-uppercase font-weight-bold text-grey-darken-1">
-          Ajouter un outil
+          {{ t('tools.addTool') }}
         </v-list-subheader>
         <v-divider></v-divider>
-        <v-list-item title="Counter" @click="addTools(toolsType.Counter)"></v-list-item>
-        <v-list-item title="Stopwatch" @click="addTools(toolsType.Stopwatch)"></v-list-item>
-        <v-list-item title="TermTranslator" @click="addTools(toolsType.TermTranslator)"></v-list-item>
-        <v-list-item title="TermHook" @click="addTools(toolsType.TermHook)"></v-list-item>
-        <v-list-item title="PixelArt" @click="addTools(toolsType.PixelArt)"></v-list-item>
-        <v-list-item title="ColorPalette" @click="addTools(toolsType.ColorPalette)"></v-list-item>
+        <v-list-item :title="t('tools.tool.counter')" @click="addTools(toolsType.Counter)"></v-list-item>
+        <v-list-item :title="t('tools.tool.stopwatch')" @click="addTools(toolsType.Stopwatch)"></v-list-item>
+        <v-list-item :title="t('tools.tool.termTranslator')" @click="addTools(toolsType.TermTranslator)"></v-list-item>
+        <v-list-item :title="t('tools.tool.termHook')" @click="addTools(toolsType.TermHook)"></v-list-item>
+        <v-list-item :title="t('tools.tool.pixelArt')" @click="addTools(toolsType.PixelArt)"></v-list-item>
+        <v-list-item :title="t('tools.tool.colorPalette')" @click="addTools(toolsType.ColorPalette)"></v-list-item>
       </v-list>
     </v-menu>
 

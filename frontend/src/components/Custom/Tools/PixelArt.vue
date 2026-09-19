@@ -172,7 +172,7 @@ onUnmounted(() => {
 <template>
     <div class="pixel-art-widget-wrapper d-flex flex-column justify-space-between pa-3">
         <div class="text-subtitle-1 font-weight-bold text-center header-block">
-            Pixel Art
+            {{ t('tools.tool.pixelArt') }}
         </div>
 
         <div class="d-flex align-stretch justify-space-around flex-grow-1 w-100 main-content-row">
@@ -183,7 +183,7 @@ onUnmounted(() => {
                 </div>
 
                 <div class="tools-actions-block w-100 d-flex flex-column gap-1 align-center" @mousedown.stop>
-                    <v-text-field v-model="gridSize" label="Taille de grille" variant="outlined" density="compact"
+                    <v-text-field v-model="gridSize" :label="t('tools.pixelArt.gridSize')" variant="outlined" density="compact"
                         hide-details class="w-100 size-input"></v-text-field>
 
                     <div class="d-flex justify-center my-1 action-icons-row">
@@ -214,7 +214,7 @@ onUnmounted(() => {
 
                     <v-btn color="error" prepend-icon="mdi-delete" variant="flat" size="small" @click="initializeGrid"
                         class="buttonColor w-100 delete-btn" @mousedown.stop>
-                        Effacer
+                        {{ t('tools.pixelArt.clean') }}
                     </v-btn>
                 </div>
             </div>
