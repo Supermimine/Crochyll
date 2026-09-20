@@ -23,12 +23,15 @@ const filteredProducts = computed(() => {
     return props.items.filter(product => {
         if (!product || !product.name) return false;
 
-        const productName = product.name
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+        const nameFr = product.name.fr
+            ? product.name.fr.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            : "";
 
-        if (productName.includes(query)) return true;
+        const nameEn = product.name.en
+            ? product.name.en.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            : "";
+
+        if (nameFr.includes(query) || nameEn.includes(query)) return true;
 
         if (product.keywords && Array.isArray(product.keywords)) {
             return product.keywords.some(keyword => {

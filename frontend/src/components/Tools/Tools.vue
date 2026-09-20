@@ -4,6 +4,9 @@ import { computed, ref, type CSSProperties } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { useHead } from "@unhead/vue";
 
+import type { tool } from "@core/model/tool";
+import { toolsType } from "@core/enum/toolsType";
+
 const { t } = useI18n()
 
 import ToolContainer from '../Custom/Tools/ToolContainer.vue';
@@ -21,15 +24,6 @@ useHead(() => ({
     { name: 'twitter:title', content: 'Crochyll - ' + t('category.tools') }
   ]
 }))
-
-const enum toolsType { Counter, Stopwatch, TermTranslator, TermHook, PixelArt, ColorPalette }
-interface tool {
-  id: number,
-  type: toolsType,
-  slotIndex: number,
-  w: number,
-  h: number
-}
 
 const menuShow = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });

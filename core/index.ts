@@ -10,6 +10,7 @@ export * from "./enum/stitchOrientation";
 export * from "./enum/stitchType";
 export * from "./enum/typeMaking";
 export * from "./enum/stateProject";
+export * from "./enum/toolsType";
 
 //Models
 export * from "./model/maker/pattern";
@@ -26,3 +27,4 @@ export * from "./model/email/emailRequest";
 export * from "./model/promo";
 export * from "./model/myProject/yarn";
 export * from "./model/myProject/project";
+export * from "./model/tool";

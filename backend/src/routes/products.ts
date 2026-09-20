@@ -102,7 +102,7 @@ const getProducts = (): Product[] => {
                 Matter.Bamboo,
                 Matter.Cotton
             ],
-            maintenance: [ Maintenance.Washable, Maintenance.Dryer, Maintenance.Uniron ],
+            maintenance: [Maintenance.Washable, Maintenance.Dryer, Maintenance.Uniron],
             measure: "26 x 60 x 1 cm",
             weight: 0,
             keywords: ["serviette", "cheveux", "accessoire", "mode", "léger", "eaux", "hygiène", "douche", "bain"],
@@ -147,12 +147,12 @@ const getProducts = (): Product[] => {
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.WolfSoph,
-            size: [ Size.S, Size.M, Size.L],
+            size: [Size.S, Size.M, Size.L],
             shade: ["000-003", "000-004", "000-005", "000-006", "000-007", "000-008", "000-009", "000-010", "000-011", "000-012", "000-013", "000-014", "000-015", "000-016", "000-017", "000-018", "000-019", "000-020", "000-021", "000-022", "000-023", "000-024", "000-025"],
             matter: [
                 Matter.Acrylic
             ],
-            maintenance: [ Maintenance.HandWash ],
+            maintenance: [Maintenance.HandWash],
             measure: "141 x 62 x 2 cm",
             weight: 0,
             keywords: ["chandail", "vêtement", "léger", "chaud", "veste", "manche longue"],
@@ -360,8 +360,8 @@ const getProducts = (): Product[] => {
             price: [29.99],
             category: Category.Amigurumi,
             description: {
-                fr: "TODO",
-                en: "TODO"
+                fr: "Ne vous fiez pas aux apparences, ce petit serpent en peluche est tout sauf effrayant ! Entièrement crocheté à la main avec soin, il adore s'enrouler partout pour recevoir des câlins. Doux, coloré et super attachant, c'est le cadeau original parfait pour surprendre un proche ou pour ajouter une touche rigolote à votre collection ;D.",
+                en: "Don't let appearances fool you—this little plush snake is anything but scary! Entirely handcrafted with care, it loves to curl up anywhere for cuddles. Soft, colorful, and super endearing, it's the perfect original gift to surprise a loved one or to add a funny touch to your own collection ;D."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -674,7 +674,7 @@ const getProducts = (): Product[] => {
                         }
                     ]
                 },
-                                {
+                {
                     compagny: "Yarnspirations",
                     name: "Bernat Prenium",
                     size: SizeWool.Medium,
@@ -793,7 +793,7 @@ const getProducts = (): Product[] => {
             category: Category.Amigurumi,
             description: {
                 fr: "Cette petit souris sur 2 pattes avec sa long queue, peut prendre plusieurs position et est parfaites pour les situations comiques ou pour les câlins.",
-                en: "TODO"
+                en: "This little two-legged mouse with its long tail can strike various poses and is perfect for comic situations or for cuddling."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -849,7 +849,7 @@ const getProducts = (): Product[] => {
             category: Category.Amigurumi,
             description: {
                 fr: "Cette raie manta en peluche est parfaite pour les amateurs d'animaux marins et les collectionneurs d'amigurumi.",
-                en: "TODO"
+                en: "This plush manta ray is perfect for marine animal enthusiasts and amigurumi collectors."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -906,8 +906,8 @@ const getProducts = (): Product[] => {
             price: [74.99],
             category: Category.Amigurumi,
             description: {
-                fr: "TODO",
-                en: "TODO"
+                fr: "Partez à l'aventure sous-marine avec ce magnifique requin-baleine en crochet ! Malgré sa grande taille dans l'océan, cette version miniature en peluche est un concentré de douceur et de gentillesse. Fabriqué avec soin, il est idéal pour les amateurs du monde marin et parfait pour décorer une chambre ou servir de compagnon de dodo ;D.",
+                en: "Embark on an underwater adventure with this beautiful crochet whale shark! Despite its large size in the ocean, this miniature plush version is packed with softness and kindness. Carefully crafted, it's ideal for marine life lovers and perfect for decorating a bedroom or becoming a bedtime companion ;D."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -970,8 +970,8 @@ const getProducts = (): Product[] => {
             price: [40.00],
             category: Category.Amigurumi,
             description: {
-                fr: "TODO",
-                en: "TODO"
+                fr: "Ce petit gnome en peluche est prêt à apporter une touche de magie et de bonheur dans votre maison. Avec son grand chapeau pointu et sa barbe toute douce, cette créature en crochet est tout simplement irrésistible. C’est le compagnon idéal pour décorer une étagère ou pour offrir un cadeau unique plein de personnalité ;D.",
+                en: "This little plush gnome is ready to bring a touch of magic and happiness to your home. With its big pointed hat and super soft beard, this crochet creature is simply irresistible. It’s the ideal companion to decorate a shelf or to give as a unique gift full of personality ;D."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -1041,8 +1041,8 @@ const getProducts = (): Product[] => {
             price: [89.99],
             category: Category.Amigurumi,
             description: {
-                fr: "TODO",
-                en: "TODO"
+                fr: "Avec ses tentacules rigolotes et ses grands yeux tendres, cette petite pieuvre en peluche va faire chavirer votre cœur ! Faite au crochet avec beaucoup d'amour, elle est incroyablement douce et ses bras sont parfaits pour être attrapés par les petites mains. Un cadeau charmant et réconfortant pour les enfants... ou pour vous-même ;D.",
+                en: "With its funny tentacles and big, tender eyes, this little plush octopus will melt your heart! Crocheted with lots of love, it is incredibly soft and its arms are perfect for little hands to hold. A charming and comforting gift for children... or for yourself ;D."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -1102,7 +1102,7 @@ const getProducts = (): Product[] => {
             category: Category.AccessoiresAmigurumi,
             description: {
                 fr: "Petite couverture qui pourra accompagner vos peluche partout, ainsi que les abbriller la nuit. Cette accessoire est parfait pour les amigurumies qui ont les mains jointes.",
-                en: "TODO"
+                en: "A small blanket that can accompany your stuffed toys wherever they go and keep them covered at night. This accessory is perfect for amigurumi with joined hands."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -1134,7 +1134,7 @@ const getProducts = (): Product[] => {
             category: Category.AccessoiresAmigurumi,
             description: {
                 fr: "3 petite tige de bambou qui pourrais ressortir et accompagner vos animamaux en crochet. Cette assesoire naturel est idéal pour rendre une peluche unique et avec un air réaliste.",
-                en: "TODO"
+                en: "A small bamboo stem that can be attached to your crocheted animals. This natural accessory is perfect for giving a plush toy a unique, realistic look."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,
@@ -1166,8 +1166,8 @@ const getProducts = (): Product[] => {
             price: [15.00],
             category: Category.AccessoiresAmigurumi,
             description: {
-                fr: "TODO",
-                en: "TODO"
+                fr: "Qui a dit que le fromage ne pouvait pas être mignon ? Craquez pour cette adorable part de fromage en peluche faite au crochet. Avec son design original et sa texture ultra douce, elle apporte une touche d'humour et d'originalité à votre décor. Le cadeau parfait pour les gourmands et les amateurs d'objets insolites ;D.",
+                en: "Who said cheese couldn't be cute? Fall for this adorable slice of plush cheese made with crochet. With its original design and ultra-soft texture, it brings a touch of humor and uniqueness to your decor. The perfect gift for foodies and lovers of quirky items ;D."
             },
             typeMaking: TypeMaking.Crochet,
             creator: Creator.Supermimine,

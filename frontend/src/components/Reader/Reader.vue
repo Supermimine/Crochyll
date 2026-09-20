@@ -21,7 +21,8 @@ import { getPatternGauge } from "@/tools/pdf/reader/pdfGauge";
 import { getPatternTips } from "@/tools/pdf/reader/pdfTips";
 
 import BasicMenu from "../Menu/BasicMenu.vue";
-import Counter from "../Custom/Tools/Counter.vue";
+import ToolContainer from '@/components/Custom/Tools/ToolContainer.vue'
+import Counter from '@/components/Custom/Tools/Counter.vue'
 
 import type { FilePattern } from "@core/model/filepattern";
 import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";
@@ -376,18 +377,17 @@ useHead(() => ({
               <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
             </a>
 
-            <div class="reader-text"
-              style="text-align: left; white-space: pre-line; max-height: 90%; overflow-y: auto;"
+            <div class="reader-text" style="text-align: left; white-space: pre-line; max-height: 90%; overflow-y: auto;"
               v-html="sanitizedSection"></div>
 
             <div class="btnSection">
               <v-btn class="buttonOutside arrow" style="margin-left: auto; margin-right: 5px" @click="changeState(-1)"
                 :disabled="selectedFile?.state == 0">
-                -
+                <v-icon icon="mdi-undo" size="14"></v-icon>
               </v-btn>
               <v-btn class="buttonOutside arrow" style="margin-right: auto; margin-left: 5px" @click="changeState(1)"
                 :disabled="selectedFile && maxState !== null ? selectedFile.state >= maxState : false">
-                +
+                <v-icon icon="mdi-redo" size="14"></v-icon>
               </v-btn>
             </div>
           </span>
@@ -396,14 +396,19 @@ useHead(() => ({
         <!-- Tools -->
         <div class="toolSection">
           <!--Compteur-->
-          <div v-for="counter in counters" :key="counter.id" class="tool">
-            <Counter :id="counter.id" :isActive="activeCounterId === counter.id" @click="setActiveCounter(counter.id)"
-              @remove="removeCounter" />
+          <div class="tools-grid">
+            <div v-for="counter in counters" :key="counter.id" class="tool">
+              <ToolContainer :id="counter.id" :isActive="activeCounterId === counter.id" :widthSlots="1"
+                :heightSlots="1" :slotIndex="1" @click.capture="setActiveCounter(counter.id)" @remove="removeCounter"
+                class="counter">
+                <component :is="Counter" :id="counter.id" :isActive="activeCounterId === counter.id" />
+              </ToolContainer>
+            </div>
           </div>
 
           <div v-if="showAddButton" class="tool">
             <v-btn class="buttonColor" @click="addCounter"
-              style="margin: auto; background-color: var(--dark-color);height: 45px;width: 45px;border-radius: 50px; margin-top: 100px; padding: 8px;">
+              style="margin: auto; background-color: var(--dark-color);height: 65px;width: 45px;border-radius: 50px; margin-top: 100px; padding: 8px;">
               <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
             </v-btn>
           </div>
@@ -534,6 +539,11 @@ useHead(() => ({
 
 .tool {
   width: 100%;
+}
+
+.counter {
+  min-height: 180px;
+  margin: 0 15px 15px 15px;
 }
 
 @media (max-width: 1250px) {
