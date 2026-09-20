@@ -111,17 +111,14 @@ const postalValid = computed(() => {
   const country = addressModel.value.country
   const postalCode = addressModel.value.postalCode ?? ""
 
-  // Si le pays n'est pas dans notre liste de validations, accepter n'importe quel format
   if (!postalValidationRules[country])
     return true
 
   const rule = postalValidationRules[country]
 
-  // Si le code postal est vide et non requis, accepter
   if (!postalCode && !rule.required)
     return true
 
-  // Sinon, valider le format
   return rule.regex.test(postalCode)
 
 })

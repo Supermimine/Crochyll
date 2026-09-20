@@ -75,7 +75,6 @@ const openContextMenu = (event: MouseEvent, slotIndex: number) => {
   menuShow.value = true
 }
 
-
 const addTools = (tool: toolsType) => {
   if (selectedSlotIndex.value === null) return
 

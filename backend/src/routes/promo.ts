@@ -5,9 +5,10 @@ import { validatePromoCode } from '../security';
 
 const router = Router();
 
+// Format promo : {code: "", description: "", discount: 1, expiresAt: new Date("01-01-0001")}
 const getPromoCodes = (): Promo[] => {
     return [
-
+        
     ];
 };
 
@@ -28,7 +29,7 @@ router.post('/promoCodes/check', (req: Request, res: Response) => {
         }
 
         const promoCodes = getPromoCodes();
-        const foundPromo = promoCodes.find((p) => p.code === cleanCode);
+        const foundPromo = promoCodes.find((p) => p.code.toLocaleUpperCase() === cleanCode);
 
         if (!foundPromo) {
             return res.status(404).json({

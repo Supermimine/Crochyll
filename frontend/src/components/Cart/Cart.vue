@@ -4,17 +4,15 @@ import ShopMenu from '../Menu/ShopMenu.vue';
 import CartItem from './CartItem.vue';
 import Paypal from '@/components/Custom/Paypal.vue';
 import AddressVue from '@/components/Cart/Address.vue';
+import { queueLoad } from '../../data/queueLoad';
 import { useI18n } from 'vue-i18n'
 
 import { api } from '@/service/api';
-
-const { t } = useI18n()
-
 import type { Address } from '@core/model/address';
-import type { Promo } from '@core';
-
 import { calculateShipping } from '@/service/useShipping';
 import { useCart } from '@/service/useCart';
+
+const { t } = useI18n()
 const { carts } = useCart();
 
 const paypalRef = ref<InstanceType<typeof Paypal> | null>(null);
@@ -23,6 +21,7 @@ const addressRef = ref<InstanceType<typeof AddressVue> | null>(null);
 const addressSelected = ref<Address | null>(null);
 const promoCode = ref<string>("");
 const discount = ref<number>(0);
+const promoError = ref("");
 
 const totalPrice = computed(() => {
     return carts.value
@@ -45,12 +44,18 @@ const applyPromoCode = async () => {
     const inputCode = promoCode.value.trim();
     if (!inputCode) return;
 
-    const data: { isValid: boolean; discount: number } = (await api.checkPromoCode(inputCode)).data;
+    const response = await api.checkPromoCode(inputCode);
+    const data: { isValid: boolean; discount: number } = response.data;
+
+    promoCode.value = "";
+
     if (data && data.isValid) {
         discount.value = data.discount;
-        promoCode.value = "";
+    } else {
+        promoError.value = t('cart.promoError');
     }
-}
+};
+
 
 const shipping = computed(() => {
     let price = 0
@@ -133,13 +138,14 @@ const confirm = async () => {
                         v-if="addressSelected.address2 != ''">-</span>{{ addressSelected.address1 }} {{
                             addressSelected.city }}) </span>
                 <a class="action-text-inverted" style="font-size: 12px;" @click="addressRef?.open()">{{ t('button.edit')
-                }}</a>
+                    }}</a>
             </div>
 
             <div style="margin-top: 20px;">
                 <div style="display: flex;">
                     <v-text-field style="width: 60%;" v-model="promoCode" :label="t('cart.promoCode')"
-                        variant="outlined" density="compact" hideDetails maxlength="36" />
+                        variant="outlined" density="compact" hide-details="auto" maxlength="36" :error="!!promoError"
+                        :error-messages="promoError" @update:model-value="promoError = ''"  />
                     <v-btn class="buttonColor" style="width: 40%; margin-left: 10px;" @click="applyPromoCode">{{
                         t('button.apply') }}</v-btn>
                 </div>
@@ -155,8 +161,13 @@ const confirm = async () => {
                 <p>${{ totalPriceCart }}</p>
             </div>
 
+            <div class="d-flex disable-text-select" style="margin-top: 50px; justify-content: center;">
+                <p style="margin-right: 10px; font-weight: normal;">Indice d'attente:</p>
+                <div style="height: 20px; width: 20px; border-radius: 20px; margin-top: auto; margin-bottom: auto;"
+                    :style="{ backgroundColor: queueLoad.color }"></div>
+            </div>
             <v-btn :disabled="carts.length === 0 || addressSelected == null" class="buttonColor"
-                style="width: 100%; margin: 2px; margin-top: 50px;" @click="confirm()">
+                style="width: 100%; margin: 2px;" @click="confirm()">
                 {{ t('cart.placeOrder') }}
             </v-btn>
         </div>

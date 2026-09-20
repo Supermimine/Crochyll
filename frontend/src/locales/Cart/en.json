@@ -6,6 +6,7 @@
         "totalPrice": "Total Price",
         "placeOrder": "Place order",
         "promoCode": "Promo Code",
+        "promoError": "Invalid promo code.",
         "item": "items"
     }
 }
