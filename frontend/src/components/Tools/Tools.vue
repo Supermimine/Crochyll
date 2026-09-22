@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BasicMenu from '../Menu/BasicMenu.vue';
-import { computed, ref, type CSSProperties } from 'vue';
+import { computed, onMounted, ref, watch, type CSSProperties } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { useHead } from "@unhead/vue";
 
@@ -51,9 +51,51 @@ const toolSize: Record<toolsType, { w: number; h: number }> = {
   [toolsType.ColorPalette]: { w: 2, h: 1 }
 }
 
+const STORAGE_KEY = "tool";
+
 const lstTools = ref<tool[]>([])
 const activeToolId = ref<number | null>(null)
 const selectedSlotIndex = ref<number | null>(null)
+const toolsState = ref<Record<number, any>>({});
+
+onMounted(() => {
+  const savedData = localStorage.getItem(STORAGE_KEY);
+  if (savedData) {
+    try {
+      const parsed = JSON.parse(savedData);
+      if (parsed && Array.isArray(parsed.tools)) {
+        lstTools.value = parsed.tools;
+        toolsState.value = parsed.states || {};
+      } else if (Array.isArray(parsed)) {
+        lstTools.value = parsed;
+      }
+
+      if (lstTools.value.length > 0) {
+        activeToolId.value = lstTools.value[0].id;
+      }
+    } catch (e) {
+      console.error("Erreur lors de la lecture du LocalStorage:", e);
+    }
+  }
+});
+
+watch(
+  [lstTools, toolsState],
+  ([newTools, newStates]) => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ tools: newTools, states: newStates })
+    );
+  },
+  { deep: true }
+);
+
+const getDefaultState = (type: toolsType) => {
+  if (type === toolsType.Counter) return 0;
+  if (type === toolsType.Stopwatch) return 0;
+  if (type === toolsType.PixelArt) return [];
+  return undefined;
+};
 
 const openContextMenu = (event: MouseEvent, slotIndex: number) => {
   const menuEstimatedHeight = 280
@@ -89,6 +131,11 @@ const addTools = (tool: toolsType) => {
     h: defaultSize.h
   })
 
+  const initialState = getDefaultState(tool);
+  if (initialState !== undefined) {
+    toolsState.value[id] = initialState;
+  }
+
   if (activeToolId.value === null) {
     activeToolId.value = id
   }
@@ -98,6 +145,7 @@ const addTools = (tool: toolsType) => {
 
 const removeTool = (idToRemove: number) => {
   lstTools.value = lstTools.value.filter(tool => tool.id !== idToRemove)
+  delete toolsState.value[idToRemove];
 
   if (activeToolId.value === idToRemove) {
     activeToolId.value = lstTools.value[0]?.id || null
@@ -235,7 +283,8 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
           :slotIndex="tool.slotIndex" @click.capture="activeToolId = tool.id" @remove="removeTool"
           @update-size="(sizeData) => handleResize(tool, sizeData)"
           @update-position="(targetSlot: number) => handleMove(tool, targetSlot)">
-          <component :is="componentMap[tool.type]" :id="tool.id" :isActive="tool.id === activeToolId" />
+          <component :is="componentMap[tool.type]" :id="tool.id" :isActive="tool.id === activeToolId"
+            :model-value="toolsState[tool.id]" @update:model-value="(val: any) => toolsState[tool.id] = val" />
         </ToolContainer>
       </div>
 

@@ -6,8 +6,11 @@ const { t } = useI18n();
 
 const props = defineProps<{
     id: number,
-    isActive: boolean
+    isActive: boolean,
+    modelValue?: string[]
 }>()
+
+const emit = defineEmits(['update:modelValue'])
 
 const gridSize = ref<number>(25)
 const selectedColor = ref<string>('#000000')
@@ -26,10 +29,12 @@ const redoStack = ref<string[][]>([])
 const hasStateSavedInCurrentStroke = ref<boolean>(false)
 const pixels = ref<string[]>([])
 
+let isInitialLoad = true
+
 const gridStyle = computed(() => {
     const sizeInPx = `${gridSize.value * 14 + (gridSize.value - 1)}px`
 
-  return {
+    return {
         display: 'grid',
         gridTemplateColumns: `repeat(${gridSize.value}, 14px)`,
         gridTemplateRows: `repeat(${gridSize.value}, 14px)`,
@@ -47,6 +52,11 @@ const initializeGrid = (): void => {
     undoStack.value = []
     redoStack.value = []
     hasStateSavedInCurrentStroke.value = false
+    syncWithParent()
+}
+
+const syncWithParent = () => {
+    emit('update:modelValue', [...pixels.value])
 }
 
 const saveState = (): void => {
@@ -59,6 +69,7 @@ const undo = (): void => {
 
     redoStack.value.push([...pixels.value])
     pixels.value = undoStack.value.pop()!
+    syncWithParent()
 }
 
 const redo = (): void => {
@@ -66,6 +77,7 @@ const redo = (): void => {
 
     undoStack.value.push([...pixels.value])
     pixels.value = redoStack.value.pop()!
+    syncWithParent()
 }
 
 const handleKeyDown = (event: KeyboardEvent): void => {
@@ -144,6 +156,7 @@ const floodFill = (startIndex: number): void => {
             if (!visited.has(bottomIndex)) queue.push(bottomIndex)
         }
     }
+    syncWithParent()
 }
 
 const drawOnHover = (index: number): void => {
@@ -157,6 +170,9 @@ const startDrawing = (): void => {
 }
 
 const stopDrawing = (): void => {
+    if (isDrawing.value) {
+        syncWithParent()
+    }
     isDrawing.value = false
     hasStateSavedInCurrentStroke.value = false
 }
@@ -166,7 +182,13 @@ const switchAction = (action: Action): void => {
 }
 
 onMounted(() => {
-    initializeGrid()
+    if (props.modelValue && props.modelValue.length > 0) {
+        pixels.value = [...props.modelValue]
+        gridSize.value = Math.sqrt(props.modelValue.length)
+    } else {
+        initializeGrid()
+    }
+    isInitialLoad = false
     window.addEventListener('keydown', handleKeyDown)
 })
 
@@ -175,8 +197,10 @@ onUnmounted(() => {
 })
 
 watch(gridSize, () => {
-    initializeGrid()
-}, { immediate: true }) 
+    if (!isInitialLoad) {
+        initializeGrid()
+    }
+}) 
 </script>
 
 <template>

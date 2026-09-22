@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { sleep, language } from "@/tools/appTools";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const props = defineProps<{
     id: number,
-    isActive: boolean
+    isActive: boolean,
+    modelValue?: number
 }>()
 
+const emit = defineEmits(['update:modelValue'])
+
 const isSpeachMode = ref<boolean>(false)
-const counter = ref(0);
 let isWaiting = false
 
 const micStream = ref<MediaStream | null>(null)
@@ -20,6 +22,11 @@ const recognition = ref<any>(null)
 const isProcessingEvent = ref<boolean>(false)
 const addwordToDetect = t('tools.counter.add')
 const reducewordToDetect = t('tools.counter.reduce')
+
+const counter = computed({
+    get: () => props.modelValue ?? 0,
+    set: (val: number) => emit('update:modelValue', val)
+})
 
 const changeCounter = (value: number) => {
     if (counter.value + value < 0) return;
@@ -70,7 +77,6 @@ const toggleSpeachMode = async () => {
     if (isSpeachMode.value) {
 
         if (micStream.value) {
-            console.log("Le microphone est déjà actif.")
             startSpeechDetection()
             return
         }

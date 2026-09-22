@@ -1,18 +1,28 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-
-const props = defineProps<{
-    id: number,
-    isActive: boolean
-}>()
 
 interface Lap {
     id: number
     time: string
 }
+
+interface StopwatchState {
+    elapsedTime: number
+    isRunning: boolean
+    startTime: number
+    laps: Lap[]
+}
+
+const props = defineProps<{
+    id: number,
+    isActive: boolean,
+    modelValue?: StopwatchState
+}>()
+
+const emit = defineEmits(['update:modelValue'])
 
 const startTime = ref<number>(0)
 const elapsedTime = ref<number>(0)
@@ -20,6 +30,36 @@ const isRunning = ref<boolean>(false)
 const laps = ref<Lap[]>([])
 
 let timerInterval: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+    if (props.modelValue) {
+        elapsedTime.value = props.modelValue.elapsedTime ?? 0
+        isRunning.value = props.modelValue.isRunning ?? false
+        laps.value = props.modelValue.laps ?? []
+        
+        // Si le chronomètre tournait lors de la fermeture, on récupère le décalage réel
+        if (isRunning.value && props.modelValue.startTime) {
+            startTime.value = props.modelValue.startTime
+            // On relance immédiatement l'intervalle
+            timerInterval = setInterval(() => {
+                elapsedTime.value = Date.now() - startTime.value
+            }, 1000)
+        }
+    }
+})
+
+const syncWithParent = () => {
+    emit('update:modelValue', {
+        elapsedTime: elapsedTime.value,
+        isRunning: isRunning.value,
+        startTime: startTime.value,
+        laps: laps.value
+    })
+}
+
+watch(laps, () => {
+    syncWithParent()
+}, { deep: true })
 
 const formattedTime = computed<string>(() => {
     const ms = elapsedTime.value
@@ -41,10 +81,12 @@ const startStop = (): void => {
             elapsedTime.value = Date.now() - startTime.value
         }, 1000)
         isRunning.value = true
+        syncWithParent()
     } else {
         if (timerInterval) clearInterval(timerInterval)
         elapsedTime.value = Date.now() - startTime.value
         isRunning.value = false
+        syncWithParent()
     }
 }
 
@@ -62,12 +104,12 @@ const resetTimer = (): void => {
     elapsedTime.value = 0
     isRunning.value = false
     laps.value = []
+    syncWithParent()
 }
 
 onUnmounted(() => {
     if (timerInterval) clearInterval(timerInterval)
 })
-
 </script>
 
 <template>
