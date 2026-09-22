@@ -17,6 +17,7 @@ Main developer
 
 ## Version history
 * 0.0.1 Initial push (shop and reader -> fondation)
+* 0.0.2 Shop, tool, profil completed
 
 > [!NOTE]
 > For any other information, please contact us at: info.crochyll@gmail.com
