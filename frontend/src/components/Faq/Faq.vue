@@ -12,32 +12,37 @@ const { t } = useI18n()
         <p>{{ t('faq.description') }}</p>
 
         <v-expansion-panels>
-            <v-expansion-panel :title="t('faq.question1')"
-                :text="t('faq.reponse1')">
+            <v-expansion-panel :title="t('faq.question1')" :text="t('faq.reponse1')">
             </v-expansion-panel>
         </v-expansion-panels>
 
         <v-expansion-panels>
-            <v-expansion-panel :title="t('faq.question2')"
-                :text="t('faq.reponse2')">
+            <v-expansion-panel :title="t('faq.question2')" :text="t('faq.reponse2')">
             </v-expansion-panel>
         </v-expansion-panels>
 
         <v-expansion-panels>
-            <v-expansion-panel :title="t('faq.question3')"
-                :text="t('faq.reponse3')">
+            <v-expansion-panel :title="t('faq.question3')" :text="t('faq.reponse3')">
             </v-expansion-panel>
         </v-expansion-panels>
 
         <v-expansion-panels>
-            <v-expansion-panel :title="t('faq.question4')"
-                :text="t('faq.reponse4')">
+            <v-expansion-panel :title="t('faq.question4')" :text="t('faq.reponse4')">
             </v-expansion-panel>
         </v-expansion-panels>
 
         <v-expansion-panels>
-            <v-expansion-panel :title="t('faq.question5')"
-                :text="t('faq.reponse5') + 'info.crochyll@gmail.com.'">
+            <v-expansion-panel :title="t('faq.question5')" :text="t('faq.reponse5') + 'info.crochyll@gmail.com.'">
+            </v-expansion-panel>
+        </v-expansion-panels>
+
+        <v-expansion-panels>
+            <v-expansion-panel :title="t('faq.question6')" :text="t('faq.reponse6')">
+            </v-expansion-panel>
+        </v-expansion-panels>
+
+        <v-expansion-panels>
+            <v-expansion-panel :title="t('faq.question7')" :text="t('faq.reponse7')">
             </v-expansion-panel>
         </v-expansion-panels>
     </div>

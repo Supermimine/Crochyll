@@ -48,6 +48,7 @@ const openItems = ref<Record<number, boolean>>({});
 const showDialogNote = ref<boolean>(false);
 
 const selectedFile = ref<File | null>(null)
+const menuOpen = ref<boolean>(false);
 
 onMounted(async () => {
     const storageValue = safeStorageGet("myProfil:project")
@@ -138,18 +139,10 @@ const getYarns = (): void => {
 
     lstYarn.value = lstYarn.value.map(item => ({
         ...item,
-        useQuantity: 1
+        useQuantity: 0
     }));
 }
-const availableYarns = computed(() => {
-    return lstYarn.value.filter(yarn =>
-        !projectModel.value.yarns.some(projectYarn =>
-            projectYarn.name === yarn.name &&
-            projectYarn.color === yarn.color &&
-            projectYarn.size === yarn.size
-        )
-    );
-});
+
 const getRemainingQuantity = (yarn: Yarn, currentUseQuantity: number): number => {
     const allProjectYarns = lstProjects.value.flatMap(project => project.yarns);
 
@@ -160,8 +153,35 @@ const getRemainingQuantity = (yarn: Yarn, currentUseQuantity: number): number =>
     return yarn.quantity - (totalUsed + currentUseQuantity);
 };
 
-const addYarnToProject = (yarn: Yarn, projectYarns: Yarn[]): void => {
-    projectYarns.push({ ...yarn });
+const handleIncrement = (yarn: Yarn): void => {
+    if (!yarn.useQuantity) {
+        yarn.useQuantity = 1;
+    } else if (getRemainingQuantity(yarn, yarn.useQuantity) > 0) {
+        yarn.useQuantity++;
+    }
+};
+
+const handleDecrement = (yarn: Yarn): void => {
+    if (yarn.useQuantity && yarn.useQuantity > 0) {
+        yarn.useQuantity--;
+    }
+};
+
+const handleMenuClose = (isOpen: boolean): void => {
+    if (!isOpen) {
+        const selectedYarns = lstYarn.value.filter((yarn: Yarn) => yarn.useQuantity && yarn.useQuantity > 0);
+        projectModel.value.yarns = selectedYarns.map((yarn: Yarn) => yarn);
+    } else {
+        lstYarn.value.forEach((availableYarn: Yarn) => {
+            const projectYarn = projectModel.value.yarns.find((y: Yarn) =>
+                y.name === availableYarn.name &&
+                y.color === availableYarn.color &&
+                y.size === availableYarn.size
+            );
+
+            availableYarn.useQuantity = projectYarn ? projectYarn.useQuantity : 0;
+        });
+    }
 };
 
 const onDragStart = (event: DragEvent, index: number): void => {
@@ -330,10 +350,11 @@ const removeImage = () => {
 
                     <v-row>
                         <v-col cols="12">
-                            <v-file-input v-if="!projectModel.image" v-model="selectedFile" :label="t('myProject.projectModel.image')"
-                                accept="image/*" prepend-icon="" variant="outlined" density="compact"
-                                hide-details="auto" class="centered-label-input custom-file-color"
-                                @update:model-value="onFileSelected" style="cursor: pointer !important;"></v-file-input>
+                            <v-file-input v-if="!projectModel.image" v-model="selectedFile"
+                                :label="t('myProject.projectModel.image')" accept="image/*" prepend-icon=""
+                                variant="outlined" density="compact" hide-details="auto"
+                                class="centered-label-input custom-file-color" @update:model-value="onFileSelected"
+                                style="cursor: pointer !important;"></v-file-input>
 
                             <v-card v-else height="160" width="100%" class="position-relative">
                                 <v-img :src="projectModel.image" height="160" cover class="bg-grey-lighten-2 rounded">
@@ -381,35 +402,52 @@ const removeImage = () => {
                         <div style="display: flex; justify-content: space-between;">
                             <v-label style="display: block;">{{ t('myProject.projectModel.yarn') }}</v-label>
 
-                            <v-menu>
+                            <v-menu v-model="menuOpen" :close-on-content-click="false"
+                                @update:model-value="handleMenuClose">
                                 <template v-slot:activator="{ props }">
                                     <v-btn v-bind="props">
                                         {{ t('myProject.projectModel.paring') }}
                                     </v-btn>
                                 </template>
 
-                                <v-list>
-                                    <v-list-item v-for="(yarn, index) in availableYarns"
-                                        :key="`${yarn.color}-${yarn.name}-${yarn.size}-${index}`">
-                                        <v-list-item-title @click="addYarnToProject(yarn, projectModel.yarns)"
-                                            style="cursor: pointer;">
-                                            {{ yarn.name }} - {{ yarn.color }} (x{{ yarn.useQuantity }})
-                                        </v-list-item-title>
+                                <v-list width="400" class="pa-2">
+                                    <v-list-item v-for="(yarn, index) in lstYarn"
+                                        :key="`${yarn.color}-${yarn.name}-${yarn.size}-${index}`"
+                                        class="mb-2 border-sm rounded-lg" @click.stop>
+                                        <div>
+                                            <div class="font-weight-bold text-subtitle-1">
+                                                {{ yarn.name }}
+                                            </div>
+                                            <div class="text-caption text-medium-emphasis">
+                                                {{ yarn.color }}
+                                            </div>
+                                            <div class="text-caption mt-1">
+                                                Sélectionné : <strong>{{ yarn.useQuantity || 0 }}</strong>
+                                                <span class="text-grey mx-1">|</span>
+                                                Dispo : <strong>{{ getRemainingQuantity(yarn, yarn.useQuantity || 0)
+                                                    }}</strong>
+                                            </div>
+                                        </div>
 
                                         <template #append>
-                                            <v-btn icon="mdi-minus" variant="text" :disabled="yarn.useQuantity <= 1"
-                                                @click.stop="yarn.useQuantity > 1 ? yarn.useQuantity-- : null"
-                                                class="mx-3"></v-btn>
+                                            <div class="d-flex align-center gap-1">
+                                                <v-btn icon="mdi-minus" density="comfortable"
+                                                    :disabled="!yarn.useQuantity || yarn.useQuantity <= 0"
+                                                    @click.stop="handleDecrement(yarn)"></v-btn>
 
-                                            <v-btn icon="mdi-plus" variant="text"
-                                                :disabled="getRemainingQuantity(yarn, yarn.useQuantity) <= 0"
-                                                @click.stop="getRemainingQuantity(yarn, yarn.useQuantity) > 0 ? yarn.useQuantity++ : null"></v-btn>
-
+                                                <v-btn icon="mdi-plus" density="comfortable"
+                                                    :disabled="getRemainingQuantity(yarn, yarn.useQuantity || 0) <= 0"
+                                                    @click.stop="handleIncrement(yarn)"></v-btn>
+                                            </div>
                                         </template>
                                     </v-list-item>
+                                    <v-list-item>
+                                        <v-btn style="width: 100%;" class="buttonColor"
+                                            @click="menuOpen = false; handleMenuClose(false)">Confirmer</v-btn>
+                                    </v-list-item>
 
-                                    <v-list-item v-if="availableYarns.length === 0">
-                                        <v-list-item-title class="text-grey">
+                                    <v-list-item v-if="lstYarn.length === 0">
+                                        <v-list-item-title class="text-grey text-center py-4">
                                             {{ t('myProject.projectModel.empty') }}
                                         </v-list-item-title>
                                     </v-list-item>

@@ -22,6 +22,7 @@ const addressSelected = ref<Address | null>(null);
 const promoCode = ref<string>("");
 const discount = ref<number>(0);
 const promoError = ref("");
+const isFreeShipping = ref<boolean>(false);
 
 const totalPrice = computed(() => {
     return carts.value
@@ -34,6 +35,16 @@ const totalPrice = computed(() => {
 });
 const totalPriceCart = computed(() => {
     return ((parseFloat(totalPrice.value) + shipping.value) - (parseFloat(totalPrice.value) * (discount.value / 100))).toFixed(2);
+});
+
+const freeShipping = computed(() => {
+    const test: number = (150 - Number(totalPrice.value))
+
+    if (test <= 0) {
+        return true
+    }
+
+    return false;
 });
 
 const saveAddress = (addr: Address) => {
@@ -59,6 +70,8 @@ const applyPromoCode = async () => {
 
 const shipping = computed(() => {
     let price = 0
+    isFreeShipping.value = false
+
     if (addressSelected.value != null) {
         carts.value.forEach((cart) => {
             const sizes = cart.item.measure.split('x').map((val: string) => val.replace('cm', '').trim());
@@ -89,8 +102,10 @@ const shipping = computed(() => {
             }
         });
 
-        if (parseFloat(totalPrice.value) >= 150)
+        if (parseFloat(totalPrice.value) >= 150) {
             price = 0;
+            isFreeShipping.value = true
+        }
     }
 
     return price;
@@ -98,6 +113,10 @@ const shipping = computed(() => {
 
 const confirm = async () => {
     paypalRef.value?.open();
+}
+
+const openWaitTimeInfo = () => {
+    alert(t('cart.waitTimeInfo'))
 }
 </script>
 
@@ -120,15 +139,22 @@ const confirm = async () => {
         </div>
 
         <div class="summarySection">
-            <p style="font-size: 20px; font-weight: bold; margin-top: 25px;">{{ t('cart.summary') }}</p>
+            <p class="disable-text-select" style="font-size: 20px; font-weight: bold; margin-top: 25px;">{{
+                t('cart.summary') }}</p>
             <hr style="margin: 10px 0 15px 0;" />
             <div style="display: flex;">
-                <p style="margin-right: auto;">{{ t('cart.item') }} ({{ carts.length }})</p>
+                <p class="disable-text-select" style="margin-right: auto;">{{ t('cart.item') }} ({{ carts.length }})</p>
                 <p>${{ totalPrice }}</p>
             </div>
 
+            <v-card style="margin-top: 10px; padding: 8px; border-radius: 8px; font-weight: normal;" :color="freeShipping ? 'success' : 'orange-lighten-2'">
+                <p v-if="!freeShipping">Vous êtes à {{ (150 - Number(totalPrice)).toFixed(2) }}$ avant la livraison
+                    gratuite!</p>
+                <p v-else>Vous êtes admissible à la livraison gratuite!</p>
+            </v-card>
+
             <div style="display: flex; margin-top: 10px;">
-                <p style="margin-right: auto;">{{ t('cart.delivery') }}</p>
+                <p class="disable-text-select" style="margin-right: auto;">{{ t('cart.delivery') }}</p>
                 <p>${{ shipping }}</p>
             </div>
             <a v-if="addressSelected == null" class="action-text-inverted" style="font-size: 12px;"
@@ -138,21 +164,21 @@ const confirm = async () => {
                         v-if="addressSelected.address2 != ''">-</span>{{ addressSelected.address1 }} {{
                             addressSelected.city }}) </span>
                 <a class="action-text-inverted" style="font-size: 12px;" @click="addressRef?.open()">{{ t('button.edit')
-                    }}</a>
+                }}</a>
             </div>
 
             <div style="margin-top: 20px;">
                 <div style="display: flex;">
                     <v-text-field style="width: 60%;" v-model="promoCode" :label="t('cart.promoCode')"
                         variant="outlined" density="compact" hide-details="auto" maxlength="36" :error="!!promoError"
-                        :error-messages="promoError" @update:model-value="promoError = ''"  />
+                        :error-messages="promoError" @update:model-value="promoError = ''" />
                     <v-btn class="buttonColor" style="width: 40%; margin-left: 10px;" @click="applyPromoCode">{{
                         t('button.apply') }}</v-btn>
                 </div>
 
                 <hr style="margin: 20px 0 10px 0;" />
                 <div style="display: flex;">
-                    <p style="margin-right: auto;">{{ t('cart.totalPrice') }}</p>
+                    <p class="disable-text-select" style="margin-right: auto;">{{ t('cart.totalPrice') }}</p>
                     <p v-if="discount == 0">${{ totalPriceCart }}</p>
                     <p v-else> - {{ discount }}%</p>
                 </div>
@@ -162,9 +188,12 @@ const confirm = async () => {
             </div>
 
             <div class="d-flex disable-text-select" style="margin-top: 50px; justify-content: center;">
-                <p style="margin-right: 10px; font-weight: normal;">Indice d'attente:</p>
+                <p style="margin-right: 10px; font-weight: normal;">{{ t('cart.waitTime') }}:</p>
                 <div style="height: 20px; width: 20px; border-radius: 20px; margin-top: auto; margin-bottom: auto;"
                     :style="{ backgroundColor: queueLoad.color }"></div>
+                <a class="action-text" @click="openWaitTimeInfo()">
+                    <v-icon icon="mdi-information-outline" size="16" style=" margin-bottom: 8px;"></v-icon>
+                </a>
             </div>
             <v-btn :disabled="carts.length === 0 || addressSelected == null" class="buttonColor"
                 style="width: 100%; margin: 2px;" @click="confirm()">

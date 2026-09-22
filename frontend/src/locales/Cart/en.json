@@ -7,6 +7,8 @@
         "placeOrder": "Place order",
         "promoCode": "Promo Code",
         "promoError": "Invalid promo code.",
+        "waitTime": "Waiting time",
+        "waitTimeInfo": "Wainting time: Each product is handmade, so there is a production lead time. \n\nGreen = Short lead time\nOrange = Medium lead time \nRed = Long lead time",
         "item": "items"
     }
 }

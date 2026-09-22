@@ -11,6 +11,10 @@
         "question4": "Do I need a PayPal account?",
         "reponse4": "No, this is not mandatory; card payment works. To do so, you must select the 'credit card' option during checkout.",
         "question5": "How can I contact Crochyll customer support?",
-        "reponse5": "You can contact our customer support by sending an email to "
+        "reponse5": "You can contact our customer support by sending an email to ",
+        "question6": "Do you offer free shipping?",
+        "reponse6": "Yes, we offer free shipping on orders of $150 or more, excluding shipping costs.",
+        "question7": "In which currency are the prices displayed?",
+        "reponse7": "All our products and displayed prices are in Canadian dollars ($CAD)."
     }
 }

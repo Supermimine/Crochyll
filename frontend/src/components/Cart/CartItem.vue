@@ -42,7 +42,7 @@ const name = computed(() =>
                     @click="removeQuantity()">
                     <v-icon icon="mdi-minus" size="10"></v-icon>
                 </v-btn>
-                <span style="margin: 10px;">{{ quantity }}</span>
+                <span class="disable-text-select" style="margin: 10px;">{{ quantity }}</span>
                 <v-btn class="btnQuantity" style="margin-right: auto;" @click="addQuantity()">
                     <v-icon icon="mdi-plus" size="10"></v-icon>
                 </v-btn>

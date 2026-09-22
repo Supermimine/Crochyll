@@ -279,7 +279,7 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
   border: var(--action-color) dashed;
   border-radius: 24px;
   transition: ease 0.3s;
-  opacity: 0;
+  opacity: 0.4;
 }
 
 .addItemBox:hover {

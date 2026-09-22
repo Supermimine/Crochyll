@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -26,14 +26,20 @@ const redoStack = ref<string[][]>([])
 const hasStateSavedInCurrentStroke = ref<boolean>(false)
 const pixels = ref<string[]>([])
 
-const gridStyle = computed(() => ({
-    display: 'grid',
-    gridTemplateColumns: `repeat(${gridSize.value}, 14px)`,
-    gridTemplateRows: `repeat(${gridSize.value}, 14px)`,
-    gap: '1px',
-    cursor: 'crosshair',
-    userSelect: 'none' as const
-}))
+const gridStyle = computed(() => {
+    const sizeInPx = `${gridSize.value * 14 + (gridSize.value - 1)}px`
+
+  return {
+        display: 'grid',
+        gridTemplateColumns: `repeat(${gridSize.value}, 14px)`,
+        gridTemplateRows: `repeat(${gridSize.value}, 14px)`,
+        gap: '1px',
+        width: sizeInPx,
+        height: sizeInPx,
+        cursor: 'crosshair',
+        userSelect: 'none' as const
+    }
+})
 
 const initializeGrid = (): void => {
     const totalPixels = gridSize.value * gridSize.value
@@ -167,6 +173,10 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown)
 })
+
+watch(gridSize, () => {
+    initializeGrid()
+}, { immediate: true }) 
 </script>
 
 <template>
@@ -183,8 +193,8 @@ onUnmounted(() => {
                 </div>
 
                 <div class="tools-actions-block w-100 d-flex flex-column gap-1 align-center" @mousedown.stop>
-                    <v-text-field v-model="gridSize" :label="t('tools.pixelArt.gridSize')" variant="outlined" density="compact"
-                        hide-details class="w-100 size-input"></v-text-field>
+                    <v-text-field v-model="gridSize" :label="t('tools.pixelArt.gridSize')" variant="outlined"
+                        density="compact" hide-details class="w-100 size-input"></v-text-field>
 
                     <div class="d-flex justify-center my-1 action-icons-row">
                         <a class="action-text mx-1" :class="{ active: selectedAction === Action.Brush }"

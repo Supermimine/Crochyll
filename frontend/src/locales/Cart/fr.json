@@ -7,6 +7,8 @@
         "placeOrder": "Passer la commande",
         "promoCode": "Code promo",
         "promoError": "Code promo invalide.",
+        "waitTime": "Temps d'attente",
+        "waitTimeInfo": "Temps d'attente: Chaque produit est réalisé à la main, il y a donc un temps d'attente de confection. \n\nVert = Bas temps d'attente\nOrange = Moyen temps d'attente \nRouge = Long temps d'attente",
         "item": "items"
     }
 }

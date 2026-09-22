@@ -223,7 +223,7 @@ const removeImage = () => {
                 </div>
 
                 <div v-if="yarn.weight" class="detail-row">
-                    <span>{{ t('myReserve.yarnModel.weigth') }}</span>
+                    <span>{{ t('myReserve.yarnModel.weight') }}</span>
                     <strong>{{ yarn.weight }} g</strong>
                 </div>
             </div>
@@ -240,7 +240,6 @@ const removeImage = () => {
 
             <div style="width:100%">
                 <h3 class="title">{{ t('myReserve.yarnModel.title') }}</h3>
-
 
                 <v-row>
                     <v-col cols="12">
@@ -271,9 +270,9 @@ const removeImage = () => {
 
                 <v-row>
                     <v-col cols="12">
-                        <v-file-input v-if="!yarnModel.image" v-model="selectedFile" :label="t('myReserve.yarnModel.image')"
-                            accept="image/*" prepend-icon="" variant="outlined" density="compact" hide-details="auto"
-                            class="centered-label-input custom-file-color"
+                        <v-file-input v-if="!yarnModel.image" v-model="selectedFile"
+                            :label="t('myReserve.yarnModel.image')" accept="image/*" prepend-icon="" variant="outlined"
+                            density="compact" hide-details="auto" class="centered-label-input custom-file-color"
                             @update:model-value="onFileSelected" style="cursor: pointer !important;"></v-file-input>
 
                         <v-card v-else height="160" width="100%" class="position-relative">

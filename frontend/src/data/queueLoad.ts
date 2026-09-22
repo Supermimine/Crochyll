@@ -1,6 +1,6 @@
 const queueLoads: {name: string, color: string}[] = [
  { name: "Low level", color: "#749E76"},
- { name: "Intermediate level", color: "#d0ab5c"},
+ { name: "Intermediate level", color: "#FFB74D"},
  { name: "High level", color: "#dd7d54"},
 ]
 
