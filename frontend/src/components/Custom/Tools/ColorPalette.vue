@@ -16,6 +16,7 @@ const isModalOpen = ref<boolean>(false)
 const selectedSwatchColor = ref<string>('')
 const recommendedYarns = ref<{ name: string, color: string[], link: string }[]>([])
 const selectedMatter = ref<Matter>(Matter.Acrylic)
+const selectedYarnName = ref<string[]>([t('tools.colorPalette.all')]);
 
 interface RGB {
     r: number
@@ -146,7 +147,13 @@ const getColorDistance = (hex1: string, hex2: string): number => {
     );
 }
 
+const cleanYarnName = (name: string): string => {
+    return name.replace(/\s*\(.*?\)\s*/g, '').trim();
+};
+
 const getYarn = (color: string): void => {
+    if (!color) return;
+
     selectedSwatchColor.value = color;
 
     if (!yarnData || yarnData.length === 0) {
@@ -155,21 +162,51 @@ const getYarn = (color: string): void => {
         return;
     }
 
-    const yarnMatter = yarnData.filter(yarn => yarn.composition.includes(selectedMatter.value));
+    recommendedYarns.value = yarnData
+        .filter(yarn => yarn.composition.includes(selectedMatter.value))
 
-    const yarnsWithDistance = yarnMatter.map((yarn) => {
-        if (!yarn.color || yarn.color.length === 0) {
-            return { yarn, minDistance: Infinity };
-        }
-        const distances = yarn.color.map((yarnColorHex) => getColorDistance(color, yarnColorHex));
-        return { yarn, minDistance: Math.min(...distances) };
-    });
+        .filter(yarn => {
+            const hasNoSelection = !selectedYarnName.value || selectedYarnName.value.length === 0;
+            const isAllSelected = selectedYarnName.value.includes(t('tools.colorPalette.all'));
 
-    yarnsWithDistance.sort((a, b) => a.minDistance - b.minDistance);
+            if (hasNoSelection || isAllSelected) return true;
 
-    recommendedYarns.value = yarnsWithDistance.slice(0, 3).map(item => item.yarn);
+            const cleanedName = cleanYarnName(yarn.name);
+            return selectedYarnName.value.includes(cleanedName);
+        })
+
+        .map((yarn) => {
+            if (!yarn.color || yarn.color.length === 0) {
+                return { yarn, minDistance: Infinity };
+            }
+            const distances = yarn.color.map((yarnColorHex) => getColorDistance(color, yarnColorHex));
+            return { yarn, minDistance: Math.min(...distances) };
+        })
+        .sort((a, b) => a.minDistance - b.minDistance)
+        .slice(0, 3)
+        .map(item => item.yarn);
+
     isModalOpen.value = true;
 }
+
+const handleYarnNameChange = (newSelection: string[]): void => {
+    if (newSelection.length > 1 && newSelection.includes(t('tools.colorPalette.all'))) {
+        const lastSelected = newSelection[newSelection.length - 1];
+
+        if (lastSelected === t('tools.colorPalette.all')) {
+            selectedYarnName.value = [t('tools.colorPalette.all')];
+        } else {
+            selectedYarnName.value = newSelection.filter(name => name !== t('tools.colorPalette.all'));
+        }
+    } else if (newSelection.length === 0) {
+        selectedYarnName.value = [t('tools.colorPalette.all')];
+    } else {
+        selectedYarnName.value = newSelection;
+    }
+
+    getYarn(selectedSwatchColor.value);
+};
+
 
 const matterList = computed(() =>
     Object.keys(Matter)
@@ -180,6 +217,19 @@ const matterList = computed(() =>
             value: matter
         }))
 );
+
+const yarnNameList = computed<string[]>(() => {
+    if (!yarnData) return [t('tools.colorPalette.all')];
+
+    const filteredYarns = yarnData.filter(yarn =>
+        yarn.composition.includes(selectedMatter.value)
+    );
+
+    const names = filteredYarns.map(yarn => cleanYarnName(yarn.name));
+
+    const uniqueNames = Array.from(new Set(names));
+    return [t('tools.colorPalette.all'), ...uniqueNames];
+});
 </script>
 
 <template>
@@ -191,10 +241,11 @@ const matterList = computed(() =>
         </div>
 
         <div class="d-flex align-center justify-space-around flex-grow-1 w-100 main-content-row">
-            
+
             <div class="input-container" @mousedown.stop>
-                <v-color-input v-model="selectedColor" color-pip pip-variant="outlined" :label="t('tools.colorPalette.color')"
-                    variant="outlined" density="compact" hide-actions></v-color-input>
+                <v-color-input v-model="selectedColor" color-pip pip-variant="outlined"
+                    :label="t('tools.colorPalette.color')" variant="outlined" density="compact"
+                    hide-actions></v-color-input>
             </div>
 
             <div class="action-container">
@@ -206,24 +257,38 @@ const matterList = computed(() =>
             <div class="palette-grid-container">
                 <div class="palette-container">
                     <div v-for="(row, rowIndex) in staticPalette" :key="rowIndex" class="swatches-row">
-                        <div v-for="(color) in row" :key="color" :style="{ backgroundColor: color }"
-                            class="swatch-item" :title="`Couleur : ${color}`" @click="getYarn(color)"></div>
+                        <div v-for="(color) in row" :key="color" :style="{ backgroundColor: color }" class="swatch-item"
+                            :title="`Couleur : ${color}`" @click="getYarn(color)"></div>
                     </div>
                 </div>
             </div>
-            
+
         </div>
 
         <v-dialog v-model="isModalOpen" max-width="600px">
             <v-card class="pa-4" style="background-color: var(--main-color);">
                 <v-card-title class="d-flex align-center justify-space-between border-b pb-2">
-                    {{ t('tools.colorPalette.closest') }} {{ selectedSwatchColor }} :
+                    <div class="d-flex">
+                        <p>{{ t('tools.colorPalette.closest') }}</p>
+                        <a :style="{ backgroundColor: selectedSwatchColor }" class="swatch-item ml-2 mr-2 mt-1"
+                            :title="`Couleur : ${selectedSwatchColor}`"></a> :
+                    </div>
                 </v-card-title>
                 <v-card-text>
-                    <v-select v-model="selectedMatter" :items="matterList" density="compact" variant="outlined"
-                        hide-details class="mb-5" style="width: fit-content;"
-                        @update:model-value="getYarn(selectedSwatchColor)">
-                    </v-select>
+                    <v-row>
+                        <v-col cols="5">
+                            <v-select v-model="selectedMatter" :items="matterList" density="compact" variant="outlined"
+                                hide-details class="mb-5 w-100"
+                                @update:model-value="getYarn(selectedSwatchColor)">
+                            </v-select>
+                        </v-col>
+
+                        <v-col cols="3">
+                            <v-select v-model="selectedYarnName" :items="yarnNameList" multiple chips density="compact"
+                                variant="outlined" hide-details class="mb-5" @update:model-value="handleYarnNameChange">
+                            </v-select>
+                        </v-col>
+                    </v-row>
                     <div v-if="recommendedYarns.length > 0">
                         <div v-for="(yarn, index) in recommendedYarns" :key="index" class="mb-4">
                             <div class="d-flex">
@@ -299,4 +364,3 @@ const matterList = computed(() =>
     border-color: #ffffff;
 }
 </style>
-

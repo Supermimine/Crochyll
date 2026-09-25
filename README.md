@@ -13,11 +13,42 @@ Main developer
 * **Backend** [NodeJS, TypeScript]
 * **Database:** [JSON file]
 * **Payment:** [Paypal Package]
-* **Email:** [NodeMailer, Smtp]
+* **Email:** [Smtp]
 
 ## Version history
 * 0.0.1 Initial push (shop and reader -> fondation)
 * 0.0.2 Shop, tool, profil completed
+
+## Installation and Launch
+### Prerequisites
+* Node.js (version 26+ recommandée)
+* npm
+
+### Installation
+1. Clone the repository :
+   ```bash
+   git clone https://github.com/Supermimine/Crochyll.git
+   ```
+2. Go to the project folder :
+   ```bash
+   cd crochyll
+   ```
+3. Install the dependencies :
+   ```bash
+   npm install
+   ```
+4. Start the development server :
+    (Backend)
+   ```bash
+   cd backend
+   npm run dev
+   ```
+    (Frontend)
+    ```bash
+   cd frontend
+   npm run dev
+   ```
+
 
 > [!NOTE]
 > For any other information, please contact us at: info.crochyll@gmail.com

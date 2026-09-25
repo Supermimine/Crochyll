@@ -130,7 +130,8 @@
         "colorPalette": {
             "closest": "Yarn with the closest color to",
             "empty": "No yarn match found.",
-            "color": "Color"
+            "color": "Color",
+            "all": "All"
         },
         "pixelArt": {
             "gridSize": "Grid size",
