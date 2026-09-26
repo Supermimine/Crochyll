@@ -6,7 +6,8 @@ const props = defineProps<{
     isActive: boolean
     widthSlots: number
     heightSlots: number
-    slotIndex: number
+    slotIndex: number,
+    gridColumns: number
 }>()
 
 const emit = defineEmits<{
@@ -15,51 +16,64 @@ const emit = defineEmits<{
     (e: 'update-position', targetSlotIndex: number): void
 }>()
 
-const GRID_COLUMNS = 5
 const GRID_ROWS = 3
 
 const isResizing = ref(false)
 const isDragging = ref(false)
 
-let startX = 0
-let startY = 0
 let startW = 0
 let startH = 0
 let currentDirection = ''
 
-let dragStartX = 0
-let dragStartY = 0
+let dragOffsetX = 0
+let dragOffsetY = 0
 let isMoveTriggered = false
 let lastSlotIndex: number | null = null
+let dragStartX = 0
+let dragStartY = 0
 
-const startResize = (e: MouseEvent, direction: string) => {
+const getEventCoords = (e: MouseEvent | TouchEvent) => {
+    if ('touches' in e) {
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY }
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+            return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }
+        }
+    }
+    return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY }
+}
+
+const startResize = (e: MouseEvent | TouchEvent, direction: string) => {
     if (isDragging.value) return
 
-    startX = e.clientX
-    startY = e.clientY
+    const coords = getEventCoords(e)
     startW = props.widthSlots || 1
     startH = props.heightSlots || 1
     currentDirection = direction
-
     isResizing.value = true
 
     window.addEventListener('mousemove', resizeMove)
     window.addEventListener('mouseup', resizeStop)
+    window.addEventListener('touchmove', resizeMove, { passive: false })
+    window.addEventListener('touchend', resizeStop)
 }
 
-const resizeMove = (e: MouseEvent) => {
+const resizeMove = (e: MouseEvent | TouchEvent) => {
+    if (e.cancelable) e.preventDefault()
+
     const container = document.querySelector('.tools-grid')
     if (!container) return
 
     const rect = container.getBoundingClientRect()
-    const cellWidth = rect.width / GRID_COLUMNS
+    const cellWidth = rect.width / props.gridColumns
     const cellHeight = rect.height / GRID_ROWS
 
-    const relativeX = e.clientX - rect.left
-    const relativeY = e.clientY - rect.top
+    const coords = getEventCoords(e)
+    const relativeX = coords.x - rect.left
+    const relativeY = coords.y - rect.top
 
-    const startCol = (props.slotIndex % GRID_COLUMNS) + 1
-    const startRow = Math.floor(props.slotIndex / GRID_COLUMNS) + 1
+    const startCol = (props.slotIndex % props.gridColumns) + 1
+    const startRow = Math.floor(props.slotIndex / props.gridColumns) + 1
 
     let targetW = startW
     let targetH = startH
@@ -70,24 +84,20 @@ const resizeMove = (e: MouseEvent) => {
         const currentMouseCol = Math.floor(relativeX / cellWidth) + 1
         targetW = Math.max(1, currentMouseCol - startCol + 1)
     } else if (currentDirection.includes('w')) {
-        const originalRightEdgeX = (startCol - 1 + startW) * cellWidth
-        
-        const newWidthPixels = originalRightEdgeX - relativeX
-        targetW = Math.max(1, Math.round(newWidthPixels / cellWidth))
-        
-        shiftX = startW - targetW
+        const originalRightEdgeCol = startCol + startW - 1
+        const currentMouseCol = Math.floor(relativeX / cellWidth) + 1
+        targetW = Math.max(1, originalRightEdgeCol - currentMouseCol + 1)
+        shiftX = (originalRightEdgeCol - targetW + 1) - startCol
     }
 
     if (currentDirection.includes('s')) {
         const currentMouseRow = Math.floor(relativeY / cellHeight) + 1
         targetH = Math.max(1, currentMouseRow - startRow + 1)
     } else if (currentDirection.includes('n')) {
-        const originalBottomEdgeY = (startRow - 1 + startH) * cellHeight
-        
-        const newHeightPixels = originalBottomEdgeY - relativeY
-        targetH = Math.max(1, Math.round(newHeightPixels / cellHeight))
-        
-        shiftY = startH - targetH
+        const originalBottomEdgeRow = startRow + startH - 1
+        const currentMouseRow = Math.floor(relativeY / cellHeight) + 1
+        targetH = Math.max(1, originalBottomEdgeRow - currentMouseRow + 1)
+        shiftY = (originalBottomEdgeRow - targetH + 1) - startRow
     }
 
     if (targetW !== props.widthSlots || targetH !== props.heightSlots) {
@@ -100,30 +110,56 @@ const resizeStop = () => {
     currentDirection = ''
     window.removeEventListener('mousemove', resizeMove)
     window.removeEventListener('mouseup', resizeStop)
+    window.removeEventListener('touchmove', resizeMove)
+    window.removeEventListener('touchend', resizeStop)
 }
 
-const startDrag = (e: MouseEvent) => {
+const startDrag = (e: MouseEvent | TouchEvent) => {
+    const target = e.target as HTMLElement
     if (
         isResizing.value ||
-        (e.target as HTMLElement).closest('.resize-handle') ||
-        (e.target as HTMLElement).closest('button')
+        target.closest('.resize-handle') ||
+        target.closest('button')
     ) return
 
     isMoveTriggered = false
     lastSlotIndex = null
-    dragStartX = e.clientX
-    dragStartY = e.clientY
+    
+    const coords = getEventCoords(e)
+    dragStartX = coords.x
+    dragStartY = coords.y
+
+    const container = document.querySelector('.tools-grid')
+    if (container) {
+        const rect = container.getBoundingClientRect()
+        const cellWidth = rect.width / props.gridColumns
+        const cellHeight = rect.height / GRID_ROWS
+        
+        const startCol = props.slotIndex % props.gridColumns
+        const startRow = Math.floor(props.slotIndex / props.gridColumns)
+        
+        const tileLeftX = rect.left + startCol * cellWidth
+        const tileTopY = rect.top + startRow * cellHeight
+        
+        dragOffsetX = coords.x - tileLeftX
+        dragOffsetY = coords.y - tileTopY
+    }
 
     window.addEventListener('mousemove', dragMove)
     window.addEventListener('mouseup', dragStop)
+    window.addEventListener('touchmove', dragMove, { passive: false })
+    window.addEventListener('touchend', dragStop)
 }
 
-const dragMove = (e: MouseEvent) => {
-    const deltaX = e.clientX - dragStartX
-    const deltaY = e.clientY - dragStartY
+const dragMove = (e: MouseEvent | TouchEvent) => {
+    const coords = getEventCoords(e)
+    const deltaX = coords.x - dragStartX
+    const deltaY = coords.y - dragStartY
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 
-    if (!isMoveTriggered && distance < 5) return
+    if (!isMoveTriggered && distance < 8) return
+
+    if (e.cancelable) e.preventDefault()
 
     if (!isMoveTriggered) {
         isMoveTriggered = true
@@ -134,28 +170,31 @@ const dragMove = (e: MouseEvent) => {
     if (!container) return
 
     const rect = container.getBoundingClientRect()
-    const cellWidth = rect.width / GRID_COLUMNS
+    const cellWidth = rect.width / props.gridColumns
     const cellHeight = rect.height / GRID_ROWS
 
-    const relativeX = e.clientX - rect.left
-    const relativeY = e.clientY - rect.top
+    const targetLeftX = coords.x - dragOffsetX - rect.left
+    const targetTopY = coords.y - dragOffsetY - rect.top
 
-    const col = Math.floor(relativeX / cellWidth)
-    const row = Math.floor(relativeY / cellHeight)
+    const rawCol = Math.round(targetLeftX / cellWidth)
+    const rawRow = Math.round(targetTopY / cellHeight)
+    
+    const col = Math.max(0, Math.min(rawCol, props.gridColumns - 1))
+    const row = Math.max(0, Math.min(rawRow, GRID_ROWS - 1))
 
-    if (col >= 0 && col < GRID_COLUMNS && row >= 0 && row < GRID_ROWS) {
-        const targetSlotIndex = row * GRID_COLUMNS + col
-        
-        if (targetSlotIndex !== lastSlotIndex) {
-            lastSlotIndex = targetSlotIndex
-            emit('update-position', targetSlotIndex)
-        }
+    const targetSlotIndex = row * props.gridColumns + col
+    
+    if (targetSlotIndex !== lastSlotIndex) {
+        lastSlotIndex = targetSlotIndex
+        emit('update-position', targetSlotIndex)
     }
 }
 
 const dragStop = () => {
     window.removeEventListener('mousemove', dragMove)
     window.removeEventListener('mouseup', dragStop)
+    window.removeEventListener('touchmove', dragMove)
+    window.removeEventListener('touchend', dragStop)
 
     if (!isMoveTriggered) return
 
@@ -166,40 +205,55 @@ const dragStop = () => {
 onBeforeUnmount(() => {
     window.removeEventListener('mousemove', resizeMove)
     window.removeEventListener('mouseup', resizeStop)
+    window.removeEventListener('touchmove', resizeMove)
+    window.removeEventListener('touchend', resizeStop)
     window.removeEventListener('mousemove', dragMove)
     window.removeEventListener('mouseup', dragStop)
+    window.removeEventListener('touchmove', dragMove)
+    window.removeEventListener('touchend', dragStop)
 })
 </script>
 
 <template>
-    <div class="box d-flex flex-column justify-start w-100" :class="{ active: isActive }" @mousedown="startDrag">
+    <div class="box d-flex flex-column justify-start w-100" :class="{ active: isActive }" @mousedown="startDrag"
+        @touchstart.passive="startDrag">
         <Teleport to="body">
             <div v-if="isResizing" class="interaction-overlay cursor-resize"></div>
             <div v-if="isDragging" class="interaction-overlay cursor-move"></div>
         </Teleport>
 
-        <div style="height: 25px; position: absolute; top: 0; left: 0; right: 0; cursor: move; z-index: 2;" @mousedown="startDrag">
+        <div style="height: 25px; position: absolute; top: 0; left: 0; right: 0; cursor: move; z-index: 2;"
+            @mousedown="startDrag" @touchstart.passive="startDrag">
         </div>
 
         <v-btn icon="mdi-close" size="30" variant="text" density="comfortable"
-            class="position-absolute btnClose action-text" style="z-index: 3;" @click.stop="emit('remove', props.id)"></v-btn>
+            class="position-absolute btnClose action-text" style="z-index: 3;"
+            @click.stop="emit('remove', props.id)"></v-btn>
 
         <div class="tool-content-wrapper flex-grow-1">
             <slot></slot>
         </div>
 
-        <div class="resize-handle n" @mousedown.stop.prevent="startResize($event, 'n')"></div>
-        <div class="resize-handle s" @mousedown.stop.prevent="startResize($event, 's')"></div>
-        <div class="resize-handle e" @mousedown.stop.prevent="startResize($event, 'e')"></div>
-        <div class="resize-handle w" @mousedown.stop.prevent="startResize($event, 'w')"></div>
+        <div class="resize-handle n" @mousedown.stop.prevent="startResize($event, 'n')"
+            @touchstart.stop.prevent="startResize($event, 'n')"></div>
+        <div class="resize-handle s" @mousedown.stop.prevent="startResize($event, 's')"
+            @touchstart.stop.prevent="startResize($event, 's')"></div>
+        <div class="resize-handle e" @mousedown.stop.prevent="startResize($event, 'e')"
+            @touchstart.stop.prevent="startResize($event, 'e')"></div>
+        <div class="resize-handle w" @mousedown.stop.prevent="startResize($event, 'w')"
+            @touchstart.stop.prevent="startResize($event, 'w')"></div>
 
-        <div class="resize-handle nw" @mousedown.stop.prevent="startResize($event, 'nw')"></div>
-        <div class="resize-handle ne" @mousedown.stop.prevent="startResize($event, 'ne')"></div>
-        <div class="resize-handle sw" @mousedown.stop.prevent="startResize($event, 'sw')"></div>
-
-        <div class="resize-handle se visible-corner" @mousedown.stop.prevent="startResize($event, 'se')"></div>
+        <div class="resize-handle nw" @mousedown.stop.prevent="startResize($event, 'nw')"
+            @touchstart.stop.prevent="startResize($event, 'nw')"></div>
+        <div class="resize-handle ne" @mousedown.stop.prevent="startResize($event, 'ne')"
+            @touchstart.stop.prevent="startResize($event, 'ne')"></div>
+        <div class="resize-handle sw" @mousedown.stop.prevent="startResize($event, 'sw')"
+            @touchstart.stop.prevent="startResize($event, 'sw')"></div>
+        <div class="resize-handle se visible-corner" @mousedown.stop.prevent="startResize($event, 'se')"
+            @touchstart.stop.prevent="startResize($event, 'se')"></div>
     </div>
 </template>
+
 
 <style scoped>
 .box {
@@ -216,10 +270,6 @@ onBeforeUnmount(() => {
     border-color: var(--action-color);
 }
 
-.box:hover .btnClose {
-    opacity: 80%;
-}
-
 .box:hover .resize-handle.visible-corner {
     background: linear-gradient(135deg, transparent 50%, var(--action-color) 50%);
 }
@@ -228,8 +278,18 @@ onBeforeUnmount(() => {
     top: 4px;
     right: 4px;
     z-index: 2;
-    opacity: 0%;
+    opacity: 80%;
     transition: ease 0.2s;
+}
+
+@media (hover: hover) {
+    .btnClose {
+        opacity: 0%; 
+    }
+
+    .box:hover .btnClose {
+        opacity: 80%;
+    }
 }
 
 .tool-content-wrapper {

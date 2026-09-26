@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useScreen } from '@/tools/appTools';
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+const { isMobile } = useScreen();
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -15,6 +17,7 @@ const emit = defineEmits(['update:modelValue'])
 const gridSize = ref<number>(25)
 const selectedColor = ref<string>('#000000')
 const isDrawing = ref<boolean>(false)
+const lockDrawing = ref<boolean>(false)
 
 const enum Action {
     Brush = 0,
@@ -28,6 +31,10 @@ const undoStack = ref<string[][]>([])
 const redoStack = ref<string[][]>([])
 const hasStateSavedInCurrentStroke = ref<boolean>(false)
 const pixels = ref<string[]>([])
+const gridContainerRef = ref<HTMLElement | null>(null)
+
+const lastTouchedIndex = ref<number | null>(null)
+let touchFrameId: number | null = null
 
 let isInitialLoad = true
 
@@ -42,7 +49,8 @@ const gridStyle = computed(() => {
         width: sizeInPx,
         height: sizeInPx,
         cursor: 'crosshair',
-        userSelect: 'none' as const
+        userSelect: 'none' as const,
+        touchAction: 'none'
     }
 })
 
@@ -65,7 +73,7 @@ const saveState = (): void => {
 }
 
 const undo = (): void => {
-    if (undoStack.value.length === 0) return
+    if (undoStack.value.length === 0 || lockDrawing.value) return
 
     redoStack.value.push([...pixels.value])
     pixels.value = undoStack.value.pop()!
@@ -73,7 +81,7 @@ const undo = (): void => {
 }
 
 const redo = (): void => {
-    if (redoStack.value.length === 0) return
+    if (redoStack.value.length === 0 || lockDrawing.value) return
 
     undoStack.value.push([...pixels.value])
     pixels.value = redoStack.value.pop()!
@@ -93,6 +101,8 @@ const handleKeyDown = (event: KeyboardEvent): void => {
 }
 
 const colorPixel = (index: number): void => {
+    if (index < 0 || index >= pixels.value.length || lockDrawing.value) return
+
     if (!hasStateSavedInCurrentStroke.value && selectedAction.value !== Action.Fill) {
         saveState()
         hasStateSavedInCurrentStroke.value = true
@@ -166,6 +176,7 @@ const drawOnHover = (index: number): void => {
 }
 
 const startDrawing = (): void => {
+    if (lockDrawing.value) return
     isDrawing.value = true
 }
 
@@ -175,6 +186,76 @@ const stopDrawing = (): void => {
     }
     isDrawing.value = false
     hasStateSavedInCurrentStroke.value = false
+    lastTouchedIndex.value = null
+    if (touchFrameId) {
+        cancelAnimationFrame(touchFrameId)
+        touchFrameId = null
+    }
+}
+
+const handleTouchStart = (event: TouchEvent): void => {
+    if (lockDrawing.value) return
+    
+    const touch = event.touches[0]
+    if (!touch || !gridContainerRef.value) return
+
+    if (event.cancelable) event.preventDefault()
+    startDrawing()
+
+    const rect = gridContainerRef.value.getBoundingClientRect()
+    
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+
+    const col = Math.floor(x / 15)
+    const row = Math.floor(y / 15)
+
+    if (col >= 0 && col < gridSize.value && row >= 0 && row < gridSize.value) {
+        const index = row * gridSize.value + col
+        lastTouchedIndex.value = index
+        colorPixel(index)
+    }
+
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
+    window.addEventListener('touchend', handleTouchEnd, { passive: false })
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: false })
+}
+
+const handleTouchMove = (event: TouchEvent): void => {
+    if (!isDrawing.value || !gridContainerRef.value) return
+    if (event.cancelable) event.preventDefault()
+
+    const touch = event.touches[0]
+    if (!touch) return
+
+    if (touchFrameId) cancelAnimationFrame(touchFrameId)
+
+    touchFrameId = requestAnimationFrame(() => {
+        if (!gridContainerRef.value) return
+        const rect = gridContainerRef.value.getBoundingClientRect()
+        
+        const x = touch.clientX - rect.left
+        const y = touch.clientY - rect.top
+
+        const col = Math.floor(x / 15)
+        const row = Math.floor(y / 15)
+
+        if (col >= 0 && col < gridSize.value && row >= 0 && row < gridSize.value) {
+            const index = row * gridSize.value + col
+
+            if (index !== lastTouchedIndex.value) {
+                lastTouchedIndex.value = index
+                colorPixel(index)
+            }
+        }
+    })
+}
+
+const handleTouchEnd = (event: TouchEvent): void => {
+    stopDrawing()
+    window.removeEventListener('touchmove', handleTouchMove)
+    window.removeEventListener('touchend', handleTouchEnd)
+    window.removeEventListener('touchcancel', handleTouchEnd)
 }
 
 const switchAction = (action: Action): void => {
@@ -188,19 +269,30 @@ onMounted(() => {
     } else {
         initializeGrid()
     }
+    
+    if (gridContainerRef.value) {
+        gridContainerRef.value.addEventListener('touchstart', handleTouchStart, { passive: false })
+    }
+    
     isInitialLoad = false
     window.addEventListener('keydown', handleKeyDown)
 })
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown)
+    if (gridContainerRef.value) {
+        gridContainerRef.value.removeEventListener('touchstart', handleTouchStart)
+    }
+    window.removeEventListener('touchmove', handleTouchMove)
+    window.removeEventListener('touchend', handleTouchEnd)
+    window.removeEventListener('touchcancel', handleTouchEnd)
 })
 
-watch(gridSize, () => {
-    if (!isInitialLoad) {
+watch(gridSize, (newSize, oldSize) => {
+    if (!isInitialLoad && newSize !== oldSize) {
         initializeGrid()
     }
-}) 
+})
 </script>
 
 <template>
@@ -209,33 +301,39 @@ watch(gridSize, () => {
             {{ t('tools.tool.pixelArt') }}
         </div>
 
-        <div class="d-flex align-stretch justify-space-around flex-grow-1 w-100 main-content-row">
-            <div class="controls-sidebar d-flex flex-column align-center justify-space-between py-10">
-                <div class="picker-container" @mousedown.stop>
+        <div class="d-flex align-stretch justify-space-around flex-grow-1 w-100 main-content-row"
+            :class="isMobile ? 'flex-column-reverse' : ''">
+            <div class="controls-sidebar d-flex flex-column align-center justify-space-between py-4"
+                :class="isMobile ? 'w-100 max-w-none' : 'py-10'">
+                <div class="picker-container" @mousedown.stop @touchstart.stop>
                     <v-color-picker v-model="selectedColor" hide-inputs elevation="0" mode="hex"
                         width="200"></v-color-picker>
                 </div>
 
-                <div class="tools-actions-block w-100 d-flex flex-column gap-1 align-center" @mousedown.stop>
-                    <v-text-field v-model="gridSize" :label="t('tools.pixelArt.gridSize')" variant="outlined"
-                        density="compact" hide-details class="w-100 size-input"></v-text-field>
+                <div class="tools-actions-block w-100 d-flex flex-column gap-1 align-center" @mousedown.stop
+                    @touchstart.stop>
+                    <v-text-field v-model.number="gridSize" :label="t('tools.pixelArt.gridSize')" variant="outlined"
+                        density="compact" hide-details type="number" class="w-100 size-input"></v-text-field>
 
                     <div class="d-flex justify-center my-1 action-icons-row">
-                        <a class="action-text mx-1" :class="{ active: selectedAction === Action.Brush }"
-                            @click="switchAction(Action.Brush)">
+                        <v-btn :variant="selectedAction === Action.Brush ? 'flat' : 'text'" size="small" icon
+                            @click="switchAction(Action.Brush)"
+                            :style="selectedAction === Action.Brush ? { color: 'var(--action-color)' } : {}">
                             <v-icon icon="mdi-brush" size="20"></v-icon>
-                        </a>
-                        <a class="action-text mx-1" :class="{ active: selectedAction === Action.Eraser }"
-                            @click="switchAction(Action.Eraser)">
+                        </v-btn>
+                        <v-btn :variant="selectedAction === Action.Eraser ? 'flat' : 'text'" size="small" icon
+                            @click="switchAction(Action.Eraser)"
+                            :style="selectedAction === Action.Eraser ? { color: 'var(--action-color)' } : {}">
                             <v-icon icon="mdi-eraser" size="20"></v-icon>
-                        </a>
-                        <a class="action-text mx-1" :class="{ active: selectedAction === Action.Fill }"
-                            @click="switchAction(Action.Fill)">
+                        </v-btn>
+                        <v-btn :variant="selectedAction === Action.Fill ? 'flat' : 'text'" size="small" icon
+                            @click="switchAction(Action.Fill)"
+                            :style="selectedAction === Action.Fill ? { color: 'var(--action-color)' } : {}">
                             <v-icon icon="mdi-format-color-fill" size="20"></v-icon>
-                        </a>
+                        </v-btn>
                     </div>
 
-                    <div class="d-flex gap-2 justify-center mb-1" @mousedown.stop>
+                    <div class="d-flex gap-2 justify-center mb-1">
                         <v-btn variant="tonal" size="x-small" icon :disabled="undoStack.length === 0" @click="undo"
                             title="Ctrl+Z">
                             <v-icon icon="mdi-undo" size="14"></v-icon>
@@ -247,19 +345,31 @@ watch(gridSize, () => {
                     </div>
 
                     <v-btn color="error" prepend-icon="mdi-delete" variant="flat" size="small" @click="initializeGrid"
-                        class="buttonColor w-100 delete-btn" @mousedown.stop>
+                        class="buttonColor w-100 delete-btn">
                         {{ t('tools.pixelArt.clean') }}
                     </v-btn>
                 </div>
             </div>
 
             <div class="canvas-area d-flex align-center justify-center">
-                <div class="grid-container pa-0 rounded shadow-inner" :style="[gridStyle, { '--grid-size': gridSize }]"
-                    @mousedown="startDrawing" @mouseup="stopDrawing" @mouseleave="stopDrawing" @mousedown.stop>
-                    <div v-for="(color, index) in pixels" :key="index" class="pixel" :style="{ backgroundColor: color }"
-                        @mousedown.prevent="colorPixel(index)" @mouseover="drawOnHover(index)"></div>
+                <div class="grid-wrapper">
+                    <div ref="gridContainerRef" class="grid-container pa-0 rounded shadow-inner"
+                        :style="[gridStyle, { '--grid-size': gridSize }]" @mousedown="startDrawing"
+                        @mouseup="stopDrawing" @mouseleave="stopDrawing" @mousedown.stop>
+
+                        <div v-for="(color, index) in pixels" :key="index" class="pixel" :data-index="index"
+                            :style="{ backgroundColor: color }" @mousedown.prevent="colorPixel(index)"
+                            @mouseover="drawOnHover(index)">
+                        </div>
+                    </div>
+
+                    <a class="grid-corner-icon buttonColor" @click.stop.prevent="lockDrawing = !lockDrawing" @touchstart.stop>
+                        <v-icon :icon="lockDrawing ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
+                            size="14"></v-icon>
+                    </a>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
@@ -270,6 +380,8 @@ watch(gridSize, () => {
     width: 100%;
     min-height: 0;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .header-block {
@@ -285,6 +397,10 @@ watch(gridSize, () => {
     max-width: 180px;
     width: 100%;
     min-height: 0;
+}
+
+.max-w-none {
+    max-width: none !important;
 }
 
 .picker-container {
@@ -307,7 +423,7 @@ watch(gridSize, () => {
 }
 
 .action-icons-row {
-    gap: 12px;
+    gap: 4px;
 }
 
 .delete-btn {
@@ -327,6 +443,28 @@ watch(gridSize, () => {
     max-width: 100%;
     max-height: 100%;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: none !important;
+    overscroll-behavior: none;
+}
+
+.grid-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.grid-corner-icon {
+    position: absolute;
+    bottom: -16px;
+    right: -16px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 15px;
 }
 
 .pixel {
@@ -346,9 +484,5 @@ watch(gridSize, () => {
 
 .gap-2 {
     gap: 8px;
-}
-
-.active {
-    color: var(--action-color);
 }
 </style>

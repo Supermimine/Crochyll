@@ -7,6 +7,8 @@ import { useHead } from "@unhead/vue";
 import type { tool } from "@core/model/tool";
 import { toolsType } from "@core/enum/toolsType";
 
+const { isMobile } = useScreen();
+
 const { t } = useI18n()
 
 import ToolContainer from '../Custom/Tools/ToolContainer.vue';
@@ -16,6 +18,7 @@ import TermTranslator from '../Custom/Tools/TermTranslator.vue';
 import TermHook from '../Custom/Tools/TermHook.vue';
 import PixelArt from '../Custom/Tools/PixelArt.vue';
 import ColorPalette from '../Custom/Tools/ColorPalette.vue';
+import { useScreen } from '@/tools/appTools.ts';
 
 useHead(() => ({
   title: 'Crochyll - ' + t('category.tools'),
@@ -27,11 +30,6 @@ useHead(() => ({
 
 const menuShow = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
-const menuStyle = computed<CSSProperties>(() => ({
-  position: 'fixed',
-  left: `${menuPosition.value.x}px`,
-  top: `${menuPosition.value.y}px`,
-}));
 
 const componentMap: Record<toolsType, any> = {
   [toolsType.Counter]: Counter,
@@ -42,14 +40,15 @@ const componentMap: Record<toolsType, any> = {
   [toolsType.ColorPalette]: ColorPalette
 }
 
-const toolSize: Record<toolsType, { w: number; h: number }> = {
-  [toolsType.Counter]: { w: 1, h: 1 },
-  [toolsType.Stopwatch]: { w: 2, h: 1 },
-  [toolsType.TermTranslator]: { w: 3, h: 1 },
-  [toolsType.TermHook]: { w: 3, h: 1 },
-  [toolsType.PixelArt]: { w: 3, h: 3 },
-  [toolsType.ColorPalette]: { w: 2, h: 1 }
+const toolSize: Record<toolsType, (isMobile: boolean) => { w: number; h: number }> = {
+  [toolsType.Counter]: (isMobile) => isMobile ? { w: 2, h: 1 } : { w: 1, h: 1 },
+  [toolsType.Stopwatch]: (isMobile) => isMobile ? { w: 3, h: 1 } : { w: 2, h: 1 },
+  [toolsType.TermTranslator]: (isMobile) => isMobile ? { w: 3, h: 1 } : { w: 3, h: 1 },
+  [toolsType.TermHook]: (isMobile) => isMobile ? { w: 3, h: 1 } : { w: 3, h: 1 },
+  [toolsType.PixelArt]: (isMobile) => isMobile ? { w: 3, h: 3 } : { w: 3, h: 3 },
+  [toolsType.ColorPalette]: (isMobile) => isMobile ? { w: 3, h: 1 } : { w: 2, h: 1 }
 }
+
 
 const STORAGE_KEY = "tool";
 
@@ -57,6 +56,35 @@ const lstTools = ref<tool[]>([])
 const activeToolId = ref<number | null>(null)
 const selectedSlotIndex = ref<number | null>(null)
 const toolsState = ref<Record<number, any>>({});
+
+const GRID_COLUMNS = computed(() => isMobile.value ? 3 : 5)
+const GRID_ROWS = computed(() => isMobile.value ? 3 : 3)
+
+watch(isMobile, (newIsMobile) => {
+  const oldCols = newIsMobile ? 5 : 3;
+  const newCols = newIsMobile ? 3 : 5;
+  const maxRows = 3;
+
+  lstTools.value = lstTools.value.map(tool => {
+    const oldRow = Math.floor(tool.slotIndex / oldCols);
+    const oldCol = tool.slotIndex % oldCols;
+
+    const currentW = tool.w || 1;
+    const currentH = tool.h || 1;
+    
+    let targetW = Math.min(currentH, newCols);
+    let targetH = Math.min(currentW, maxRows);
+    let targetCol = Math.min(oldCol, newCols - targetW);
+    let targetRow = Math.min(oldRow, maxRows - targetH);
+
+    return {
+      ...tool,
+      w: targetW,
+      h: targetH,
+      slotIndex: targetRow * newCols + targetCol
+    };
+  });
+});
 
 onMounted(() => {
   const savedData = localStorage.getItem(STORAGE_KEY);
@@ -97,19 +125,22 @@ const getDefaultState = (type: toolsType) => {
   return undefined;
 };
 
-const openContextMenu = (event: MouseEvent, slotIndex: number) => {
+const openContextMenu = (event: MouseEvent | TouchEvent, slotIndex: number) => {
   const menuEstimatedHeight = 280
   const menuEstimatedWidth = 160
 
-  let targetX = event.clientX
-  let targetY = event.clientY
+  const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX
+  const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY
 
-  if (event.clientY + menuEstimatedHeight > window.innerHeight) {
-    targetY = event.clientY - menuEstimatedHeight
+  let targetX = clientX
+  let targetY = clientY
+
+  if (clientY + menuEstimatedHeight > window.innerHeight) {
+    targetY = clientY - menuEstimatedHeight
   }
 
-  if (event.clientX + menuEstimatedWidth > window.innerWidth) {
-    targetX = event.clientX - menuEstimatedWidth
+  if (clientX + menuEstimatedWidth > window.innerWidth) {
+    targetX = clientX - menuEstimatedWidth
   }
 
   menuPosition.value = { x: targetX, y: targetY }
@@ -121,14 +152,15 @@ const addTools = (tool: toolsType) => {
   if (selectedSlotIndex.value === null) return
 
   const id = lstTools.value.length > 0 ? lstTools.value[lstTools.value.length - 1].id + 1 : 1
-  const defaultSize = toolSize[tool] || { w: 1, h: 1 }
+
+  const { w, h } = toolSize[tool](isMobile.value)
 
   lstTools.value.push({
     id,
     type: tool,
     slotIndex: selectedSlotIndex.value,
-    w: defaultSize.w,
-    h: defaultSize.h
+    w,
+    h
   })
 
   const initialState = getDefaultState(tool);
@@ -153,8 +185,8 @@ const removeTool = (idToRemove: number) => {
 }
 
 const getCoordinates = (slotIndex: number) => {
-  const row = Math.floor(slotIndex / 5) + 1
-  const col = (slotIndex % 5) + 1
+  const row = Math.floor(slotIndex / GRID_COLUMNS.value) + 1
+  const col = (slotIndex % GRID_COLUMNS.value) + 1
   return { row, col }
 }
 
@@ -184,13 +216,14 @@ const emptySlots = computed(() => {
 
     for (let r = 0; r < h; r++) {
       for (let c = 0; c < w; c++) {
-        const slot = (startRow - 1 + r) * 5 + (startCol - 1 + c)
+        const slot = (startRow - 1 + r) * GRID_COLUMNS.value + (startCol - 1 + c)
         occupied.add(slot)
       }
     }
   })
 
-  return Array.from({ length: 15 }, (_, i) => i).filter(slot => !occupied.has(slot))
+  const totalSlots = isMobile.value ? 9 : 15
+  return Array.from({ length: totalSlots }, (_, i) => i).filter(slot => !occupied.has(slot))
 })
 
 const handleResize = (tool: tool, sizeData: { w: number, h: number, shiftX: number, shiftY: number }) => {
@@ -202,8 +235,8 @@ const handleResize = (tool: tool, sizeData: { w: number, h: number, shiftX: numb
   if (
     targetCol < 1 ||
     targetRow < 1 ||
-    targetCol - 1 + sizeData.w > 5 ||
-    targetRow - 1 + sizeData.h > 3
+    targetCol - 1 + sizeData.w > GRID_COLUMNS.value ||
+    targetRow - 1 + sizeData.h > GRID_ROWS.value
   ) {
     return
   }
@@ -227,16 +260,16 @@ const handleResize = (tool: tool, sizeData: { w: number, h: number, shiftX: numb
 
   tool.w = sizeData.w
   tool.h = sizeData.h
-  tool.slotIndex = (targetRow - 1) * 5 + (targetCol - 1)
+  tool.slotIndex = (targetRow - 1) * GRID_COLUMNS.value + (targetCol - 1)
 }
 
 const handleMove = (tool: tool, targetSlotIndex: number) => {
   const { row: targetRow, col: targetCol } = getCoordinates(targetSlotIndex)
 
-  if (targetCol - 1 + tool.w > 5 || targetRow - 1 + tool.h > 3) return
+  if (targetCol - 1 + tool.w > GRID_COLUMNS.value || targetRow - 1 + tool.h > GRID_ROWS.value) return
 
   const isSpaceFree = lstTools.value.every(other => {
-    if (other.id === tool.id) return true // S'ignorer soi-même
+    if (other.id === tool.id) return true
 
     const { row: otherRow, col: otherCol } = getCoordinates(other.slotIndex)
     const otherW = other.w || 1
@@ -262,7 +295,12 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
   </div>
 
   <v-container fluid class="fill-screen pa-2 disable-text-select" @contextmenu.prevent>
-    <v-menu v-model="menuShow" :style="menuStyle" :close-on-content-click="true" class="disable-text-select">
+    <v-menu 
+      v-model="menuShow" 
+      :target="[menuPosition.x, menuPosition.y]" 
+      :close-on-content-click="true" 
+      class="disable-text-select"
+    >
       <v-list density="compact">
         <v-list-subheader class="text-uppercase font-weight-bold text-grey-darken-1">
           {{ t('tools.addTool') }}
@@ -277,24 +315,34 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
       </v-list>
     </v-menu>
 
-    <div class="tools-grid">
+    <div 
+      class="tools-grid"
+      :style="{ 
+        '--grid-cols': GRID_COLUMNS, 
+        '--grid-rows': GRID_ROWS 
+      }"
+    >
       <div v-for="tool in lstTools" :key="tool.id" class="grid-cell" :style="getGridStyle(tool)">
         <ToolContainer :id="tool.id" :isActive="tool.id === activeToolId" :widthSlots="tool.w" :heightSlots="tool.h"
-          :slotIndex="tool.slotIndex" @click.capture="activeToolId = tool.id" @remove="removeTool"
+          :slotIndex="tool.slotIndex" :gridColumns="GRID_COLUMNS" @click.capture="activeToolId = tool.id" @remove="removeTool"
           @update-size="(sizeData) => handleResize(tool, sizeData)"
-          @update-position="(targetSlot: number) => handleMove(tool, targetSlot)">
+          @update-position="(targetSlot) => handleMove(tool, targetSlot)">
           <component :is="componentMap[tool.type]" :id="tool.id" :isActive="tool.id === activeToolId"
             :model-value="toolsState[tool.id]" @update:model-value="(val: any) => toolsState[tool.id] = val" />
         </ToolContainer>
       </div>
 
       <div v-for="slot in emptySlots" :key="'empty-' + slot" class="grid-cell" :style="getEmptySlotStyle(slot)">
-        <a class="addItemBox d-flex align-center justify-center w-100 h-100 text-h2"
-          @click="openContextMenu($event, slot)" @contextmenu.prevent="openContextMenu($event, slot)">
+        <button 
+          class="addItemBox d-flex align-center justify-center w-100 h-100 text-h2"
+          type="button"
+          @click="openContextMenu($event, slot)" 
+          @contextmenu.prevent="openContextMenu($event, slot)"
+        >
           <div class="buttonColor" style="padding: 18px 25px; border-radius: 30px; color: white">
             +
           </div>
-        </a>
+        </button>
       </div>
     </div>
   </v-container>
@@ -311,8 +359,8 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(3, calc((75vh - 32px) / 3));
+  grid-template-columns: repeat(var(--grid-cols, 5), 1fr);
+  grid-template-rows: repeat(var(--grid-rows, 3), calc((75vh - 32px) / var(--grid-rows, 3)));
   gap: 16px;
   width: 100%;
 }
@@ -331,8 +379,10 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
   opacity: 0.4;
 }
 
-.addItemBox:hover {
-  opacity: 1;
-  cursor: pointer;
+@media (hover: hover) {
+  .addItemBox:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
 }
 </style>

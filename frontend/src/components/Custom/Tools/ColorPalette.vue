@@ -3,7 +3,9 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { yarnData } from '../../../data/yarnData';
 import { Matter } from '@core/enum/matter';
+import { useScreen } from '@/tools/appTools';
 
+const { isMobile } = useScreen();
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -276,14 +278,14 @@ const yarnNameList = computed<string[]>(() => {
                 </v-card-title>
                 <v-card-text>
                     <v-row>
-                        <v-col cols="5">
+                        <v-col :cols="isMobile ? 6 : 5">
                             <v-select v-model="selectedMatter" :items="matterList" density="compact" variant="outlined"
                                 hide-details class="mb-5 w-100"
                                 @update:model-value="getYarn(selectedSwatchColor)">
                             </v-select>
                         </v-col>
 
-                        <v-col cols="3">
+                        <v-col :cols="isMobile ? 6 : 3">
                             <v-select v-model="selectedYarnName" :items="yarnNameList" multiple chips density="compact"
                                 variant="outlined" hide-details class="mb-5" @update:model-value="handleYarnNameChange">
                             </v-select>
