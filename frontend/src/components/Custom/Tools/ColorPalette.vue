@@ -91,45 +91,69 @@ function hslToHex({ h, s, l }: HSL): string {
 
 function generate603010Palette(baseColor: string): SwatchesMatrix {
     if (!baseColor) {
-        return [[], [], [], [], []]
+        return [[], [], [], []];
     }
 
-    const rgb = hexToRgb(baseColor)
-    const hsl = rgbToHsl(rgb)
+    const rgb = hexToRgb(baseColor);
+    const hsl = rgbToHsl(rgb);
+
+    let safeH = hsl.h;
+    let safeS = hsl.s;
+    let safeL = hsl.l;
+
+    if (hsl.s < 5 || hsl.l < 10 || hsl.l > 90) {
+        if (hsl.h === 0 && hsl.s === 0) {
+            safeH = 210;
+        }
+        safeS = 65;
+        safeL = 50;
+    }
 
     const row1 = [
         baseColor,
-        hslToHex({ h: (hsl.h - 22 + 360) % 360, s: Math.min(100, hsl.s * 1.0), l: Math.max(20, hsl.l * 0.93) }),
-        hslToHex({ h: (hsl.h - 43 + 360) % 360, s: Math.min(100, hsl.s * 0.65), l: Math.max(15, hsl.l * 0.82) }),
-        hslToHex({ h: (hsl.h - 75 + 360) % 360, s: Math.min(100, hsl.s * 0.35), l: Math.max(10, hsl.l * 1.05) }),
-        hslToHex({ h: (hsl.h - 135 + 360) % 360, s: Math.min(100, hsl.s * 0.45), l: 26 })
-    ]
+        hslToHex({ h: (safeH - 30 + 360) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH - 15 + 360) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 15) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 30) % 360, s: safeS, l: safeL })
+    ];
 
     const row2 = [
         baseColor,
-        hslToHex({ h: (hsl.h - 16 + 360) % 360, s: Math.min(100, hsl.s * 1.0), l: 53 }),
-        hslToHex({ h: (hsl.h - 55 + 360) % 360, s: Math.min(100, hsl.s * 1.0), l: 43 }),
-        hslToHex({ h: (hsl.h + 233) % 360, s: Math.min(100, hsl.s * 1.0), l: 65 }),
-        hslToHex({ h: (hsl.h + 200) % 360, s: Math.min(100, hsl.s * 1.0), l: 50 })
-    ]
+        hslToHex({ h: (safeH + 180) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 150) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 210) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 180) % 360, s: safeS, l: Math.max(15, safeL * 0.5) })
+    ];
 
     const row3 = [
         baseColor,
-        hslToHex({ h: (hsl.h + 12) % 360, s: 17, l: 29 }),
-        hslToHex({ h: (hsl.h + 12) % 360, s: 16, l: 69 }),
-        hslToHex({ h: 120, s: 100, l: 30 }),
-        hslToHex({ h: 120, s: 100, l: 19 })
-    ]
+        hslToHex({ h: (safeH + 120) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 240) % 360, s: safeS, l: safeL }),
+        hslToHex({ h: (safeH + 120) % 360, s: Math.min(100, safeS * 0.8), l: Math.min(90, safeL * 1.2) }),
+        hslToHex({ h: (safeH + 240) % 360, s: safeS, l: Math.max(15, safeL * 0.6) })
+    ];
 
+    const isLightColor = hsl.l >= 50;
     const row4 = [
         baseColor,
-        hslToHex({ h: (hsl.h + 12) % 360, s: 17, l: 29 }),
-        hslToHex({ h: (hsl.h + 12) % 360, s: 16, l: 69 }),
-        hslToHex({ h: 202, s: 100, l: 50 }),
-        hslToHex({ h: 196, s: 84, l: 41 })
-    ]
+        isLightColor 
+            ? hslToHex({ h: hsl.h, s: hsl.s, l: Math.max(0, hsl.l * 0.75) })
+            : hslToHex({ h: hsl.h, s: hsl.s, l: Math.min(100, hsl.l + (100 - hsl.l) * 0.25) }),
+        
+        isLightColor 
+            ? hslToHex({ h: hsl.h, s: hsl.s, l: Math.max(0, hsl.l * 0.50) })
+            : hslToHex({ h: hsl.h, s: hsl.s, l: Math.min(100, hsl.l + (100 - hsl.l) * 0.50) }),
+        
+        isLightColor 
+            ? hslToHex({ h: hsl.h, s: hsl.s, l: Math.max(0, hsl.l * 0.25) })
+            : hslToHex({ h: hsl.h, s: hsl.s, l: Math.min(100, hsl.l + (100 - hsl.l) * 0.75) }),
+        
+        isLightColor 
+            ? hslToHex({ h: hsl.h, s: hsl.s, l: 8 })
+            : hslToHex({ h: hsl.h, s: hsl.s, l: 95 })
+    ];
 
-    return [row1, row2, row3, row4]
+    return [row1, row2, row3, row4];
 }
 
 const staticPalette = ref<SwatchesMatrix>(generate603010Palette(selectedColor.value))
@@ -342,6 +366,10 @@ const yarnNameList = computed<string[]>(() => {
     padding: 6px;
     border-radius: 8px;
     width: fit-content;
+}
+
+.palette-grid-container {
+    min-width: 33%;
 }
 
 .swatches-row {
