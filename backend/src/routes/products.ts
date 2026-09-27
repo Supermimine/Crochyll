@@ -967,7 +967,7 @@ const getProducts = (): Product[] => {
                 fr: "Gnome",
                 en: "Gnome"
             },
-            price: [40.00],
+            price: [20.00, 32.00, 30.00, 32.00],
             category: Category.Amigurumi,
             description: {
                 fr: "Ce petit gnome en peluche est prêt à apporter une touche de magie et de bonheur dans votre maison. Avec son grand chapeau pointu et sa barbe toute douce, cette créature en crochet est tout simplement irrésistible. C’est le compagnon idéal pour décorer une étagère ou pour offrir un cadeau unique plein de personnalité ;D.",
@@ -1024,9 +1024,9 @@ const getProducts = (): Product[] => {
                 },
             ],
             image: [
-                "no-picture.png",
-                "no-picture.png",
-                "no-picture.png",
+                "products/8b333ba4-3195-4923-a1a0-19c7478d03da-1.jpg",
+                "products/8b333ba4-3195-4923-a1a0-19c7478d03da-2.jpg",
+                "products/8b333ba4-3195-4923-a1a0-19c7478d03da-3.jpg",
                 "##000-045##no-picture.png",
                 "##000-046##no-picture.png",
                 "##000-047##no-picture.png"
@@ -1187,6 +1187,103 @@ const getProducts = (): Product[] => {
                 "products/a91e8fbe-78a2-4c0f-87ea-fbfe7252027e-1.jpg",
                 "products/a91e8fbe-78a2-4c0f-87ea-fbfe7252027e-2.jpg",
                 "products/a91e8fbe-78a2-4c0f-87ea-fbfe7252027e-3.jpg"
+            ]
+        },
+        {
+            id: "ef655bfb-0c46-4cac-9874-8c4919d4c75b",
+            name: {
+                fr: "Chapeau citrouille",
+                en: "Pumpkin hat"
+            },
+            price: [6.00],
+            category: Category.AccessoiresAmigurumi,
+            description: {
+                fr: "",
+                en: ""
+            },
+            typeMaking: TypeMaking.Crochet,
+            creator: Creator.Supermimine,
+            size: [],
+            shade: [],
+            matter: [
+                Matter.Acrylic,
+            ],
+            maintenance: [Maintenance.Washable, Maintenance.Dryer],
+            measure: "25 x 12 x 12 cm",
+            weight: 1,
+            keywords: ["chapeau", "tuque", "orange", "citrouille", "halloween", "peluche", "amigurumi"],
+            relatedProduct: ["8b333ba4-3195-4923-a1a0-19c7478d03da"],
+            wool: [
+            ],
+            image: [
+                "products/ef655bfb-0c46-4cac-9874-8c4919d4c75b-1.jpg",
+                "products/ef655bfb-0c46-4cac-9874-8c4919d4c75b-2.jpg",
+                "products/ef655bfb-0c46-4cac-9874-8c4919d4c75b-3.jpg",
+                "products/ef655bfb-0c46-4cac-9874-8c4919d4c75b-4.jpg"
+            ]
+        },
+        {
+            id: "6368e5f9-38c3-492b-8d97-c1af55390cdb",
+            name: {
+                fr: "Chapeau Noël",
+                en: "Christmas hat"
+            },
+            price: [5.00],
+            category: Category.AccessoiresAmigurumi,
+            description: {
+                fr: "",
+                en: ""
+            },
+            typeMaking: TypeMaking.Crochet,
+            creator: Creator.Supermimine,
+            size: [],
+            shade: [],
+            matter: [
+                Matter.Acrylic,
+            ],
+            maintenance: [Maintenance.Washable, Maintenance.Dryer],
+            measure: "25 x 12 x 12 cm",
+            weight: 1,
+            keywords: ["chapeau", "tuque", "rouge", "noel", "noël", "peluche", "amigurumi", "froid"],
+            relatedProduct: ["8b333ba4-3195-4923-a1a0-19c7478d03da"],
+            wool: [
+            ],
+            image: [
+                "products/6368e5f9-38c3-492b-8d97-c1af55390cdb-1.jpg",
+                "products/6368e5f9-38c3-492b-8d97-c1af55390cdb-2.jpg",
+                "products/6368e5f9-38c3-492b-8d97-c1af55390cdb-3.jpg"
+            ]
+        },
+        {
+            id: "eaf3800d-8bed-47cf-bc56-ae58947bd572",
+            name: {
+                fr: "Chapeau fleur",
+                en: "flower hat"
+            },
+            price: [6.00],
+            category: Category.AccessoiresAmigurumi,
+            description: {
+                fr: "",
+                en: ""
+            },
+            typeMaking: TypeMaking.Crochet,
+            creator: Creator.Supermimine,
+            size: [],
+            shade: [],
+            matter: [
+                Matter.Acrylic,
+            ],
+            maintenance: [Maintenance.Washable, Maintenance.Dryer],
+            measure: "25 x 12 x 12 cm",
+            weight: 1,
+            keywords: ["chapeau", "tuque", "orange", "citrouille", "halloween", "peluche", "amigurumi"],
+            relatedProduct: ["8b333ba4-3195-4923-a1a0-19c7478d03da"],
+            wool: [
+            ],
+            image: [
+                "products/eaf3800d-8bed-47cf-bc56-ae58947bd572-1.jpg",
+                "products/eaf3800d-8bed-47cf-bc56-ae58947bd572-2.jpg",
+                "products/eaf3800d-8bed-47cf-bc56-ae58947bd572-3.jpg"
             ]
         },
     ]

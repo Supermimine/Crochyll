@@ -80,8 +80,21 @@ const description = computed(() =>
 )
 
 const selectedPrice = computed(() => {
-  const sizeIndex = item?.size?.indexOf(sizeSelected.value as Size) ?? -1
-  return item?.price[sizeIndex] ?? item?.price[0] ?? ''
+  if (!item?.price || item.price.length === 0) return ''
+
+  if (item.price.length > 1) {
+    if (item.size && item.size.length > 1) {
+      const sizeIndex = item.size.indexOf(sizeSelected.value as Size)
+      return sizeIndex !== -1 ? item.price[sizeIndex] : item.price[0]
+    }
+    
+    if (item.shade && item.shade.length > 0) {
+      const colorIndex = item.shade.indexOf(colorSelected.value as string)
+      return colorIndex !== -1 ? item.price[colorIndex] : item.price[0]
+    }
+  }
+
+  return item.price[0]
 })
 
 const schemaOrg = computed(() => {
