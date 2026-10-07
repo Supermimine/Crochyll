@@ -131,7 +131,8 @@
             "termTranslator": "Traducteur de terme",
             "termHook": "Convertisseur taille crochet",
             "pixelArt": "Pixel art",
-            "colorPalette": "Générateur palette de couleurs"
+            "colorPalette": "Générateur palette de couleurs",
+            "note": "Note"
         },
         "colorPalette": {
             "closest": "Laine ayant la couleur la plus proche de",
@@ -150,6 +151,15 @@
         "termTranslator": {
             "language": "Langue",
             "term": "Terme"
+        },
+        "note": {
+            "title": "Note",
+            "size": {
+                "title": "Taille",
+                "small": "Petit",
+                "medium": "Moyen",
+                "large": "Grand"
+            }
         }
     }
 }

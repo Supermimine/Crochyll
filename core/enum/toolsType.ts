@@ -4,5 +4,6 @@ export enum toolsType {
     TermTranslator, 
     TermHook, 
     PixelArt, 
-    ColorPalette 
+    ColorPalette,
+    Note
 }

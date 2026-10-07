@@ -125,7 +125,8 @@
             "termTranslator": "Term Translator",
             "termHook": "Term Hook",
             "pixelArt": "Pixel Art",
-            "colorPalette": "Color Palette"
+            "colorPalette": "Color Palette",
+            "note": "Note"
         },
         "colorPalette": {
             "closest": "Yarn with the closest color to",
@@ -144,6 +145,15 @@
         "termTranslator": {
             "language": "Language",
             "term": "Term"
+        },
+        "note": {
+            "title": "Note",
+            "size": {
+                "title": "Size",
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+            }
         }
     }
 }
