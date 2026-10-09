@@ -28,6 +28,40 @@ export function sanitizeHtml(dirty: string): string {
   return String(DOMPurify.sanitize(dirty, config))
 }
 
+export function sanitizeNoteHtml(dirty: string): string {
+  if (!dirty) return ''
+
+  const sanitized = DOMPurify.sanitize(dirty, {
+    ALLOWED_TAGS: ['p', 'div', 'br', 'strong', 'b', 'i', 'em', 'u', 'span'],
+    ALLOWED_ATTR: ['style', 'align'],
+    ALLOW_DATA_ATTR: false
+  })
+  const parsed = new DOMParser().parseFromString(String(sanitized), 'text/html')
+
+  parsed.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
+    const textAlign = (element.getAttribute('align') || element.style.textAlign).toLowerCase()
+    const fontSize = element.style.fontSize.trim()
+    const display = element.style.display
+    element.removeAttribute('style')
+    element.removeAttribute('align')
+
+    if ((element.tagName === 'P' || element.tagName === 'DIV') && ['left', 'center', 'right', 'justify'].includes(textAlign)) {
+      element.style.textAlign = textAlign
+    }
+
+    if (element.tagName === 'SPAN') {
+      if (/^(?:[8-9]|[1-6]\d|7[0-2])px$/.test(fontSize)) {
+        element.style.fontSize = fontSize
+      }
+      if (display === 'inline-block') {
+        element.style.display = display
+      }
+    }
+  })
+
+  return parsed.body.innerHTML
+}
+
 /**
  * Sanitise pour SVG et symboles internes seulement
  * (pour Maker.vue où on affiche des symboles générés)

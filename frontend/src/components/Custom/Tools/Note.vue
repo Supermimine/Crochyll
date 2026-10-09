@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref, computed, onMounted, watch } from 'vue'
+import { sanitizeNoteHtml } from '@/tools/sanitizer'
 
 const { t } = useI18n()
 
@@ -11,6 +12,16 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:modelValue'])
+
+const enum Format {
+    Bold = 'bold',
+    Italic = 'italic'
+}
+const enum Align {
+    Left = 'justifyLeft',
+    Center = 'justifyCenter',
+    Right = 'justifyRight'
+}
 
 let isWaiting = false
 let savedRange: Range | null = null
@@ -30,16 +41,23 @@ const textValue = computed({
     set: (value: string) => emit('update:modelValue', value)
 })
 
+const setEditorContent = (value?: string) => {
+    if (!editorRef.value) return
+
+    const sanitizedValue = sanitizeNoteHtml(value || '')
+    editorRef.value.innerHTML = sanitizedValue || '<p style="text-align: left;"><br></p>'
+
+    if (value && sanitizedValue !== value) {
+        textValue.value = sanitizedValue
+    }
+}
+
 const initEditorContent = () => {
     if (!editorRef.value) return
     
     document.execCommand('styleWithCSS', false, 'false')
-    
-    if (!textValue.value || textValue.value === '<br>' || textValue.value === '') {
-        editorRef.value.innerHTML = '<p style="text-align: left;"><br></p>'
-    } else {
-        editorRef.value.innerHTML = textValue.value
-    }
+
+    setEditorContent(textValue.value)
     checkActiveStyles()
 }
 
@@ -49,19 +67,54 @@ onMounted(() => {
 
 watch(() => props.modelValue, (newValue) => {
     if (editorRef.value && editorRef.value.innerHTML !== newValue) {
-        if (!newValue || newValue === '') {
-            editorRef.value.innerHTML = '<p style="text-align: left;"><br></p>'
-        } else {
-            editorRef.value.innerHTML = newValue
-        }
+        setEditorContent(newValue)
         checkActiveStyles()
     }
 })
 
 const onInput = () => {
     if (editorRef.value) {
-        textValue.value = editorRef.value.innerHTML
+        const sanitizedValue = sanitizeNoteHtml(editorRef.value.innerHTML)
+        if (editorRef.value.innerHTML !== sanitizedValue) {
+            editorRef.value.innerHTML = sanitizedValue
+        }
+        textValue.value = sanitizedValue
     }
+}
+
+const handlePaste = (event: ClipboardEvent) => {
+    event.preventDefault()
+    if (!props.isActive || isWaiting || !editorRef.value || !event.clipboardData) return
+
+    const selection = window.getSelection()
+    if (!selection) return
+
+    const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : document.createRange()
+    if (!editorRef.value.contains(range.commonAncestorContainer)) {
+        range.selectNodeContents(editorRef.value)
+        range.collapse(false)
+    }
+    range.deleteContents()
+
+    const sanitizedHtml = sanitizeNoteHtml(event.clipboardData.getData('text/html'))
+    if (sanitizedHtml) {
+        const template = document.createElement('template')
+        template.innerHTML = sanitizedHtml
+        const fragment = template.content
+        const lastNode = fragment.lastChild
+        range.insertNode(fragment)
+        if (lastNode) range.setStartAfter(lastNode)
+    } else {
+        const textNode = document.createTextNode(event.clipboardData.getData('text/plain'))
+        range.insertNode(textNode)
+        range.setStartAfter(textNode)
+    }
+
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range)
+    onInput()
+    checkActiveStyles()
 }
 
 const saveSelection = () => {
@@ -103,7 +156,7 @@ const checkActiveStyles = () => {
     }
 }
 
-const format = (command: 'bold' | 'italic') => {
+const format = (command: Format) => {
     if (!props.isActive || isWaiting) return
     if (editorRef.value) editorRef.value.focus()
     document.execCommand(command, false)
@@ -111,7 +164,7 @@ const format = (command: 'bold' | 'italic') => {
     checkActiveStyles()
 }
 
-const align = (alignment: 'justifyLeft' | 'justifyCenter' | 'justifyRight') => {
+const align = (alignment: Align) => {
     if (!props.isActive || isWaiting) return
     if (editorRef.value) editorRef.value.focus()
     document.execCommand(alignment, false)
@@ -185,49 +238,54 @@ const changeFontSize = (size: string) => {
             </h3>
         </div>
 
-        <div class="editor-toolbar d-flex align-center px-2 py-1 border-b" @mousedown.stop>
+        <div class="editor-toolbar d-flex align-center border-b" @mousedown.stop>
             <v-btn 
-                icon="mdi-format-bold" 
+                class="toolbar-icon-btn"
+                icon="mdi-format-bold"
                 variant="text" 
-                density="comfortable" 
+                density="compact" 
                 :color="activeFormats.bold ? 'red' : undefined"
                 :disabled="!props.isActive || isWaiting"
-                @click="format('bold')"
+                @click="format(Format.Bold)"
             />
             <v-btn 
+                class="toolbar-icon-btn"
                 icon="mdi-format-italic" 
                 variant="text" 
-                density="comfortable" 
+                density="compact" 
                 :color="activeFormats.italic ? 'red' : undefined"
                 :disabled="!props.isActive || isWaiting"
-                @click="format('italic')"
+                @click="format(Format.Italic)"
             />
             
             <v-divider vertical class="mx-1" />
 
             <v-btn 
+                class="toolbar-icon-btn"
                 icon="mdi-format-align-left" 
                 variant="text" 
-                density="comfortable" 
+                density="compact" 
                 :color="activeFormats.left ? 'red' : undefined"
                 :disabled="!props.isActive || isWaiting"
-                @click="align('justifyLeft')"
+                @click="align(Align.Left)"
             />
             <v-btn 
+                class="toolbar-icon-btn"
                 icon="mdi-format-align-center" 
                 variant="text" 
-                density="comfortable" 
+                density="compact" 
                 :color="activeFormats.center ? 'red' : undefined"
                 :disabled="!props.isActive || isWaiting"
-                @click="align('justifyCenter')"
+                @click="align(Align.Center)"
             />
             <v-btn 
+                class="toolbar-icon-btn"
                 icon="mdi-format-align-right" 
                 variant="text" 
-                density="comfortable" 
+                density="compact" 
                 :color="activeFormats.right ? 'red' : undefined"
                 :disabled="!props.isActive || isWaiting"
-                @click="align('justifyRight')"
+                @click="align(Align.Right)"
             />
 
             <v-divider vertical class="mx-1" />
@@ -236,7 +294,7 @@ const changeFontSize = (size: string) => {
                 <template v-slot:activator="{ props: menuProps }">
                     <v-btn 
                         variant="text" 
-                        density="comfortable" 
+                        density="compact" 
                         prepend-icon="mdi-format-size" 
                         v-bind="menuProps"
                         :disabled="!props.isActive || isWaiting"
@@ -252,13 +310,13 @@ const changeFontSize = (size: string) => {
                     ></v-list-item>
                     <v-list-item 
                         :title="t('tools.note.size.medium')"
-                        :color="activeFontSize === '22px' ? 'red' : undefined"
-                        @click="changeFontSize('22px')"
+                        :color="activeFontSize === '16px' ? 'red' : undefined"
+                        @click="changeFontSize('16px')"
                     ></v-list-item>
                     <v-list-item 
                         :title="t('tools.note.size.large')"
-                        :color="activeFontSize === '36px' ? 'red' : undefined"
-                        @click="changeFontSize('36px')"
+                        :color="activeFontSize === '24px' ? 'red' : undefined"
+                        @click="changeFontSize('24px')"
                     ></v-list-item>
                 </v-list>
             </v-menu>
@@ -271,6 +329,8 @@ const changeFontSize = (size: string) => {
             class="note-textarea custom-editor px-3 py-2"
             :class="{ 'editor-disabled': !props.isActive || isWaiting }"
             @input="onInput"
+            @paste="handlePaste"
+            @drop.prevent
             @focus="checkActiveStyles"
             @click="checkActiveStyles"
             @mousedown.stop
@@ -290,6 +350,12 @@ const changeFontSize = (size: string) => {
 
 .editor-toolbar {
     gap: 4px;
+}
+
+.editor-toolbar :deep(.toolbar-icon-btn) {
+    width: 32px;
+    min-width: 32px;
+    padding: 0;
 }
 
 .note-textarea {
