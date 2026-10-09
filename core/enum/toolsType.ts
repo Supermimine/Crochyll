@@ -5,5 +5,6 @@ export enum toolsType {
     TermHook, 
     PixelArt, 
     ColorPalette,
+    YarnComparaison,
     Note
 }

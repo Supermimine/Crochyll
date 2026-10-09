@@ -126,6 +126,7 @@
             "termHook": "Term Hook",
             "pixelArt": "Pixel Art",
             "colorPalette": "Color Palette",
+            "yarnComparaison": "Yarn Comparaison",
             "note": "Note"
         },
         "colorPalette": {
@@ -153,6 +154,19 @@
                 "small": "Small",
                 "medium": "Medium",
                 "large": "Large"
+            }
+        },
+        "yarnComparaison": {
+            "yarnA": "Yarn (A)",
+            "yarnB": "Yarn (B)",
+            "length": "Length",
+            "weight": "Weight",
+            "density": "Density",
+            "result": {
+                "sucess": "Perfect! These yarns have a quasi-identical thickness. You can substitute them without problems.",
+                "warning": "Close! The thicknesses are similar, but be careful to make your swatch.",
+                "error": "Warning! The thicknesses are too different. The size of your final project might change.",
+                "info": "Please fill in all values to perform the comparison."
             }
         }
     }

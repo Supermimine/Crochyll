@@ -132,6 +132,7 @@
             "termHook": "Convertisseur taille crochet",
             "pixelArt": "Pixel art",
             "colorPalette": "Générateur palette de couleurs",
+            "yarnComparaison": "Comparateur de pelotes",
             "note": "Note"
         },
         "colorPalette": {
@@ -159,6 +160,19 @@
                 "small": "Petit",
                 "medium": "Moyen",
                 "large": "Grand"
+            }
+        },
+        "yarnComparaison": {
+            "yarnA": "Fil (A)",
+            "yarnB": "Fil (B)",
+            "length": "Longueur",
+            "weight": "Poids",
+            "density": "Densité",
+            "result": {
+                "sucess": "Parfait ! Ces fils ont une épaisseur quasi identique. Vous pouvez les substituer sans problème.",
+                "warning": "Proche ! Les épaisseurs sont similaires, mais attention à bien faire votre échantillon.",
+                "error": "Attention ! Les épaisseurs sont trop différentes. La taille de votre projet final risque de changer.",
+                "info": "Veuillez remplir toutes les valeurs pour effectuer la comparaison."
             }
         }
     }

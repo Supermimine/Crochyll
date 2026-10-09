@@ -18,6 +18,7 @@ import TermTranslator from '../Custom/Tools/TermTranslator.vue';
 import TermHook from '../Custom/Tools/TermHook.vue';
 import PixelArt from '../Custom/Tools/PixelArt.vue';
 import ColorPalette from '../Custom/Tools/ColorPalette.vue';
+import YarnComparaison from '../Custom/Tools/YarnComparaison.vue';
 import Note from '../Custom/Tools/Note.vue';
 import { useScreen } from '@/tools/appTools.ts';
 
@@ -39,6 +40,7 @@ const componentMap: Record<toolsType, any> = {
   [toolsType.TermHook]: TermHook,
   [toolsType.PixelArt]: PixelArt,
   [toolsType.ColorPalette]: ColorPalette,
+  [toolsType.YarnComparaison]: YarnComparaison,
   [toolsType.Note]: Note
 }
 
@@ -49,6 +51,7 @@ const toolSize: Record<toolsType, (isMobile: boolean) => { w: number; h: number 
   [toolsType.TermHook]: (isMobile) => isMobile ? { w: 3, h: 1 } : { w: 3, h: 1 },
   [toolsType.PixelArt]: (isMobile) => isMobile ? { w: 3, h: 3 } : { w: 3, h: 3 },
   [toolsType.ColorPalette]: (isMobile) => isMobile ? { w: 3, h: 1 } : { w: 2, h: 1 },
+  [toolsType.YarnComparaison]: (isMobile) => isMobile ? { w: 2, h: 2 } : { w: 2, h: 2 },
   [toolsType.Note]: (isMobile) => isMobile ? { w: 1, h: 1 } : { w: 2, h: 2 }
 }
 
@@ -315,6 +318,7 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
         <v-list-item :title="t('tools.tool.termHook')" @click="addTools(toolsType.TermHook)"></v-list-item>
         <v-list-item :title="t('tools.tool.pixelArt')" @click="addTools(toolsType.PixelArt)"></v-list-item>
         <v-list-item :title="t('tools.tool.colorPalette')" @click="addTools(toolsType.ColorPalette)"></v-list-item>
+        <v-list-item :title="t('tools.tool.yarnComparaison')" @click="addTools(toolsType.YarnComparaison)"></v-list-item>
         <v-list-item :title="t('tools.tool.note')" @click="addTools(toolsType.Note)"></v-list-item>
       </v-list>
     </v-menu>
@@ -380,7 +384,7 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
   border: var(--action-color) dashed;
   border-radius: 24px;
   transition: ease 0.3s;
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 @media (hover: hover) {
