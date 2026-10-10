@@ -1,17 +1,31 @@
-<script setup type="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
 import BasicMenu from '../Menu/BasicMenu.vue';
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
+
+const enum tabs {
+    privacy = 'privacy',
+    intellectualProperty = 'intellectualProperty'
+}
+
+const activeTab = ref < tabs > (tabs.privacy);
 </script>
 
 <template>
     <BasicMenu />
 
     <div>
-        <h1>{{ t('policy.title') }}</h1>
-        <p>{{ t('policy.lastUpdate') }} 08-03-2026</p>
+        <h1 class="mb-3">{{ t('policy.title') }}</h1>
+        <p>{{ t('policy.lastUpdate') }} 10-10-2026</p>
+        <br />
 
-        <div style="text-align: left;">
+        <v-tabs v-model="activeTab" align-tabs="center" density="compact" class="policy-tabs" fixed-tabs>
+            <v-tab :value="tabs.privacy">{{ t('policy.privacyTitle') }}</v-tab>
+            <v-tab :value="tabs.intellectualProperty">{{ t('policy.intellectualPropertyTitle') }}</v-tab>
+        </v-tabs>
+
+        <div v-if="activeTab === tabs.privacy" style="text-align: left;">
             <h3>{{ t('policy.summary') }}</h3>
             <p>
                 {{ t('policy.text1') }}
@@ -105,9 +119,44 @@ const { t } = useI18n()
             <br />
 
             <h3>{{ t('policy.contactUs') }}</h3>
-            <p>
+            <p class="pb-16">
                 {{ t('policy.text19') }}
                 info.crochyll@gmail.com
+            </p>
+            <br />
+        </div>
+
+        <div v-else style="text-align: left;">
+            <h3>{{ t('policy.ipScopeTitle') }}</h3>
+            <p>{{ t('policy.intellectualPropertyText1') }}</p>
+            <br />
+
+            <h3>{{ t('policy.ipProductTitle') }}</h3>
+            <p>{{ t('policy.ipProductText') }}</p>
+            <br />
+
+            <h3>{{ t('policy.ipVisualTitle') }}</h3>
+            <p>{{ t('policy.ipVisualText') }}</p>
+            <br />
+
+            <h3>{{ t('policy.ipCodeTitle') }}</h3>
+            <p>{{ t('policy.ipCodeText') }}</p>
+            <br />
+
+            <h3>{{ t('policy.ipUseTitle') }}</h3>
+            <p>{{ t('policy.intellectualPropertyText2') }}</p>
+            <br />
+
+            <h3>{{ t('policy.ipPurchaseTitle') }}</h3>
+            <p>{{ t('policy.intellectualPropertyText3') }}</p>
+            <br />
+            <p>{{ t('policy.ipPurchaseText') }}</p>
+            <br />
+
+            <h3>{{ t('policy.ipThirdPartyTitle') }}</h3>
+            <p class="pb-16">
+                {{ t('policy.intellectualPropertyText4') }}
+                <a href="mailto:info.crochyll@gmail.com">info.crochyll@gmail.com</a>.
             </p>
             <br />
         </div>
@@ -117,5 +166,24 @@ const { t } = useI18n()
 <style scoped>
 .spaceLeft {
     margin-left: 20px;
+}
+
+.policy-tabs {
+    margin-bottom: 20px;
+    background-color: var(--main-color);
+    color: var(--text-color);
+}
+
+.policy-tabs :deep(.v-tab) {
+    background-color: var(--main-color) !important;
+    color: var(--text-color);
+}
+
+.policy-tabs :deep(.v-tab--selected) {
+    color: var(--action-color);
+}
+
+.policy-tabs :deep(.v-tab__slider) {
+    background-color: var(--action-color);
 }
 </style>
