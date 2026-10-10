@@ -1,12 +1,24 @@
 {
     "maker": {
         "menu": {
-            "title": "Outils de création",
+            "title": "Creation Tools",
             "shortcut": {
-                "title": "Raccourcis:",
-                "add": "ALT+A (nouveau rang)",
-                "delete": "ALT+R (supprimer rang)",
-                "export": "ALT+S (exporter)"
+                "title": "Shortcuts",
+                "addRow": "CTRL + SHIFT + A (new row)",
+                "addStitch": "CTRL + SHIFT + L (new stitch)",
+                "delete": "CTRL + SHIFT + R (delete row)",
+                "export": "CTRL + SHIFT + S (export)"
+            },
+            "info": {
+                "title": "Tip"
+            },
+            "tool": {
+                "row": {
+                    "title": "Row Management"
+                },
+                "stitch": {
+                    "title": "Stitch Management"
+                }
             }
         }
     }

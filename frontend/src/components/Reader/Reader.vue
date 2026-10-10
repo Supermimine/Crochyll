@@ -250,12 +250,14 @@ interface CounterItem {
 const counters = ref<CounterItem[]>([
   { id: 1 }
 ])
+const counterValues = ref<Record<number, number>>({ 1: 0 })
 const activeCounterId = ref<number | null>(null)
 const showAddButton = ref(true)
 
 const addCounter = () => {
   const newId = Date.now()
   counters.value.push({ id: newId })
+  counterValues.value[newId] = 0
   activeCounterId.value = newId
 
   if (counters.value.length >= 2) {
@@ -264,6 +266,7 @@ const addCounter = () => {
 }
 const removeCounter = (id: number) => {
   counters.value = counters.value.filter(c => c.id !== id)
+  delete counterValues.value[id]
 
   if (activeCounterId.value === id) {
     activeCounterId.value = null
@@ -399,9 +402,12 @@ useHead(() => ({
           <div class="tools-grid">
             <div v-for="counter in counters" :key="counter.id" class="tool">
               <ToolContainer :id="counter.id" :isActive="activeCounterId === counter.id" :widthSlots="1"
-                :heightSlots="1" :slotIndex="1" @click.capture="setActiveCounter(counter.id)" @remove="removeCounter"
+                :heightSlots="1" :slotIndex="0" :gridColumns="1" @click.capture="setActiveCounter(counter.id)"
+                @remove="removeCounter"
                 class="counter">
-                <component :is="Counter" :id="counter.id" :isActive="activeCounterId === counter.id" />
+                <component :is="Counter" :id="counter.id" :isActive="activeCounterId === counter.id"
+                  :model-value="counterValues[counter.id]"
+                  @update:model-value="counterValues[counter.id] = $event" />
               </ToolContainer>
             </div>
           </div>

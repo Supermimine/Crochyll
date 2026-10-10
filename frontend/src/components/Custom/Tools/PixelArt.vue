@@ -6,10 +6,17 @@ import { useI18n } from 'vue-i18n';
 const { isMobile } = useScreen();
 const { t } = useI18n();
 
+interface PixelArtState {
+    pixels: string[];
+    crosses: boolean[];
+}
+
+type PixelArtHistoryState = PixelArtState
+
 const props = defineProps<{
     id: number,
     isActive: boolean,
-    modelValue?: string[]
+    modelValue?: string[] | PixelArtState
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -27,11 +34,14 @@ const enum Action {
 
 const selectedAction = ref<Action>(Action.Brush)
 
-const undoStack = ref<string[][]>([])
-const redoStack = ref<string[][]>([])
+const undoStack = ref<PixelArtHistoryState[]>([])
+const redoStack = ref<PixelArtHistoryState[]>([])
 const hasStateSavedInCurrentStroke = ref<boolean>(false)
 const pixels = ref<string[]>([])
+const crosses = ref<boolean[]>([])
 const gridContainerRef = ref<HTMLElement | null>(null)
+const mouseAction = ref<'color' | 'cross' | null>(null)
+const lastMouseIndex = ref<number | null>(null)
 
 const lastTouchedIndex = ref<number | null>(null)
 let touchFrameId: number | null = null
@@ -57,6 +67,7 @@ const gridStyle = computed(() => {
 const initializeGrid = (): void => {
     const totalPixels = gridSize.value * gridSize.value
     pixels.value = Array(totalPixels).fill('#FFFFFF')
+    crosses.value = Array(totalPixels).fill(false)
     undoStack.value = []
     redoStack.value = []
     hasStateSavedInCurrentStroke.value = false
@@ -64,27 +75,34 @@ const initializeGrid = (): void => {
 }
 
 const syncWithParent = () => {
-    emit('update:modelValue', [...pixels.value])
+    emit('update:modelValue', {
+        pixels: [...pixels.value],
+        crosses: [...crosses.value]
+    })
 }
 
 const saveState = (): void => {
-    undoStack.value.push([...pixels.value])
+    undoStack.value.push({ pixels: [...pixels.value], crosses: [...crosses.value] })
     redoStack.value = []
 }
 
 const undo = (): void => {
     if (undoStack.value.length === 0 || lockDrawing.value) return
 
-    redoStack.value.push([...pixels.value])
-    pixels.value = undoStack.value.pop()!
+    redoStack.value.push({ pixels: [...pixels.value], crosses: [...crosses.value] })
+    const previousState = undoStack.value.pop()!
+    pixels.value = previousState.pixels
+    crosses.value = previousState.crosses
     syncWithParent()
 }
 
 const redo = (): void => {
     if (redoStack.value.length === 0 || lockDrawing.value) return
 
-    undoStack.value.push([...pixels.value])
-    pixels.value = redoStack.value.pop()!
+    undoStack.value.push({ pixels: [...pixels.value], crosses: [...crosses.value] })
+    const nextState = redoStack.value.pop()!
+    pixels.value = nextState.pixels
+    crosses.value = nextState.crosses
     syncWithParent()
 }
 
@@ -170,9 +188,61 @@ const floodFill = (startIndex: number): void => {
 }
 
 const drawOnHover = (index: number): void => {
-    if (isDrawing.value) {
+    if (isDrawing.value && mouseAction.value === 'color') {
         colorPixel(index)
     }
+}
+
+const toggleCross = (index: number): void => {
+    if (index < 0 || index >= crosses.value.length || !lockDrawing.value) return
+
+    if (!hasStateSavedInCurrentStroke.value) {
+        saveState()
+        hasStateSavedInCurrentStroke.value = true
+    }
+
+    crosses.value[index] = !crosses.value[index]
+}
+
+const handleMouseDown = (event: MouseEvent): void => {
+    const pixel = (event.target as HTMLElement).closest<HTMLElement>('.pixel')
+    if (!pixel) return
+
+    const index = Number(pixel.dataset.index)
+
+    if (lockDrawing.value && (event.button === 0 || event.button === 2)) {
+        if (event.button === 2) event.preventDefault()
+        mouseAction.value = 'cross'
+        isDrawing.value = true
+        lastMouseIndex.value = index
+        toggleCross(index)
+    } else if (event.button === 0) {
+        mouseAction.value = 'color'
+        startDrawing()
+        lastMouseIndex.value = index
+        colorPixel(index)
+    }
+}
+
+const handleMouseMove = (event: MouseEvent): void => {
+    if (!isDrawing.value || !mouseAction.value) return
+
+    const pixel = (event.target as HTMLElement).closest<HTMLElement>('.pixel')
+    if (!pixel) return
+
+    const index = Number(pixel.dataset.index)
+    if (index === lastMouseIndex.value) return
+
+    lastMouseIndex.value = index
+    if (mouseAction.value === 'cross') {
+        toggleCross(index)
+    } else {
+        colorPixel(index)
+    }
+}
+
+const handleContextMenu = (event: MouseEvent): void => {
+    if (lockDrawing.value) event.preventDefault()
 }
 
 const startDrawing = (): void => {
@@ -185,8 +255,10 @@ const stopDrawing = (): void => {
         syncWithParent()
     }
     isDrawing.value = false
+    mouseAction.value = null
     hasStateSavedInCurrentStroke.value = false
     lastTouchedIndex.value = null
+    lastMouseIndex.value = null
     if (touchFrameId) {
         cancelAnimationFrame(touchFrameId)
         touchFrameId = null
@@ -263,9 +335,17 @@ const switchAction = (action: Action): void => {
 }
 
 onMounted(() => {
-    if (props.modelValue && props.modelValue.length > 0) {
-        pixels.value = [...props.modelValue]
-        gridSize.value = Math.sqrt(props.modelValue.length)
+    if (props.modelValue && (Array.isArray(props.modelValue)
+        ? props.modelValue.length > 0
+        : props.modelValue.pixels.length > 0)) {
+        if (Array.isArray(props.modelValue)) {
+            pixels.value = [...props.modelValue]
+            crosses.value = Array(props.modelValue.length).fill(false)
+        } else {
+            pixels.value = [...props.modelValue.pixels]
+            crosses.value = [...props.modelValue.crosses]
+        }
+        gridSize.value = Math.sqrt(pixels.value.length)
     } else {
         initializeGrid()
     }
@@ -354,12 +434,16 @@ watch(gridSize, (newSize, oldSize) => {
             <div class="canvas-area d-flex align-center justify-center">
                 <div class="grid-wrapper">
                     <div ref="gridContainerRef" class="grid-container pa-0 rounded shadow-inner"
-                        :style="[gridStyle, { '--grid-size': gridSize }]" @mousedown="startDrawing"
-                        @mouseup="stopDrawing" @mouseleave="stopDrawing" @mousedown.stop>
+                        :style="[gridStyle, { '--grid-size': gridSize }]" @mousedown.stop="handleMouseDown"
+                        @mousemove="handleMouseMove" @mouseup="stopDrawing" @mouseleave="stopDrawing"
+                        @touchstart.stop @contextmenu="handleContextMenu">
 
-                        <div v-for="(color, index) in pixels" :key="index" class="pixel" :data-index="index"
-                            :style="{ backgroundColor: color }" @mousedown.prevent="colorPixel(index)"
+                        <div v-for="(color, index) in pixels" :key="index" class="pixel"
+                            :data-index="index" :style="{ backgroundColor: color }"
                             @mouseover="drawOnHover(index)">
+                            <span v-if="crosses[index]" class="pixel-cross">
+                                <v-icon icon="mdi-close" size="14"></v-icon>
+                            </span>
                         </div>
                     </div>
 
@@ -468,10 +552,22 @@ watch(gridSize, (newSize, oldSize) => {
 }
 
 .pixel {
+    position: relative;
     width: 14px;
     height: 14px;
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
     transition: background-color 0.05s ease;
+}
+
+.pixel-cross {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    mix-blend-mode: difference;
+    pointer-events: none;
 }
 
 .pixel:hover {
