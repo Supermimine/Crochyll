@@ -24,7 +24,7 @@ import BasicMenu from "../Menu/BasicMenu.vue";
 import ToolContainer from '@/components/Custom/Tools/ToolContainer.vue'
 import Counter from '@/components/Custom/Tools/Counter.vue'
 
-import type { FilePattern } from "@core/model/filepattern";
+import type { FilePattern, ReaderCounter } from "@core/model/filepattern";
 import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";
 import { useHead } from "@unhead/vue";
 
@@ -102,29 +102,33 @@ const removeFile = (index: number) => {
 };
 
 const changeSelectedFile = (index: number) => {
+  const file = filesList.value[index];
+  if (!file) return;
+
+  if (file.readerCounters === undefined) {
+    file.readerCounters = [{ id: 1, slotIndex: 0, value: 0 }];
+  }
+  normalizeCounterSlots(file.readerCounters);
+  safeStorageSetJSON("files", filesList.value);
+
   selectedFileIndex.value = index;
   uploadSectionShow.value = false;
-
-  selectedFile.value = filesList.value[index];
+  selectedFile.value = file;
+  activeCounterId.value = file.readerCounters[0]?.id ?? null;
   filesSectionOpen.value = false;
 };
 const unSelectedFile = () => {
   selectedFileIndex.value = null;
   uploadSectionShow.value = true;
   selectedFile.value = null;
+  activeCounterId.value = null;
 };
 
 const editFile = () => {
-  const files: FilePattern[] = safeStorageGetJSON<FilePattern[]>("files", []);
+  if (!selectedFile.value || selectedFileIndex.value === null) return;
 
-  if (!selectedFile.value) return;
-
-  const index = files.findIndex((entry) => entry.name === selectedFile.value!.name);
-
-  if (index !== -1) {
-    files[index] = selectedFile.value;
-    safeStorageSetJSON("files", files);
-  }
+  filesList.value[selectedFileIndex.value] = selectedFile.value;
+  safeStorageSetJSON("files", filesList.value);
 };
 const changeState = (state: number) => {
   if (selectedFile?.value == null) return;
@@ -244,40 +248,121 @@ const showSection = async () => {
   }
 };
 
-interface CounterItem {
-  id: number
-}
-const counters = ref<CounterItem[]>([
-  { id: 1 }
-])
-const counterValues = ref<Record<number, number>>({ 1: 0 })
+const MAX_COUNTERS = 2;
+const GRID_COLUMNS = 1;
+const GRID_ROWS = 2;
+const COUNTER_WIDTH = 1;
+const COUNTER_HEIGHT = 1;
+const counters = computed(() => selectedFile.value?.readerCounters ?? []);
 const activeCounterId = ref<number | null>(null)
-const showAddButton = ref(true)
+const showAddButton = computed(() => counters.value.length < MAX_COUNTERS)
+
+const isCounterPositionAvailable = (slotIndex: number, otherCounters: ReaderCounter[]) => {
+  const column = slotIndex % GRID_COLUMNS;
+  const row = Math.floor(slotIndex / GRID_COLUMNS);
+
+  if (
+    column + COUNTER_WIDTH > GRID_COLUMNS ||
+    row + COUNTER_HEIGHT > GRID_ROWS
+  ) return false;
+
+  return otherCounters.every(other => {
+    const otherColumn = other.slotIndex % GRID_COLUMNS;
+    const otherRow = Math.floor(other.slotIndex / GRID_COLUMNS);
+    const overlapsHorizontally = column < otherColumn + COUNTER_WIDTH && column + COUNTER_WIDTH > otherColumn;
+    const overlapsVertically = row < otherRow + COUNTER_HEIGHT && row + COUNTER_HEIGHT > otherRow;
+    return !(overlapsHorizontally && overlapsVertically);
+  });
+};
+
+const findFreeCounterSlot = (otherCounters: ReaderCounter[]) =>
+  Array.from({ length: GRID_COLUMNS * GRID_ROWS }, (_, index) => index)
+    .find(slotIndex => isCounterPositionAvailable(slotIndex, otherCounters));
+
+const normalizeCounterSlots = (fileCounters: ReaderCounter[]) => {
+  const placedCounters: ReaderCounter[] = [];
+
+  fileCounters.forEach(counter => {
+    if (!isCounterPositionAvailable(counter.slotIndex, placedCounters)) {
+      const freeSlot = findFreeCounterSlot(placedCounters);
+      if (freeSlot !== undefined) counter.slotIndex = freeSlot;
+    }
+    placedCounters.push(counter);
+  });
+};
 
 const addCounter = () => {
-  const newId = Date.now()
-  counters.value.push({ id: newId })
-  counterValues.value[newId] = 0
-  activeCounterId.value = newId
+  if (!selectedFile.value || counters.value.length >= MAX_COUNTERS) return;
 
-  if (counters.value.length >= 2) {
-    showAddButton.value = false
-  }
+  const slotIndex = findFreeCounterSlot(counters.value);
+  if (slotIndex === undefined) return;
+
+  const newId = counters.value.reduce((maxId, counter) => Math.max(maxId, counter.id), 0) + 1;
+  selectedFile.value.readerCounters ??= [];
+  selectedFile.value.readerCounters.push({ id: newId, slotIndex, value: 0 });
+  activeCounterId.value = newId
+  editFile();
 }
 const removeCounter = (id: number) => {
-  counters.value = counters.value.filter(c => c.id !== id)
-  delete counterValues.value[id]
+  if (!selectedFile.value) return;
+  selectedFile.value.readerCounters = counters.value.filter(counter => counter.id !== id);
 
   if (activeCounterId.value === id) {
-    activeCounterId.value = null
+    activeCounterId.value = counters.value[0]?.id ?? null
   }
-
-  showAddButton.value = true
+  editFile();
 }
 
 const setActiveCounter = (id: number) => {
   activeCounterId.value = id
 }
+
+const updateCounterValue = (id: number, value: number) => {
+  const counter = counters.value.find(item => item.id === id);
+  if (!counter) return;
+
+  counter.value = value;
+  editFile();
+}
+
+const getCounterStyle = (counter: ReaderCounter) => ({
+  gridColumn: `${(counter.slotIndex % GRID_COLUMNS) + 1}`,
+  gridColumnEnd: `span ${COUNTER_WIDTH}`,
+  gridRow: `${Math.floor(counter.slotIndex / GRID_COLUMNS) + 1}`,
+  gridRowEnd: `span ${COUNTER_HEIGHT}`
+});
+
+const getAddCounterStyle = () => {
+  const slotIndex = findFreeCounterSlot(counters.value) ?? 0;
+  return {
+    gridColumn: `${(slotIndex % GRID_COLUMNS) + 1}`,
+    gridRow: `${Math.floor(slotIndex / GRID_COLUMNS) + 1}`,
+    gridRowEnd: `span ${COUNTER_HEIGHT}`
+  };
+};
+
+const handleCounterMove = (counter: ReaderCounter, targetSlotIndex: number) => {
+  const otherCounters = counters.value.filter(other => other.id !== counter.id);
+
+  if (!isCounterPositionAvailable(targetSlotIndex, otherCounters)) {
+    const overlappingCounter = otherCounters.find(other =>
+      other.slotIndex === targetSlotIndex
+    );
+    if (!overlappingCounter) return;
+
+    const remainingCounters = otherCounters.filter(other => other.id !== overlappingCounter.id);
+    if (!isCounterPositionAvailable(counter.slotIndex, remainingCounters)) return;
+
+    const previousSlotIndex = counter.slotIndex;
+    counter.slotIndex = overlappingCounter.slotIndex;
+    overlappingCounter.slotIndex = previousSlotIndex;
+    editFile();
+    return;
+  }
+
+  counter.slotIndex = targetSlotIndex;
+  editFile();
+};
 
 watchEffect(() => {
   showSection();
@@ -399,24 +484,26 @@ useHead(() => ({
         <!-- Tools -->
         <div class="toolSection">
           <!--Compteur-->
-          <div class="tools-grid">
-            <div v-for="counter in counters" :key="counter.id" class="tool">
-              <ToolContainer :id="counter.id" :isActive="activeCounterId === counter.id" :widthSlots="1"
-                :heightSlots="1" :slotIndex="0" :gridColumns="1" @click.capture="setActiveCounter(counter.id)"
+          <div class="tools-grid" :style="{ '--grid-cols': GRID_COLUMNS, '--grid-rows': GRID_ROWS }">
+            <div v-for="counter in counters" :key="counter.id" class="tool" :style="getCounterStyle(counter)">
+              <ToolContainer :id="counter.id" :isActive="activeCounterId === counter.id" :widthSlots="COUNTER_WIDTH"
+                :heightSlots="COUNTER_HEIGHT" :slotIndex="counter.slotIndex" :gridColumns="GRID_COLUMNS"
+                :gridRows="GRID_ROWS"
+                @click.capture="setActiveCounter(counter.id)"
+                @update-position="handleCounterMove(counter, $event)"
                 @remove="removeCounter"
                 class="counter">
                 <component :is="Counter" :id="counter.id" :isActive="activeCounterId === counter.id"
-                  :model-value="counterValues[counter.id]"
-                  @update:model-value="counterValues[counter.id] = $event" />
+                  :model-value="counter.value"
+                  @update:model-value="updateCounterValue(counter.id, $event)" />
               </ToolContainer>
             </div>
-          </div>
-
-          <div v-if="showAddButton" class="tool">
-            <v-btn class="buttonColor" @click="addCounter"
-              style="margin: auto; background-color: var(--dark-color);height: 65px;width: 45px;border-radius: 50px; margin-top: 100px; padding: 8px;">
-              <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
-            </v-btn>
+            <div v-if="showAddButton" class="tool add-counter" :style="getAddCounterStyle()">
+              <v-btn class="buttonColor" @click="addCounter"
+                style="background-color: var(--dark-color);height: 65px;width: 45px;border-radius: 50px; padding: 8px;">
+                <v-icon icon="mdi-plus" size="20" class="ma-auto"></v-icon>
+              </v-btn>
+            </div>
           </div>
         </div>
       </div>
@@ -431,12 +518,13 @@ useHead(() => ({
 
 .stateContainer {
   display: flex;
+  align-items: stretch;
 }
 
 .stateBox {
   height: auto;
   aspect-ratio: 3 / 2;
-  margin: auto;
+  margin: 0 auto;
   background-color: var(--dark-color);
   border-radius: 5px;
   padding: 20px 50px;
@@ -541,15 +629,35 @@ useHead(() => ({
 .toolSection {
   display: block;
   width: 40%;
+  min-height: 0;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols, 1), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--grid-rows, 2), minmax(0, 1fr));
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 
 .tool {
-  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.add-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .counter {
-  min-height: 180px;
-  margin: 0 15px 15px 15px;
+  height: 100%;
+  min-height: 0;
 }
 
 @media (max-width: 1250px) {
@@ -562,15 +670,13 @@ useHead(() => ({
   }
 
   .toolSection {
-    display: flex !important;
     width: 100%;
-    justify-content: space-between;
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 16px;
   }
 
-  .tool {
-    width: 50%;
+  .tools-grid {
+    height: auto;
+    grid-template-rows: repeat(var(--grid-rows, 2), 180px);
   }
 }
 

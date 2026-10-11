@@ -64,14 +64,81 @@ const selectedSlotIndex = ref<number | null>(null)
 const toolsState = ref<Record<number, any>>({});
 
 const GRID_COLUMNS = computed(() => isMobile.value ? 3 : 5)
-const GRID_ROWS = computed(() => isMobile.value ? 3 : 3)
+const GRID_ROWS = computed(() => Math.max(
+  3,
+  ...lstTools.value.map(item => Math.floor(item.slotIndex / GRID_COLUMNS.value) + Math.max(1, item.h || 1))
+))
+
+const getMinimumGridRows = (tools: tool[]) =>
+  Math.max(3, tools.reduce((total, item) => total + Math.max(1, item.h || 1), 0))
+
+const getToolBounds = (item: tool, slotIndex: number, columns: number) => ({
+  col: slotIndex % columns,
+  row: Math.floor(slotIndex / columns),
+  width: Math.max(1, item.w || 1),
+  height: Math.max(1, item.h || 1)
+})
+
+const toolsOverlap = (
+  first: ReturnType<typeof getToolBounds>,
+  second: ReturnType<typeof getToolBounds>
+) =>
+  first.col < second.col + second.width && first.col + first.width > second.col &&
+  first.row < second.row + second.height && first.row + first.height > second.row
+
+const findToolSlot = (item: tool, placedTools: tool[], columns: number, rows: number) => {
+  const slotIndexes = [
+    item.slotIndex,
+    ...Array.from({ length: columns * rows }, (_, index) => index)
+  ];
+  const visited = new Set<number>();
+
+  return slotIndexes.find(slotIndex => {
+    if (visited.has(slotIndex) || slotIndex < 0 || slotIndex >= columns * rows) return false;
+    visited.add(slotIndex);
+
+    const bounds = getToolBounds(item, slotIndex, columns);
+    if (bounds.col + bounds.width > columns || bounds.row + bounds.height > rows) return false;
+
+    return placedTools.every(other =>
+      !toolsOverlap(bounds, getToolBounds(other, other.slotIndex, columns))
+    );
+  });
+}
+
+const normalizeToolLayout = (tools: tool[], columns: number, rows: number) => {
+  const availableRows = Math.max(rows, getMinimumGridRows(tools));
+  const placedTools: tool[] = [];
+
+  for (const item of tools) {
+    const normalizedItem = {
+      ...item,
+      w: Math.min(Math.max(1, item.w || 1), columns),
+      h: Math.max(1, item.h || 1)
+    };
+    const slotIndex = findToolSlot(normalizedItem, placedTools, columns, availableRows);
+
+    if (slotIndex === undefined) continue;
+    placedTools.push({ ...normalizedItem, slotIndex });
+  }
+
+  return placedTools;
+}
+
+const normalizeCurrentToolLayout = () => {
+  lstTools.value = normalizeToolLayout(
+    lstTools.value,
+    GRID_COLUMNS.value,
+    getMinimumGridRows(lstTools.value)
+  );
+}
 
 watch(isMobile, (newIsMobile) => {
   const oldCols = newIsMobile ? 5 : 3;
   const newCols = newIsMobile ? 3 : 5;
-  const maxRows = 3;
+  const maxRows = getMinimumGridRows(lstTools.value);
 
-  lstTools.value = lstTools.value.map(tool => {
+  const resizedTools = lstTools.value.map(tool => {
     const oldRow = Math.floor(tool.slotIndex / oldCols);
     const oldCol = tool.slotIndex % oldCols;
 
@@ -90,6 +157,8 @@ watch(isMobile, (newIsMobile) => {
       slotIndex: targetRow * newCols + targetCol
     };
   });
+
+  lstTools.value = normalizeToolLayout(resizedTools, newCols, maxRows);
 });
 
 onMounted(() => {
@@ -98,10 +167,10 @@ onMounted(() => {
     try {
       const parsed = JSON.parse(savedData);
       if (parsed && Array.isArray(parsed.tools)) {
-        lstTools.value = parsed.tools;
+        lstTools.value = normalizeToolLayout(parsed.tools, GRID_COLUMNS.value, getMinimumGridRows(parsed.tools));
         toolsState.value = parsed.states || {};
       } else if (Array.isArray(parsed)) {
-        lstTools.value = parsed;
+        lstTools.value = normalizeToolLayout(parsed, GRID_COLUMNS.value, getMinimumGridRows(parsed));
       }
 
       if (lstTools.value.length > 0) {
@@ -160,14 +229,22 @@ const addTools = (tool: toolsType) => {
   const id = lstTools.value.length > 0 ? lstTools.value[lstTools.value.length - 1].id + 1 : 1
 
   const { w, h } = toolSize[tool](isMobile.value)
-
-  lstTools.value.push({
+  const newTool: tool = {
     id,
     type: tool,
     slotIndex: selectedSlotIndex.value,
     w,
     h
-  })
+  };
+  const availableRows = Math.max(
+    GRID_ROWS.value,
+    getMinimumGridRows([...lstTools.value, newTool])
+  );
+  const slotIndex = findToolSlot(newTool, lstTools.value, GRID_COLUMNS.value, availableRows);
+
+  if (slotIndex === undefined) return;
+
+  lstTools.value.push({ ...newTool, slotIndex });
 
   const initialState = getDefaultState(tool);
   if (initialState !== undefined) {
@@ -228,7 +305,7 @@ const emptySlots = computed(() => {
     }
   })
 
-  const totalSlots = isMobile.value ? 9 : 15
+  const totalSlots = GRID_COLUMNS.value * GRID_ROWS.value
   return Array.from({ length: totalSlots }, (_, i) => i).filter(slot => !occupied.has(slot))
 })
 
@@ -267,29 +344,53 @@ const handleResize = (tool: tool, sizeData: { w: number, h: number, shiftX: numb
   tool.w = sizeData.w
   tool.h = sizeData.h
   tool.slotIndex = (targetRow - 1) * GRID_COLUMNS.value + (targetCol - 1)
+  normalizeCurrentToolLayout()
 }
 
 const handleMove = (tool: tool, targetSlotIndex: number) => {
-  const { row: targetRow, col: targetCol } = getCoordinates(targetSlotIndex)
-
-  if (targetCol - 1 + tool.w > GRID_COLUMNS.value || targetRow - 1 + tool.h > GRID_ROWS.value) return
-
-  const isSpaceFree = lstTools.value.every(other => {
-    if (other.id === tool.id) return true
-
-    const { row: otherRow, col: otherCol } = getCoordinates(other.slotIndex)
-    const otherW = other.w || 1
-    const otherH = other.h || 1
-
-    const collisionX = (targetCol < otherCol + otherW) && (targetCol + tool.w > otherCol)
-    const collisionY = (targetRow < otherRow + otherH) && (targetRow + tool.h > otherRow)
-
-    return !(collisionX && collisionY)
+  const getBounds = (item: tool, slotIndex: number) => ({
+    col: slotIndex % GRID_COLUMNS.value,
+    row: Math.floor(slotIndex / GRID_COLUMNS.value),
+    width: item.w || 1,
+    height: item.h || 1
   })
+  const overlaps = (first: ReturnType<typeof getBounds>, second: ReturnType<typeof getBounds>) =>
+    first.col < second.col + second.width && first.col + first.width > second.col &&
+    first.row < second.row + second.height && first.row + first.height > second.row
+  const fitsGrid = (bounds: ReturnType<typeof getBounds>) =>
+    bounds.col + bounds.width <= GRID_COLUMNS.value && bounds.row + bounds.height <= GRID_ROWS.value
+  const targetBounds = getBounds(tool, targetSlotIndex)
 
-  if (isSpaceFree) {
+  if (!fitsGrid(targetBounds)) return
+
+  const otherTools = lstTools.value.filter(other => other.id !== tool.id)
+  const overlappingTools = otherTools.filter(other => overlaps(targetBounds, getBounds(other, other.slotIndex)))
+
+  if (overlappingTools.length === 0) {
     tool.slotIndex = targetSlotIndex
+    normalizeCurrentToolLayout()
+    return
   }
+
+  if (overlappingTools.length !== 1) return
+
+  const otherTool = overlappingTools[0]
+  const sourceSlotIndex = tool.slotIndex
+  const otherBoundsAtSource = getBounds(otherTool, sourceSlotIndex)
+  const remainingTools = otherTools.filter(other => other.id !== otherTool.id)
+
+  if (
+    !fitsGrid(otherBoundsAtSource) ||
+    overlaps(targetBounds, otherBoundsAtSource) ||
+    remainingTools.some(other =>
+      overlaps(targetBounds, getBounds(other, other.slotIndex)) ||
+      overlaps(otherBoundsAtSource, getBounds(other, other.slotIndex))
+    )
+  ) return
+
+  tool.slotIndex = otherTool.slotIndex
+  otherTool.slotIndex = sourceSlotIndex
+  normalizeCurrentToolLayout()
 }
 </script>
 
@@ -332,7 +433,8 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
     >
       <div v-for="tool in lstTools" :key="tool.id" class="grid-cell" :style="getGridStyle(tool)">
         <ToolContainer :id="tool.id" :isActive="tool.id === activeToolId" :widthSlots="tool.w" :heightSlots="tool.h"
-          :slotIndex="tool.slotIndex" :gridColumns="GRID_COLUMNS" @click.capture="activeToolId = tool.id" @remove="removeTool"
+          :slotIndex="tool.slotIndex" :gridColumns="GRID_COLUMNS" :gridRows="GRID_ROWS"
+          @click.capture="activeToolId = tool.id" @remove="removeTool"
           @update-size="(sizeData) => handleResize(tool, sizeData)"
           @update-position="(targetSlot) => handleMove(tool, targetSlot)">
           <component :is="componentMap[tool.type]" :id="tool.id" :isActive="tool.id === activeToolId"
@@ -359,7 +461,7 @@ const handleMove = (tool: tool, targetSlotIndex: number) => {
 <style scoped>
 .fill-screen {
   height: 80vh;
-  overflow: hidden;
+  overflow-y: auto;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

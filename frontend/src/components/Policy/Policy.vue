@@ -169,7 +169,7 @@ const activeTab = ref < tabs > (tabs.privacy);
 }
 
 .policy-tabs {
-    margin-bottom: 20px;
+    margin-bottom: 50px;
     background-color: var(--main-color);
     color: var(--text-color);
 }

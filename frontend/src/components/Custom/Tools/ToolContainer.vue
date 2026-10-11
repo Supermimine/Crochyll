@@ -7,7 +7,8 @@ const props = defineProps<{
     widthSlots: number
     heightSlots: number
     slotIndex: number,
-    gridColumns: number
+    gridColumns: number,
+    gridRows?: number
 }>()
 
 const emit = defineEmits<{
@@ -16,7 +17,23 @@ const emit = defineEmits<{
     (e: 'update-position', targetSlotIndex: number): void
 }>()
 
-const GRID_ROWS = 3
+const getGridRows = () => props.gridRows ?? 3
+
+const getGridMetrics = (container: Element) => {
+    const rect = container.getBoundingClientRect()
+    const styles = window.getComputedStyle(container)
+    const columnGap = Number.parseFloat(styles.columnGap) || 0
+    const rowGap = Number.parseFloat(styles.rowGap) || 0
+    const rows = getGridRows()
+
+    return {
+        rect,
+        columnGap,
+        rowGap,
+        cellWidth: (rect.width - columnGap * (props.gridColumns - 1)) / props.gridColumns,
+        cellHeight: (rect.height - rowGap * (rows - 1)) / rows
+    }
+}
 
 const isResizing = ref(false)
 const isDragging = ref(false)
@@ -64,9 +81,7 @@ const resizeMove = (e: MouseEvent | TouchEvent) => {
     const container = document.querySelector('.tools-grid')
     if (!container) return
 
-    const rect = container.getBoundingClientRect()
-    const cellWidth = rect.width / props.gridColumns
-    const cellHeight = rect.height / GRID_ROWS
+    const { rect, columnGap, rowGap, cellWidth, cellHeight } = getGridMetrics(container)
 
     const coords = getEventCoords(e)
     const relativeX = coords.x - rect.left
@@ -81,21 +96,21 @@ const resizeMove = (e: MouseEvent | TouchEvent) => {
     let shiftY = 0
 
     if (currentDirection.includes('e')) {
-        const currentMouseCol = Math.floor(relativeX / cellWidth) + 1
+        const currentMouseCol = Math.floor(relativeX / (cellWidth + columnGap)) + 1
         targetW = Math.max(1, currentMouseCol - startCol + 1)
     } else if (currentDirection.includes('w')) {
         const originalRightEdgeCol = startCol + startW - 1
-        const currentMouseCol = Math.floor(relativeX / cellWidth) + 1
+        const currentMouseCol = Math.floor(relativeX / (cellWidth + columnGap)) + 1
         targetW = Math.max(1, originalRightEdgeCol - currentMouseCol + 1)
         shiftX = (originalRightEdgeCol - targetW + 1) - startCol
     }
 
     if (currentDirection.includes('s')) {
-        const currentMouseRow = Math.floor(relativeY / cellHeight) + 1
+        const currentMouseRow = Math.floor(relativeY / (cellHeight + rowGap)) + 1
         targetH = Math.max(1, currentMouseRow - startRow + 1)
     } else if (currentDirection.includes('n')) {
         const originalBottomEdgeRow = startRow + startH - 1
-        const currentMouseRow = Math.floor(relativeY / cellHeight) + 1
+        const currentMouseRow = Math.floor(relativeY / (cellHeight + rowGap)) + 1
         targetH = Math.max(1, originalBottomEdgeRow - currentMouseRow + 1)
         shiftY = (originalBottomEdgeRow - targetH + 1) - startRow
     }
@@ -131,15 +146,13 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
 
     const container = document.querySelector('.tools-grid')
     if (container) {
-        const rect = container.getBoundingClientRect()
-        const cellWidth = rect.width / props.gridColumns
-        const cellHeight = rect.height / GRID_ROWS
+        const { rect, columnGap, rowGap, cellWidth, cellHeight } = getGridMetrics(container)
         
         const startCol = props.slotIndex % props.gridColumns
         const startRow = Math.floor(props.slotIndex / props.gridColumns)
         
-        const tileLeftX = rect.left + startCol * cellWidth
-        const tileTopY = rect.top + startRow * cellHeight
+        const tileLeftX = rect.left + startCol * (cellWidth + columnGap)
+        const tileTopY = rect.top + startRow * (cellHeight + rowGap)
         
         dragOffsetX = coords.x - tileLeftX
         dragOffsetY = coords.y - tileTopY
@@ -169,18 +182,17 @@ const dragMove = (e: MouseEvent | TouchEvent) => {
     const container = document.querySelector('.tools-grid')
     if (!container) return
 
-    const rect = container.getBoundingClientRect()
-    const cellWidth = rect.width / props.gridColumns
-    const cellHeight = rect.height / GRID_ROWS
+    const gridRows = getGridRows()
+    const { rect, columnGap, rowGap, cellWidth, cellHeight } = getGridMetrics(container)
 
     const targetLeftX = coords.x - dragOffsetX - rect.left
     const targetTopY = coords.y - dragOffsetY - rect.top
 
-    const rawCol = Math.round(targetLeftX / cellWidth)
-    const rawRow = Math.round(targetTopY / cellHeight)
+    const rawCol = Math.round(targetLeftX / (cellWidth + columnGap))
+    const rawRow = Math.round(targetTopY / (cellHeight + rowGap))
     
     const col = Math.max(0, Math.min(rawCol, props.gridColumns - 1))
-    const row = Math.max(0, Math.min(rawRow, GRID_ROWS - 1))
+    const row = Math.max(0, Math.min(rawRow, gridRows - 1))
 
     const targetSlotIndex = row * props.gridColumns + col
     
