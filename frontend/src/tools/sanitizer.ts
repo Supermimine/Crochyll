@@ -16,10 +16,10 @@ export function sanitizeHtml(dirty: string): string {
       'ul', 'ol', 'li',
       'table', 'thead', 'tbody', 'tr', 'td', 'th',
       'div', 'span',
-      'a', 'img'
+      'a', 'label', 'input'
     ],
     ALLOWED_ATTR: [
-      'href', 'title', 'target', 'src', 'alt', 'width', 'height', 'class', 'style'
+      'href', 'title', 'class', 'type', 'name', 'checked'
     ],
     ALLOW_DATA_ATTR: false,
     RETURN_DOM: false

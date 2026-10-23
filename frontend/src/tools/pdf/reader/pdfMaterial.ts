@@ -1,3 +1,5 @@
+import { yarnData } from '@/data/yarnData';
+
 const keywordsByConcept = {
     material: {
         fra: ["materiel", "materiaux", "mat."],
@@ -12,6 +14,37 @@ const normalize = (str: string) =>
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+
+const yarnColors = {
+    fra: [
+        "blanc", "blanche", "noir", "noire", "gris", "grise", "rouge", "rose",
+        "orange", "jaune", "vert", "verte", "bleu", "bleue", "violet", "violette",
+        "mauve", "beige", "marron", "brun", "brune", "turquoise", "crème", "ecru",
+        "écru", "doré", "dorée", "argenté", "argentée"
+    ],
+    eng: [
+        "white", "ivory", "black", "gray", "grey", "red", "pink", "orange", "yellow",
+        "green", "blue", "purple", "violet", "mauve", "beige", "brown", "tan",
+        "turquoise", "teal", "cream", "ecru", "gold", "silver", "navy", "aqua"
+    ]
+};
+
+const knownYarnNames = [...yarnData].sort((first, second) => second.name.length - first.name.length);
+
+const getYarnDisplayName = (entry: string, lang: 'fra' | 'eng') => {
+    const normalizedEntry = normalize(entry);
+    const knownYarn = knownYarnNames.find((yarn) => normalizedEntry.includes(normalize(yarn.name)));
+
+    if (knownYarn) return knownYarn.name;
+
+    const colorTerms = yarnColors[lang]
+        .sort((first, second) => second.length - first.length)
+        .map(escapeRegex);
+    const colorPattern = new RegExp(`\\b(${colorTerms.join("|")})\\b`, "gi");
+    const colors = [...entry.matchAll(colorPattern)].map((match) => match[0]);
+
+    return colors.join(" ");
+};
 
 const isMaterialSection = (section: string, lang: 'fra' | 'eng') => {
     const materialKeywords = keywordsByConcept.material[lang];
@@ -88,9 +121,15 @@ export const getPatternMaterials = (sections: string[], lang: 'fra' | 'eng' = 'f
                 if (isYarnLine(line)) {
                     const yarnLine = lastBrandLine && !isBrandLine(line)
                         ? `${line} ${lastBrandLine}`
-                        : line;  
-                        
-                    yarnLines.push((hasBulletPoints == true ? '##yarn##' : '') + yarnLine);
+                        : line;
+                    const conjunction = lang === 'fra' ? 'et' : 'and';
+                    const yarnEntries = yarnLine
+                        .split(new RegExp(`\\s*,\\s*|\\s+${conjunction}\\s+`, 'i'))
+                        .map((entry) => getYarnDisplayName(entry.trim(), lang))
+                        .filter(Boolean);
+                    const yarnMarker = hasBulletPoints ? '##yarn##' : '';
+
+                    yarnLines.push(...yarnEntries.map((entry) => yarnMarker + entry));
                 }
 
                 if (isNeedlesLine(line)) {

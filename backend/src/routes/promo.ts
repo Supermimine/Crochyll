@@ -6,7 +6,7 @@ import { validatePromoCode } from '../security';
 const router = Router();
 
 // Format promo : {code: "", description: "", discount: 1, expiresAt: new Date("01-01-0001")}
-const getPromoCodes = (): Promo[] => {
+export const getPromoCodes = (): Promo[] => {
     return [
         
     ];
@@ -68,9 +68,10 @@ router.post('/promoCodes/check', (req: Request, res: Response) => {
         return res.json(response);
 
     } catch (error: any) {
+        console.error('Promo check error:', error);
         return res.status(500).json({
             success: false,
-            error: error.message,
+            error: 'Unable to check promo code',
             timestamp: new Date().toISOString()
         });
     }

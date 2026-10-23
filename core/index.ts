@@ -28,3 +28,4 @@ export * from "./model/promo";
 export * from "./model/myProject/yarn";
 export * from "./model/myProject/project";
 export * from "./model/tool";
+export * from "./utils/productPricing";

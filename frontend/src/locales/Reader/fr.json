@@ -8,6 +8,15 @@
         },
         "counter": {
             "title": "Compteur"
+        },
+        "materials": {
+            "title": "Matériaux",
+            "hook": "Crochet",
+            "needles": "Aiguilles",
+            "marker": "Marqueur de mailles",
+            "stuffing": "Rembourrage",
+            "safetyEyes": "Yeux de sécurité",
+            "yarns": "Laines"
         }
     }
 }

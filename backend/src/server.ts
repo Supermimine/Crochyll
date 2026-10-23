@@ -13,6 +13,7 @@ import cors from 'cors';
 import productRoutes from './routes/products';
 import promoRoutes from './routes/promo';
 import emailRoutes from './routes/email';
+import checkoutRoutes from './routes/checkout';
 import { mailerService } from './services/mailer.service';
 import { applySecurityHeaders, createRateLimiter, isAllowedOrigin } from './security';
 
@@ -21,12 +22,26 @@ mailerService.reinitialize();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-const allowedOrigins = [FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+const isProduction = process.env.NODE_ENV === 'production';
+const configuredFrontendUrl = process.env.FRONTEND_URL?.trim();
+
+if (isProduction && !configuredFrontendUrl) {
+  throw new Error('FRONTEND_URL must be configured in production');
+}
+
+const FRONTEND_URL = configuredFrontendUrl || 'http://localhost:5173';
+const allowedOrigins = [
+  FRONTEND_URL,
+  ...(!isProduction ? ['http://localhost:5173', 'http://127.0.0.1:5173'] : [])
+];
 const globalLimiter = createRateLimiter(200, 60_000);
-const emailLimiter = createRateLimiter(20, 60_000);
+const emailLimiter = createRateLimiter(5, 15 * 60_000);
+const checkoutLimiter = createRateLimiter(20, 15 * 60_000);
 
 app.disable('x-powered-by');
+if (process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1);
+}
 app.use(applySecurityHeaders);
 app.use(globalLimiter);
 app.use(cors({
@@ -38,7 +53,7 @@ app.use(cors({
 
     callback(new Error('Origin not allowed by CORS'));
   },
-  credentials: true,
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -58,6 +73,8 @@ app.get('/api/health', (req: Request, res: Response) => {
 // Utiliser les routes
 app.use('/api', productRoutes);
 app.use('/api', promoRoutes);
+app.use('/api/checkout', checkoutLimiter);
+app.use('/api', checkoutRoutes);
 app.use('/api/email', emailLimiter);
 app.use('/api', emailRoutes);
 
@@ -75,7 +92,7 @@ app.use((err: any, req: Request, res: Response, next: Function) => {
   console.error('Error:', err);
   res.status(500).json({ 
     success: false, 
-    error: err.message || 'Internal server error',
+    error: 'Internal server error',
     timestamp: new Date().toISOString()
   });
 });

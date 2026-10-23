@@ -33,6 +33,12 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
         const section = sections[i];
         if (isAbbreviationSection(section, lang)) {
             const cleanSection = section.replace(/<h3>.*?<\/h3>/gs, "").trim();
+            const definitionLines = cleanSection
+                .replace(/<br\s*\/?>|<\/(?:p|li|div|tr|td)>/gi, "\n")
+                .replace(/<[^>]+>/g, " ")
+                .split(/[\r\n]+/)
+                .map(normalize)
+                .filter(Boolean);
 
             let abbreviationArray: string[] = [];
             let abbreviations = '';
@@ -41,7 +47,6 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
                 fra: [
                     "cm",
                     "ch",
-                    "m",
                     "mc",
                     "br",
                     "ba",
@@ -50,12 +55,12 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
                     "db",
                     "dim",
                     "aug",
-                    "augm"
+                    "augm",
+                    "ml"
                 ],
                 eng: [
                     "mr",
                     "ch",
-                    "st",
                     "slst",
                     "blo",
                     "flo",
@@ -64,12 +69,31 @@ export const getPatternAbbreviations = (sections: string[], lang: 'fra' | 'eng' 
                     "hdc",
                     "dec",
                     "inc",
-                    "inc"
+                    "inc",
+                    "ch"
                 ]
             };
 
+            if (lang === 'fra') {
+                definitionLines
+                    .filter(line => /\bbr\b/i.test(line))
+                    .forEach(line => {
+                        const fullName = /\bbrin\s+arriere\b/i.test(line)
+                            ? 'blo'
+                            : /\bbride\b/i.test(line)
+                                ? 'dc'
+                                : abbreviationWords.eng[4];
+
+                        if (!abbreviationArray.includes(fullName)) {
+                            abbreviationArray.push(fullName);
+                        }
+                    });
+            }
+
             Object.keys(abbreviationWords).forEach((lang) => {
                 abbreviationWords[lang].forEach((word: string, index: number) => {
+                    if (lang === 'fra' && word === 'br') return;
+
                     let pattern = word;
 
                     if (word.length === 2) {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { CartItem } from '@core/model/cartItem';
+import { getProductPrice } from '@core/utils/productPricing';
 import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()
@@ -13,6 +14,7 @@ import { useCart } from '@/service/useCart';
 const { removeCart, updateQuantityCart } = useCart();
 
 const quantity = ref(props.cart.quantity);
+const lineTotal = computed(() => (getProductPrice(props.cart.item, props.cart.size, props.cart.color) * quantity.value).toFixed(2));
 
 const addQuantity = () => {
     quantity.value++;
@@ -48,7 +50,7 @@ const name = computed(() =>
                 </v-btn>
             </div>
 
-            <div style="margin: auto;">${{ ((cart?.item?.price?.[(cart?.size ?? 1) - 1] ?? cart?.item?.price?.[0] ?? 0) * (quantity ?? 1)).toFixed(2) }}</div>
+            <div style="margin: auto;">${{ lineTotal }}</div>
         </div>
 
         <v-icon icon="mdi-close" size="20" class="ml-1 removeCart action-text" @click="removeCart(props.cart)"></v-icon>

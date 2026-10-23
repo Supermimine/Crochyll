@@ -32,7 +32,6 @@ class ApiService {
       const response = await fetch(url, {
         ...options,
         headers,
-        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -131,30 +130,40 @@ class ApiService {
     });
   }
 
-  // ============ EMAILS ============
-
-  /**
-   * Send a simple email
-   * -------------------------------------
-   * @param emailData The email data to send
-   * @return A success message or an error message if the request fails
-   * @throws Will throw an error if there is an issue with the API request
-   * @example
-   * await api.sendEmail({
-   *   to: 'recipient@example.com',
-   *   subject: 'Test Email',
-   *   message: 'This is a test email.'
-   * });
-   */
-  async sendEmail(emailData: {
-    to: string;
-    subject: string;
-    message: string;
-  }): Promise<ApiResponse<any>> {
-    return this.request('/api/email/send', {
+  // ============ CHECKOUT ============
+  async createCheckoutOrder(checkout: {
+    items: Array<{ productId: string; quantity: number; color: string | null; size: number | null }>;
+    address: {
+      address1: string;
+      address2?: string;
+      city: string;
+      state?: string;
+      postalCode?: string;
+      country: string;
+    };
+    promoCode?: string;
+  }): Promise<{ orderId: string; total: string }> {
+    const response = await this.request<{ orderId: string; total: string }>('/api/checkout/orders', {
       method: 'POST',
-      body: JSON.stringify(emailData),
+      body: JSON.stringify(checkout),
     });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Unable to create checkout');
+    }
+    return response.data;
+  }
+
+  async captureCheckoutOrder(orderId: string): Promise<{ success: boolean; emailSent: boolean }> {
+    const response = await this.request<{ success: boolean; emailSent: boolean }>(
+      `/api/checkout/orders/${encodeURIComponent(orderId)}/capture`,
+      { method: 'POST', body: '{}' },
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Unable to verify payment');
+    }
+    return response.data;
   }
 
   /**

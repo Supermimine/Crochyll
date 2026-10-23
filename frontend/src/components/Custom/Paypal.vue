@@ -1,110 +1,85 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { loadScript, type PayPalNamespace } from '@paypal/paypal-js'
 import { api } from '@/service/api';
 import { useCart } from '@/service/useCart';
-import type { CartItem } from '@core/model/cartItem';
+import type { Address } from '@core/model/address';
 const { carts, cleanCart } = useCart();
+const { t } = useI18n();
 
 const isOpen = ref(false);
 const paypalContainer = ref<HTMLDivElement | null>(null);
 const showSuccess = ref(false);
+const emailWarning = ref(false);
+const paymentError = ref(false);
+const paypalReady = ref(false);
 
 const props = defineProps<{
-    totalPrice: number;
+    address: Address | null;
+    promoCode: string;
 }>();
 
-const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || 'sb'
+const CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || (import.meta.env.DEV ? 'sb' : '')
 let paypal: PayPalNamespace | null = null
 let buttonsRendered = false
-
-interface Address {
-    address_line_1?: string;
-    admin_area_2?: string;
-    postal_code?: string;
-    country_code?: string;
-}
-
-interface Shipping {
-    address?: Address;
-}
-
-interface PurchaseUnit {
-    shipping?: Shipping;
-}
 
 const open = () => (isOpen.value = true)
 const close = () => (isOpen.value = false)
 
 defineExpose({ open })
 
-loadScript({
-    clientId: CLIENT_ID,
-    currency: 'CAD',
-    disableFunding: 'credit'
-}).then((pp) => {
-    paypal = pp
-})
+if (CLIENT_ID) {
+    loadScript({
+        clientId: CLIENT_ID,
+        currency: 'CAD',
+        disableFunding: 'credit'
+    }).then((pp) => {
+        paypal = pp
+        paypalReady.value = true
+    }).catch(() => {
+        paymentError.value = true
+    })
+} else {
+    paymentError.value = true
+}
 
-watch(isOpen, async (open) => {
-    if (!open || !paypal || buttonsRendered) return
+watch([isOpen, paypalReady], async ([open, ready]) => {
+    if (!open || !ready || !paypal || buttonsRendered) return
 
     await nextTick()
 
     if (!paypalContainer.value || !paypal.Buttons) return
 
     paypal.Buttons({
-        createOrder: async (_data, actions) => {
-            return actions.order.create({
-                intent: 'CAPTURE',
-                purchase_units: [
-                    {
-                        amount: {
-                            currency_code: 'CAD',
-                            value: props.totalPrice.toFixed(2)
-                        }
-                    }
-                ]
-            })
-        },
-        onApprove: async (_data, actions) => {
-            if (!actions.order) return
-            const order = await actions.order.capture()
-
-            const email = order.payer?.email_address;
-            const address = order.purchase_units?.[0]?.shipping?.address;
-            if (!email || !address) {
-                console.error('Information utilisateur non disponible')
-                return
-            }
-
-            let message = `
-                <p><b>Email:</b> ${email}</p>
-                <p><b>Adresse:</b> ${address?.address_line_1}, ${address?.admin_area_2}, ${address?.postal_code}, ${address?.admin_area_1}, ${address?.country_code}</p><br/>
-                <p><b>Commande:</b>
-            `;
-            carts.value.forEach((cart: CartItem) => {
-                message += `
-                    ${cart.item.name} - ${cart.color || 'NA'} - ${cart.size || 'NA'} x${cart.quantity}</p>
-                `
+        createOrder: async () => {
+            if (!props.address) throw new Error('Shipping address is required');
+            const checkout = await api.createCheckoutOrder({
+                items: carts.value.map((cart) => ({
+                    productId: cart.item.id,
+                    quantity: cart.quantity,
+                    color: cart.color,
+                    size: cart.size,
+                })),
+                address: props.address,
+                promoCode: props.promoCode || undefined,
             });
-            message += '</p>';
-
+            return checkout.orderId;
+        },
+        onApprove: async (data) => {
             try {
-                await api.sendEmail({
-                    to: email,
-                    subject: "test",
-                    message: message
-                });
-
+                const result = await api.captureCheckoutOrder(data.orderID);
+                emailWarning.value = !result.emailSent;
                 cleanCart();
                 showSuccess.value = true;
             } catch (err) {
                 console.error('Erreur:', err)
+                paymentError.value = true;
             }
         },
         onError: (err) => {
             console.error('Erreur PayPal', err)
+            paymentError.value = true;
         }
     }).render(paypalContainer.value)
 
@@ -129,13 +104,17 @@ watch(isOpen, async (open) => {
 
             <!--Success-->
             <div v-else>
-                <div class="success-animation">
+                <div class="success-animation" role="status" aria-live="polite">
                     <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                         <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
                         <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                     </svg>
+                    <p>{{ t('cart.paymentConfirmed') }}</p>
+                    <p v-if="emailWarning" role="alert">{{ t('cart.emailConfirmationWarning') }}</p>
                 </div>
             </div>
+
+            <p v-if="paymentError" role="alert">{{ t('cart.paymentError') }}</p>
         </div>
     </div>
 </template>

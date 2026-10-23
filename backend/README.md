@@ -34,12 +34,26 @@ Créer un fichier `.env` à la racine du backend :
 PORT=3000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
+PAYPAL_ENV=sandbox
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=
 
-# À remplir selon votre service email
-EMAILJS_SERVICE_ID=
-EMAILJS_TEMPLATE_ID=
-EMAILJS_PUBLIC_KEY=
+# SMTP (identifiants uniquement côté backend)
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM_NAME=Crochyll
+SMTP_FROM_EMAIL=
+SUPPORT_EMAIL=
 ```
+
+En production, définissez `NODE_ENV=production`, `FRONTEND_URL` avec l'origine HTTPS exacte,
+`PAYPAL_ENV=live`, les identifiants PayPal live côté backend et `VITE_PAYPAL_CLIENT_ID`
+dans l'environnement de build du frontend. Ne publiez jamais `PAYPAL_CLIENT_SECRET` ni les
+identifiants SMTP dans le frontend. Si l'application est derrière un proxy de confiance,
+activez `TRUST_PROXY=true` uniquement lorsque l'hébergeur remplace correctement les en-têtes IP.
 
 ## 🔌 API Endpoints
 
@@ -52,23 +66,19 @@ EMAILJS_PUBLIC_KEY=
 - **GET** `/api/products/category/:category` - Récupérer les produits d'une catégorie
 
 ### Emails
-- **POST** `/api/email/send` - Envoyer un email générique
-  ```json
-  {
-    "to": "email@example.com",
-    "subject": "Sujet",
-    "message": "Message"
-  }
-  ```
 - **POST** `/api/email/contact` - Envoyer un formulaire de contact
   ```json
   {
-    "name": "Nom",
+    "username": "Nom",
     "email": "email@example.com",
     "subject": "Sujet",
     "message": "Message"
   }
   ```
+
+### Checkout
+- **POST** `/api/checkout/orders` - Créer une commande PayPal depuis les IDs produits, options et adresse. Le backend recalcule le total.
+- **POST** `/api/checkout/orders/:orderId/capture` - Capturer et vérifier le paiement avant l'envoi de la confirmation.
 
 ## 📦 Dépendances principales
 
@@ -82,11 +92,8 @@ EMAILJS_PUBLIC_KEY=
 
 ## 🔧 TODO - À implémenter
 
-1. **Données produits** - Remplacer `getProducts()` dans `src/routes/products.ts`
-2. **Envoi d'emails** - Implémenter la logique dans `src/routes/email.ts`
-3. **Base de données** - Si nécessaire, ajouter une connexion DB
-4. **Authentification** - Implémenter si besoin
-5. **Validation** - Ajouter une validation plus robuste des données
+1. **Données produits** - Remplacer `getProducts()` dans `src/routes/products.ts` par un catalogue administrable.
+2. **Commandes** - Persister les commandes et l’état de capture dans un stockage partagé avant d’utiliser plusieurs instances backend.
 
 ## 🌐 Communication Frontend-Backend
 
@@ -101,12 +108,7 @@ await api.healthCheck();
 // Récupérer les produits
 const response = await api.getProducts();
 
-// Envoyer un email
-await api.sendEmail({
-  to: 'example@mail.com',
-  subject: 'Test',
-  message: 'Message test'
-});
+// Le paiement utilise api.createCheckoutOrder() puis api.captureCheckoutOrder().
 ```
 
 ## 🚢 Déploiement

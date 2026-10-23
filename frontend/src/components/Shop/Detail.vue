@@ -14,6 +14,7 @@ const { t, locale } = useI18n()
 import { Category } from '@core/enum/category';
 import { Size } from '@core/enum/size';
 import type { Product } from '@core/model/product';
+import { getProductPrice } from '@core/utils/productPricing';
 
 const shareRef = ref<InstanceType<typeof Share> | null>(null);
 const customRef = ref<InstanceType<typeof Customization> | null>(null);
@@ -80,21 +81,7 @@ const description = computed(() =>
 )
 
 const selectedPrice = computed(() => {
-  if (!item?.price || item.price.length === 0) return ''
-
-  if (item.price.length > 1) {
-    if (item.size && item.size.length > 1) {
-      const sizeIndex = item.size.indexOf(sizeSelected.value as Size)
-      return sizeIndex !== -1 ? item.price[sizeIndex] : item.price[0]
-    }
-    
-    if (item.shade && item.shade.length > 0) {
-      const colorIndex = item.shade.indexOf(colorSelected.value as string)
-      return colorIndex !== -1 ? item.price[colorIndex] : item.price[0]
-    }
-  }
-
-  return item.price[0]
+  return getProductPrice(item, sizeSelected.value, colorSelected.value);
 })
 
 const schemaOrg = computed(() => {

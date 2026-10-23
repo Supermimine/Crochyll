@@ -3,7 +3,8 @@ export interface FilePattern {
     content: string | ArrayBuffer | null,
     lang: string,
     state: number,
-    readerCounters?: ReaderCounter[]
+    readerCounters?: ReaderCounter[],
+    materialChecks?: Record<string, boolean>
 }
 
 export interface ReaderCounter {

@@ -11,6 +11,7 @@ import { StitchAction } from '@core/enum/stitchAction';
 import type { Row } from '@core/model/maker/row';
 import type { Pattern } from '@core/model/maker/pattern';
 import { useHead } from '@unhead/vue';
+import { sanitizeInternalHtml } from '@/tools/sanitizer';
 
 const { t } = useI18n();
 const { isMobile } = useScreen();
@@ -975,7 +976,7 @@ useHead(() => ({
                                             :style="getStitchStyle(row, index, pattern.rows.length - 1 - rowIndex)"
                                             :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
                                             :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
-                                            v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
+                                            v-html="sanitizeInternalHtml(getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime))">
                                         </div>
                                     </div>
                                 </div>
@@ -1054,7 +1055,7 @@ useHead(() => ({
                                                 :style="getStitchStyle(row, index, pattern.rows.length - 1 - rowIndex)"
                                                 :data-symbol="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)"
                                                 :title="`${t(`stitchType.${stitchInfo.type}`).split('(')[0] || stitchInfo.type}${(stitchInfo.orientation !== StitchOrientation.AL ? '[' + stitchInfo.orientation + '] ' : '')}${(stitchInfo.action !== StitchAction.NULL ? `[${stitchInfo.action} x${stitchInfo.nbTime}] ` : '')}(${stitchInfo.localIndex + 1}/${stitchInfo.count})`"
-                                                v-html="getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime)">
+                                                v-html="sanitizeInternalHtml(getStitchSymbol(stitchInfo.type, stitchInfo.orientation, stitchInfo.action, stitchInfo.nbTime))">
                                             </div>
                                         </div>
                                     </div>

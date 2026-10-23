@@ -85,36 +85,13 @@ SMTP_PASSWORD=votre-mot-de-passe
 
 ## 📧 API Endpoints
 
-### 1. Envoyer un email simple
-
-**POST** `/api/email/send`
-
-```json
-{
-  "to": "utilisateur@email.com",
-  "subject": "Mon sujet",
-  "message": "<h1>Bonjour</h1><p>Contenu HTML</p>"
-}
-```
-
-**Réponse:**
-```json
-{
-  "success": true,
-  "data": {
-    "messageId": "message-id-unique"
-  },
-  "timestamp": "2026-05-24T10:30:00Z"
-}
-```
-
-### 2. Formulaire de contact
+### Formulaire de contact
 
 **POST** `/api/email/contact`
 
 ```json
 {
-  "name": "Jean Dupont",
+  "username": "Jean Dupont",
   "email": "jean@email.com",
   "subject": "Question sur ma commande",
   "message": "Bonjour, j'aimerais savoir..."
@@ -123,28 +100,7 @@ SMTP_PASSWORD=votre-mot-de-passe
 
 L'email est envoyé à `SUPPORT_EMAIL` avec la réponse vers l'email du client.
 
-### 3. Confirmation de commande
-
-**POST** `/api/email/order-confirmation`
-
-```json
-{
-  "to": "client@email.com",
-  "orderData": {
-    "orderId": "ORD-12345",
-    "customerName": "Marie Dupont",
-    "items": [
-      {
-        "name": "Amigurumi Ours",
-        "quantity": 1,
-        "price": 25.99
-      }
-    ],
-    "total": 25.99,
-    "shippingAddress": "123 Rue de Paris\n75001 Paris\nFrance"
-  }
-}
-```
+Les confirmations de commande sont envoyées uniquement par le service checkout après capture et vérification du paiement auprès de PayPal. L'API email publique générique n'est pas exposée.
 
 ## 🛠️ Utilisation dans le code
 
@@ -187,18 +143,6 @@ const result = await mailerService.sendOrderConfirmation(
 import { mailerService } from './services/mailer.service';
 
 await mailerService.verifyConnection();
-```
-
-### 2. Envoyer un email de test
-
-```bash
-curl -X POST http://localhost:3000/api/email/send \
-  -H "Content-Type: application/json" \
-  -d '{
-    "to": "test@email.com",
-    "subject": "Test",
-    "message": "Test email"
-  }'
 ```
 
 ## 📊 Avantages de cette solution

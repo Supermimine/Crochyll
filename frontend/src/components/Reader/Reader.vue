@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed, onMounted, onUnmounted } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
 import { safeStorageGetJSON, safeStorageSetJSON, useScreen } from '@/tools/appTools';
 
@@ -25,7 +25,11 @@ import ToolContainer from '@/components/Custom/Tools/ToolContainer.vue'
 import Counter from '@/components/Custom/Tools/Counter.vue'
 
 import type { FilePattern, ReaderCounter } from "@core/model/filepattern";
-import { getPatternSection } from "@/tools/pdf/reader/pdfPattern";
+import {
+  boldPatternRoundHeadings,
+  getPatternSection,
+  normalizePatternAbbreviations
+} from "@/tools/pdf/reader/pdfPattern";
 import { useHead } from "@unhead/vue";
 
 const filesList = ref<FilePattern[]>(safeStorageGetJSON<FilePattern[]>("files", []));
@@ -130,6 +134,14 @@ const editFile = () => {
   filesList.value[selectedFileIndex.value] = selectedFile.value;
   safeStorageSetJSON("files", filesList.value);
 };
+const handleMaterialCheckboxChange = (event: Event) => {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement) || !input.name.startsWith('material-') || !selectedFile.value) return;
+
+  selectedFile.value.materialChecks ??= {};
+  selectedFile.value.materialChecks[input.name] = input.checked;
+  editFile();
+};
 const changeState = (state: number) => {
   if (selectedFile?.value == null) return;
 
@@ -154,8 +166,9 @@ const showSection = async () => {
 
   // Title
   const patternTitle = getPatternTitle(sections);
-  finalSections.push(`<h3 style="margin: 100px 0;text-align: center;"><b>${patternTitle}</b></h3>`);
-
+  finalSections.push(
+    `<h1 class="pattern-title"><b>${patternTitle}</b></h1>`
+  );
 
   // Materials
   const patternMaterialsResult = getPatternMaterials(sections, lang as 'fra' | 'eng');
@@ -174,32 +187,59 @@ const showSection = async () => {
     .map((y: string) => y.trim())
     .filter((y: string) => y.length > 0);
 
-  const materials = `<h3><b>Materials</b></h3><span>${patternHookSize}</span>
-    ${[
-      patternMaterialsResult.materials[1] ? `<span>Needles</span><br/>` : '',
-      patternMaterialsResult.materials[2] ? `<span>Marker</span><br/>` : '',
-      patternMaterialsResult.materials[3] ? `<span>Stuffing</span><br/>` : '',
-      patternMaterialsResult.materials[4] ? `<span>Safety eyes</span><br/>` : '',
-    ].filter(Boolean).join('')}<span>Yarns:</span>
-    ${yarns.map((y: string) => `<span style="margin-left: 20px;">- ${y}</span><br/>`).join('')}`;
+  const materialCheckboxKeys: string[] = [];
+  const materialCheckbox = (key: string, label: string, indented = false) => {
+    materialCheckboxKeys.push(key);
+    const checked = selectedFile.value?.materialChecks?.[key] ? ' checked' : '';
+    const indentClass = indented ? ' class="reader-material-indent"' : '';
+    return `<label${indentClass}><input type="checkbox" name="${key}"${checked}> ${label}</label><br/>`;
+  };
+  const hookSize = patternHookSize.match(/[\d]+(?:[.,][\d]+)?\s*mm/i)?.[0] ?? '';
+  const hookLabel = hookSize
+    ? `${t('reader.materials.hook')}: ${hookSize}`
+    : t('reader.materials.hook');
 
+  const translatedYarns = await Promise.all(
+    yarns.map(async (y: string) => {
+      const translated = await translate(y, lang, language());
+      const trimmedTranslation = translated.trim();
+      return trimmedTranslation.charAt(0).toUpperCase() + trimmedTranslation.slice(1);
+    })
+  );
+
+  let materials = `<div><h2 class="mb-2">${t('reader.materials.title')}</h2>`
+  if (patternHookSize) {
+    materials += materialCheckbox('material-hook', hookLabel)
+  }
+  materials += `${[
+    patternMaterialsResult.materials[1] ? materialCheckbox('material-needles', t('reader.materials.needles')) : '',
+    patternMaterialsResult.materials[2] ? materialCheckbox('material-marker', t('reader.materials.marker')) : '',
+    patternMaterialsResult.materials[3] ? materialCheckbox('material-stuffing', t('reader.materials.stuffing')) : '',
+    patternMaterialsResult.materials[4] ? materialCheckbox('material-safety-eyes', t('reader.materials.safetyEyes')) : '',
+  ].filter(Boolean).join('')}`;
+  materials += `<span><b>${t('reader.materials.yarns')}:</b></span><br/>${translatedYarns.map((y: string, index: number) => materialCheckbox(
+    `material-yarn-${index}`,
+    y,
+    true
+  )).join('')}</div>`
+
+  const materialsSectionIndex = finalSections.length;
   finalSections.push(materials);
-
 
   // Project size
   const patternSize = getPatternSize(sections);
   if (patternSize) {
-    finalSections.push(`<h3><b>Size</b></h3><span>${patternSize}</span>`);
+    finalSections.push(`<h2 class="mb-2">Size</h2><span>${patternSize}</span>`);
   }
-
 
   // Abbreviations
   const patternAbbreviationsResult = getPatternAbbreviations(sections, lang as 'fra' | 'eng');
   if (patternAbbreviationsResult.sectionIndex !== null) {
     lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternAbbreviationsResult.sectionIndex);
   }
-  finalSections.push(`<h3><b>Abbreviations</b></h3>${patternAbbreviationsResult.abbreviations}`);
-
+  finalSections.push(
+    `<h2 class="mb-2">Abbreviations</h2><div style="margin-left: 20px;">${patternAbbreviationsResult.abbreviations}</div>`
+  );
 
   // Gauge
   const patternGaugeResult = getPatternGauge(sections, lang as 'fra' | 'eng');
@@ -207,9 +247,8 @@ const showSection = async () => {
     lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternGaugeResult.sectionIndex);
   }
   if (patternGaugeResult.gauge) {
-    finalSections.push(`<h3><b>Gauge</b></h3><span>${patternGaugeResult.gauge}</span>`);
+    finalSections.push(`<h2 class="mb-2"><b>Gauge</b></h2><span>${patternGaugeResult.gauge}</span>`);
   }
-
 
   // Tips/info
   const patternTipsResult = getPatternTips(sections, lang as 'fra' | 'eng');
@@ -217,14 +256,19 @@ const showSection = async () => {
     lastIndexCheck = Math.max(lastIndexCheck ?? 0, patternTipsResult.sectionIndex);
   }
   if (patternTipsResult.tips) {
-    finalSections.push(`<h3><b>Tips</b></h3><span>${patternTipsResult.tips}</span>`);
+    finalSections.push(`<h2 class="mb-2"><b>Tips</b></h2><span>${patternTipsResult.tips}</span>`);
   }
-
 
   //Pattern
   lastIndexCheck = lastIndexCheck ? lastIndexCheck + 1 : 0;
   const lastSection = sections.slice(lastIndexCheck).join(' ').trim();
+
+  const patternSectionIndex = finalSections.length;
+  const abbreviationSection = patternAbbreviationsResult.sectionIndex === null
+    ? ''
+    : sections[patternAbbreviationsResult.sectionIndex];
   const patternSectionResult = getPatternSection(lastSection);
+
   finalSections.push(...patternSectionResult.finalSection);
 
   maxState.value = finalSections.length - 1;
@@ -234,13 +278,50 @@ const showSection = async () => {
     return;
   }
 
-
   loadingTranslate.value = true;
 
   try {
     const currentSection = finalSections[selectedFile.value.state];
+    const translated = selectedFile.value.state === materialsSectionIndex
+      ? currentSection
+      : await translate(currentSection, lang, language());
+    const normalizedTranslation = selectedFile.value.state >= patternSectionIndex
+      ? normalizePatternAbbreviations(
+        translated,
+        abbreviationSection,
+        patternAbbreviationsResult.abbreviations,
+        lang as 'fra' | 'eng',
+        language()
+      )
+      : translated;
+    const formattedTranslation = selectedFile.value.state >= patternSectionIndex
+      ? boldPatternRoundHeadings(normalizedTranslation)
+      : normalizedTranslation;
+    const translatedDocument = new DOMParser().parseFromString(formattedTranslation, 'text/html');
 
-    translatedSection.value = await translate(currentSection, lang, language());
+    translatedDocument.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach((input, index) => {
+      const key = input.name || materialCheckboxKeys[index];
+      if (!key) return;
+
+      input.name = key;
+      const checked = Boolean(selectedFile.value?.materialChecks?.[key]);
+      input.checked = checked;
+      if (checked) {
+        input.setAttribute('checked', '');
+      } else {
+        input.removeAttribute('checked');
+      }
+
+      if (key.startsWith('material-yarn-')) {
+        const label = input.closest('label');
+        if (label) {
+          label.style.display = 'block';
+          label.style.marginLeft = '20px';
+        }
+      }
+    });
+
+    translatedSection.value = translatedDocument.body.innerHTML;
   } catch (error) {
     translatedSection.value = "Erreur de traduction";
   } finally {
@@ -305,7 +386,7 @@ const addCounter = () => {
 }
 const removeCounter = (id: number) => {
   if (!selectedFile.value) return;
-  selectedFile.value.readerCounters = counters.value.filter(counter => counter.id !== id);
+  selectedFile.value.readerCounters = counters.value.filter((counter) => counter.id !== id);
 
   if (activeCounterId.value === id) {
     activeCounterId.value = counters.value[0]?.id ?? null
@@ -364,9 +445,10 @@ const handleCounterMove = (counter: ReaderCounter, targetSlotIndex: number) => {
   editFile();
 };
 
-watchEffect(() => {
-  showSection();
-});
+watch(
+  [selectedFile, () => selectedFile.value?.state],
+  () => showSection()
+);
 
 const handleKeyDown = async (event: KeyboardEvent) => {
   if (event.code === 'ArrowLeft') {
@@ -465,8 +547,9 @@ useHead(() => ({
               <v-icon icon="mdi-close" size="20" class="ml-1"></v-icon>
             </a>
 
-            <div class="reader-text" style="text-align: left; white-space: pre-line; max-height: 90%; overflow-y: auto;"
-              v-html="sanitizedSection"></div>
+            <div class="reader-text" :class="{ 'title-section': selectedFile?.state === 0 }"
+              style="text-align: left; white-space: pre-line; max-height: 90%; height: 90%; overflow-y: auto;"
+              v-html="sanitizedSection" @change="handleMaterialCheckboxChange"></div>
 
             <div class="btnSection">
               <v-btn class="buttonOutside arrow" style="margin-left: auto; margin-right: 5px" @click="changeState(-1)"
@@ -488,14 +571,10 @@ useHead(() => ({
             <div v-for="counter in counters" :key="counter.id" class="tool" :style="getCounterStyle(counter)">
               <ToolContainer :id="counter.id" :isActive="activeCounterId === counter.id" :widthSlots="COUNTER_WIDTH"
                 :heightSlots="COUNTER_HEIGHT" :slotIndex="counter.slotIndex" :gridColumns="GRID_COLUMNS"
-                :gridRows="GRID_ROWS"
-                @click.capture="setActiveCounter(counter.id)"
-                @update-position="handleCounterMove(counter, $event)"
-                @remove="removeCounter"
-                class="counter">
+                :gridRows="GRID_ROWS" @click.capture="setActiveCounter(counter.id)"
+                @update-position="handleCounterMove(counter, $event)" @remove="removeCounter" class="counter">
                 <component :is="Counter" :id="counter.id" :isActive="activeCounterId === counter.id"
-                  :model-value="counter.value"
-                  @update:model-value="updateCounterValue(counter.id, $event)" />
+                  :model-value="counter.value" @update:model-value="updateCounterValue(counter.id, $event)" />
               </ToolContainer>
             </div>
             <div v-if="showAddButton" class="tool add-counter" :style="getAddCounterStyle()">
@@ -532,7 +611,12 @@ useHead(() => ({
   max-width: 850px;
   max-height: 560px;
   min-height: 400px;
-  width: 60%;
+  width: 70%;
+}
+
+.stateBox>span {
+  display: block;
+  height: 100%;
 }
 
 .btnSection {
@@ -574,6 +658,42 @@ useHead(() => ({
   z-index: 2;
   padding-top: 20px;
   margin: 0;
+}
+
+.reader-text :deep(.pattern-title) {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.reader-text.title-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reader-text.title-section :deep(h3:first-of-type) {
+  position: static;
+  top: auto;
+  flex: 0 0 100%;
+  margin: auto;
+  padding-top: 0;
+}
+
+.reader-text :deep(input[type="checkbox"]) {
+  accent-color: var(--action-color);
+  cursor: pointer;
+}
+
+.reader-text :deep(label) {
+  cursor: pointer;
+}
+
+.reader-text :deep(.reader-material-indent) {
+  display: inline-block;
+  margin-left: 20px;
 }
 
 .filesSection.open {
@@ -628,7 +748,7 @@ useHead(() => ({
 
 .toolSection {
   display: block;
-  width: 40%;
+  width: 30%;
   min-height: 0;
 }
 

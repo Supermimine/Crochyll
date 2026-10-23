@@ -8,6 +8,15 @@
         },
         "counter": {
             "title": "Counter"
+        },
+        "materials": {
+            "title": "Materials",
+            "hook": "Hook",
+            "needles": "Needles",
+            "marker": "Stitch marker",
+            "stuffing": "Stuffing",
+            "safetyEyes": "Safety eyes",
+            "yarns": "Yarns"
         }
     }
 }

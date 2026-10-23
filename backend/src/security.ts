@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+const MAX_RATE_LIMIT_ENTRIES = 20_000;
 
 const securityHeaders: Record<string, string> = {
   'X-Content-Type-Options': 'nosniff',
@@ -22,16 +22,40 @@ export function applySecurityHeaders(req: Request, res: Response, next: NextFunc
     "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://localhost:3000 https://localhost:3000"
   );
 
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+  }
+
   next();
 }
 
 export function createRateLimiter(maxRequests: number, windowMs: number) {
+  const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+  let nextRateLimitCleanup = Date.now() + 60_000;
+
   return (req: Request, res: Response, next: NextFunction): void => {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const now = Date.now();
+
+    if (now >= nextRateLimitCleanup) {
+      for (const [key, entry] of rateLimitStore) {
+        if (entry.resetAt <= now) rateLimitStore.delete(key);
+      }
+      nextRateLimitCleanup = now + 60_000;
+    }
+
     const current = rateLimitStore.get(ip);
 
     if (!current || current.resetAt <= now) {
+      if (!current && rateLimitStore.size >= MAX_RATE_LIMIT_ENTRIES) {
+        res.status(503).json({
+          success: false,
+          error: 'Service temporarily unavailable',
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
       rateLimitStore.set(ip, { count: 1, resetAt: now + windowMs });
       next();
       return;

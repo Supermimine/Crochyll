@@ -9,11 +9,13 @@ import { useI18n } from 'vue-i18n'
 
 import { api } from '@/service/api';
 import type { Address } from '@core/model/address';
+import { getProductPrice } from '@core/utils/productPricing';
 import { calculateShipping } from '@/service/useShipping';
 import { useCart } from '@/service/useCart';
 
 const { t } = useI18n()
 const { carts } = useCart();
+const queueColor: string = queueLoad.color;
 
 const paypalRef = ref<InstanceType<typeof Paypal> | null>(null);
 const addressRef = ref<InstanceType<typeof AddressVue> | null>(null);
@@ -21,13 +23,14 @@ const addressRef = ref<InstanceType<typeof AddressVue> | null>(null);
 const addressSelected = ref<Address | null>(null);
 const promoCode = ref<string>("");
 const discount = ref<number>(0);
+const appliedPromoCode = ref('');
 const promoError = ref("");
 const isFreeShipping = ref<boolean>(false);
 
 const totalPrice = computed(() => {
     return carts.value
         .reduce((sum: number, x: any) => {
-            const price = x?.item?.price?.[(x?.size ?? 1) - 1] ?? x?.item?.price?.[0] ?? 0;
+            const price = getProductPrice(x.item, x.size, x.color);
             const itemTotal = price * (x?.quantity ?? 1);
             return sum + itemTotal;
         }, 0)
@@ -62,7 +65,10 @@ const applyPromoCode = async () => {
 
     if (data && data.isValid) {
         discount.value = data.discount;
+        appliedPromoCode.value = inputCode;
     } else {
+        appliedPromoCode.value = '';
+        discount.value = 0;
         promoError.value = t('cart.promoError');
     }
 };
@@ -190,7 +196,7 @@ const openWaitTimeInfo = () => {
             <div class="d-flex disable-text-select" style="margin-top: 50px; justify-content: center;">
                 <p style="margin-right: 10px; font-weight: normal;">{{ t('cart.waitTime') }}:</p>
                 <div style="height: 20px; width: 20px; border-radius: 20px; margin-top: auto; margin-bottom: auto;"
-                    :style="{ backgroundColor: queueLoad.color }"></div>
+                    :style="{ backgroundColor: queueColor }"></div>
                 <a class="action-text" @click="openWaitTimeInfo()">
                     <v-icon icon="mdi-information-outline" size="16" style=" margin-bottom: 8px;"></v-icon>
                 </a>
@@ -202,7 +208,7 @@ const openWaitTimeInfo = () => {
         </div>
     </div>
 
-    <Paypal ref="paypalRef" :totalPrice="parseFloat(totalPriceCart)" />
+    <Paypal ref="paypalRef" :address="addressSelected" :promoCode="appliedPromoCode" />
     <AddressVue ref="addressRef" @save="saveAddress" />
 </template>
 

@@ -12,7 +12,7 @@ import type { Product } from "@core/model/product";
 
 const router = Router();
 
-const getProducts = (): Product[] => {
+export const getProducts = (): Product[] => {
     return [
         //Vêtements
         {
@@ -1300,9 +1300,10 @@ router.get('/products', (req: Request, res: Response) => {
         };
         res.json(response);
     } catch (error: any) {
+        console.error('Products request error:', error);
         res.status(500).json({
             success: false,
-            error: error.message,
+            error: 'Unable to load products',
             timestamp: new Date().toISOString()
         });
     }
@@ -1330,9 +1331,10 @@ router.get('/products/:id', (req: Request, res: Response) => {
         };
         res.json(response);
     } catch (error: any) {
+        console.error('Product request error:', error);
         res.status(500).json({
             success: false,
-            error: error.message,
+            error: 'Unable to load product',
             timestamp: new Date().toISOString()
         });
     }
@@ -1360,9 +1362,10 @@ router.get('/products/category/:category', (req: Request, res: Response) => {
         };
         res.json(response);
     } catch (error: any) {
+        console.error('Product category request error:', error);
         res.status(500).json({
             success: false,
-            error: error.message,
+            error: 'Unable to load products',
             timestamp: new Date().toISOString()
         });
     }

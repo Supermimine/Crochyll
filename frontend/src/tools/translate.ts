@@ -1,10 +1,23 @@
 import translate from "translate";
 
+const normalizeLanguageCode = (code: string) => {
+    const normalizedCode = code.trim().toLowerCase();
+    const languageCodes: Record<string, string> = {
+        fra: "fr",
+        fre: "fr",
+        eng: "en"
+    };
+
+    return languageCodes[normalizedCode] ?? normalizedCode.split("-")[0];
+};
+
 const translateText = async (text: string, from: string, to: string): Promise<string> => {
+    const sourceLanguage = normalizeLanguageCode(from);
+    const targetLanguage = normalizeLanguageCode(to);
     const keywordsAbbreviation = ["Abbreviations"];
 
-    const patternAbbreviation = new RegExp(`<h3>\\s*<b>\\s*(${keywordsAbbreviation.join("|")})`, "i");
-    const matchAbbreviation = text.toLowerCase().match(patternAbbreviation);
+    const patternAbbreviation = new RegExp(`<h2\\b[^>]*>\\s*(?:<b>)?\\s*(${keywordsAbbreviation.join("|")})`, "i");
+    const matchAbbreviation = text.match(patternAbbreviation);
 
     translate.engine = "google";
 
@@ -14,10 +27,10 @@ const translateText = async (text: string, from: string, to: string): Promise<st
         const abbreviationWords: Record<string, string[]> = {
             fra: [
                 "cm",
-                "m",
                 "mc",
                 "br",
                 "ba",
+                "ml",
                 "ch",
                 "ms",
                 "b",
@@ -28,10 +41,10 @@ const translateText = async (text: string, from: string, to: string): Promise<st
             ],
             eng: [
                 "mr",
-                "st",
                 "slst",
                 "blo",
                 "flo",
+                "ch",
                 "ch",
                 "sc",
                 "dc",
@@ -42,7 +55,7 @@ const translateText = async (text: string, from: string, to: string): Promise<st
             ]
         };
 
-        const textChecker = text.match(/<\/h3>([\s\S]*)/i)?.[1]?.trim();
+        const textChecker = text.match(/<\/h2>([\s\S]*)/i)?.[1]?.trim();
         Object.keys(abbreviationWords).forEach((lang) => {
             abbreviationWords[lang].forEach((word: string, index: number) => {
                 let pattern = word;
@@ -64,87 +77,93 @@ const translateText = async (text: string, from: string, to: string): Promise<st
             });
         });
 
-        text = text.replace('Abbreviations', await translate('Abbreviations', { to }));
+        const translatedHeading = await translate('Abbreviations', {
+            from: sourceLanguage,
+            to: targetLanguage
+        });
+        text = text.replace(patternAbbreviation, heading =>
+            heading.replace(/Abbreviations/i, translatedHeading)
+        );
 
         abbreviationArray = abbreviationArray.sort((a, b) => abbreviationWords.eng.indexOf(a) - abbreviationWords.eng.indexOf(b));
 
         abbreviationArray.forEach(x => {
             switch (x.toLowerCase()) {
                 case "mr":
-                    if (to === 'fr') {
-                        text = text.replace('mr', 'cm = (cercle magique)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('mr', '<b>cm</b> = (cercle magique)');
                     } else {
-                        text = text.replace('mr', 'mr = (magic ring)');
+                        text = text.replace('mr', '<b>mr</b> = (magic ring)');
                     }
                     break;
                 case "st":
-                    if (to === 'fr') {
-                        text = text.replace('st', 'm = (maille)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('st', '<b>m</b> = (maille)');
                     } else {
-                        text = text.replace('st', 'st = (stitch)');
+                        text = text.replace('st', '<b>st</b> = (stitch)');
                     }
                     break;
                 case "slst":
-                    if (to === 'fr') {
-                        text = text.replace('slst', 'mc = (maille coulée)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('slst', '<b>mc</b> = (maille coulée)');
                     } else {
-                        text = text.replace('slst', 'slst = (slip stitch)');
+                        text = text.replace('slst', '<b>slst</b> = (slip stitch)');
                     }
                     break;
                 case "blo":
-                    if (to === 'fr') {
-                        text = text.replace('blo', 'br = (brin arrière)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('blo', '<b>br</b> = (brin arrière)');
                     } else {
-                        text = text.replace('blo', 'blo = (back loop only)');
+                        text = text.replace('blo', '<b>blo</b> = (back loop only)');
                     }
                     break;
                 case "flo":
-                    if (to === 'fr') {
-                        text = text.replace('flo', 'ba = (brin avant)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('flo', '<b>ba</b> = (brin avant)');
                     } else {
-                        text = text.replace('flo', 'flo = (front loop only)');
+                        text = text.replace('flo', '<b>flo</b> = (front loop only)');
                     }
                     break;
                 case "ch":
-                    if (to === 'fr') {
-                        text = text.replace('ch', 'ch = (chaînette)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('ch', "<b>ml</b> = (maille en l'air)");
                     } else {
-                        text = text.replace('ch', 'ch = (chain stitch)');
+                        text = text.replace('ch', '<b>ch</b> = (chain stitch)');
                     }
                     break;
                 case "sc":
-                    if (to === 'fr') {
-                        text = text.replace('sc', 'ms = (maille serrée)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('sc', '<b>ms</b> = (maille serrée)');
                     } else {
-                        text = text.replace('sc', 'sc = (single crochet)');
+                        text = text.replace('sc', '<b>sc</b> = (single crochet)');
                     }
                     break;
                 case "dc":
-                    if (to === 'fr') {
-                        text = text.replace('dc', 'b = (bride)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('dc', '<b>br</b> = (bride)');
                     } else {
-                        text = text.replace('dc', 'dc = (double crochet)');
+                        text = text.replace('dc', '<b>dc</b> = (double crochet)');
                     }
                     break;
                 case "hdc":
-                    if (to === 'fr') {
-                        text = text.replace('hdc', 'db = (demi-bride)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('hdc', '<b>db</b> = (demi-bride)');
                     } else {
-                        text = text.replace('hdc', 'hdc = (half double crochet)');
+                        text = text.replace('hdc', '<b>hdc</b> = (half double crochet)');
                     }
                     break;
                 case "dec":
-                    if (to === 'fr') {
-                        text = text.replace('dec', 'dim = (diminution)');
+                    if (targetLanguage === 'fr') {
+                        text = text.replace('dec', '<b>dim</b> = (diminution)');
                     } else {
-                        text = text.replace('dec', 'dec = (decrease)');
+                        text = text.replace('dec', '<b>dec</b> = (decrease)');
                     }
                     break;
                 case "inc":
                     if (to === 'fr') {
-                        text = text.replace('inc', 'aug = (augmentation)');
+                        text = text.replace('inc', '<b>aug</b> = (augmentation)');
                     } else {
-                        text = text.replace('inc', 'inc = (increase)');
+                        text = text.replace('inc', '<b>inc</b> = (increase)');
                     }
                     break;
             }
@@ -153,7 +172,10 @@ const translateText = async (text: string, from: string, to: string): Promise<st
         return text;
     }
     else {
-        let translated = await translate(text, { to });
+        let translated = await translate(text, {
+            from: sourceLanguage,
+            to: targetLanguage
+        });
 
         return translated;
     }

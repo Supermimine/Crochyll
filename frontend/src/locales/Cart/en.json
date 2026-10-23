@@ -9,6 +9,9 @@
         "promoError": "Invalid promo code.",
         "waitTime": "Waiting time",
         "waitTimeInfo": "Wainting time: Each product is handmade, so there is a production lead time. \n\nGreen = Short lead time\nOrange = Medium lead time \nRed = Long lead time",
-        "item": "items"
+        "item": "items",
+        "paymentConfirmed": "Payment confirmed. Thank you for your order!",
+        "emailConfirmationWarning": "Your payment is confirmed, but the confirmation email could not be sent.",
+        "paymentError": "We could not verify the payment. Please contact us before trying again."
     }
 }

@@ -11,6 +11,7 @@ import { colorData } from '../../data/colorData';
 import { Category } from '@core/enum/category';
 import { Size } from '@core/enum/size';
 import type { Product } from '@core/model/product';
+import { getProductPrice } from '@core/utils/productPricing';
 
 const isOpen = ref(false);
 const isTilesPage = ref(true);
@@ -49,8 +50,7 @@ const description = computed(() =>
 )
 
 const selectedPrice = computed(() => {
-  const sizeIndex = itemSelected.value?.size?.indexOf(sizeSelected.value as Size) ?? -1
-  return itemSelected.value?.price[sizeIndex] ?? itemSelected.value?.price[0] ?? ''
+  return itemSelected.value ? getProductPrice(itemSelected.value, sizeSelected.value, colorSelected.value) : '';
 })
 
 const open = () => {

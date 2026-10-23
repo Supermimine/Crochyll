@@ -9,6 +9,9 @@
         "promoError": "Code promo invalide.",
         "waitTime": "Temps d'attente",
         "waitTimeInfo": "Temps d'attente: Chaque produit est réalisé à la main, il y a donc un temps d'attente de confection. \n\nVert = Bas temps d'attente\nOrange = Moyen temps d'attente \nRouge = Long temps d'attente",
-        "item": "items"
+        "item": "items",
+        "paymentConfirmed": "Paiement confirmé. Merci pour votre commande !",
+        "emailConfirmationWarning": "Le paiement est confirmé, mais l'email de confirmation n'a pas pu être envoyé.",
+        "paymentError": "Le paiement n'a pas pu être vérifié. Contactez-nous avant de réessayer."
     }
 }
