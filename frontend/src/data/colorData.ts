@@ -1,10 +1,10 @@
-export const colorData: { no: string, name: string, img: string, hex: string[] }[] = [
-    { no: '000-001', name: '03 - Waikiki', img: '/img/colors/000-001.png', hex: ['#F8E4B5'] },
-    { no: '000-002', name: '04 - Kuhio Beach', img: '/img/colors/000-002.png', hex: ['#E6D4A4'] },
+export const colorData: { no: string, name: string, img: string | undefined, hex: string[] }[] = [
+    { no: '000-001', name: '01 - Waikiki', img: '/img/colors/000-001.png', hex: ['#F8E4B5'] },
+    { no: '000-002', name: '02 - Kuhio Beach', img: '/img/colors/000-002.png', hex: ['#E6D4A4'] },
 
     { no: '000-003', name: '01 - Chamomile', img: '/img/colors/000-003.png', hex: ['#F5F5DC'] },
     { no: '000-004', name: '02 - Maté', img: '/img/colors/000-004.png', hex: ['#D2B48C'] },
-    { no: '000-005', name: '03 -Chai', img: '/img/colors/000-005.png', hex: ['#F8E4B5'] },
+    { no: '000-005', name: '03 - Chai', img: '/img/colors/000-005.png', hex: ['#F8E4B5'] },
     { no: '000-006', name: '04 - Hibiscus', img: '/img/colors/000-006.png', hex: ['#F8E4B5'] },
     { no: '000-007', name: '05 - Oolong', img: '/img/colors/000-007.png', hex: ['#F8E4B5'] },
     { no: '000-008', name: '06 - Pu-Erh', img: '/img/colors/000-008.png', hex: ['#F8E4B5'] },
@@ -13,7 +13,7 @@ export const colorData: { no: string, name: string, img: string, hex: string[] }
     { no: '000-011', name: '09 - Herbal', img: '/img/colors/000-011.png', hex: ['#F8E4B5'] },
     { no: '000-012', name: '10 - Rooibos', img: '/img/colors/000-012.png', hex: ['#F8E4B5'] },
     { no: '000-013', name: '11 - Earl Grey', img: '/img/colors/000-013.png', hex: ['#F8E4B5'] },
-    { no: '000-014', name: '12  Peppermint', img: '/img/colors/000-014.png', hex: ['#F8E4B5'] },
+    { no: '000-014', name: '12 - Peppermint', img: '/img/colors/000-014.png', hex: ['#F8E4B5'] },
     { no: '000-015', name: '13 - Matcha', img: '/img/colors/000-015.png', hex: ['#F8E4B5'] },
     { no: '000-016', name: '14 - Darjeeling', img: '/img/colors/000-016.png', hex: ['#F8E4B5'] },
     { no: '000-017', name: '15 - Black Tea', img: '/img/colors/000-017.png', hex: ['#F8E4B5'] },
@@ -26,8 +26,8 @@ export const colorData: { no: string, name: string, img: string, hex: string[] }
     { no: '000-024', name: '22 - Green Tea', img: '/img/colors/000-024.png', hex: ['#F8E4B5'] },
     { no: '000-025', name: '23 - Rose Hip', img: '/img/colors/000-025.png', hex: ['#F8E4B5'] },
     
-    { no: '000-026', name: '01 -Black', img: '/img/colors/000-026.png', hex: ['#F8E4B5'] },
-    { no: '000-027', name: '02 - Grey', img: '/img/colors/000-027.png', hex: ['#F8E4B5'] },
+    { no: '000-026', name: '01 - Black', img: undefined, hex: ['#0B030A'] },
+    { no: '000-027', name: '02 - Grey', img: undefined, hex: ['#504e4f'] },
     
     { no: '000-028', name: '01 - Aqua', img: '/img/colors/000-028.png', hex: ['#b5ecf8'] },
     { no: '000-029', name: '02 - Taupe', img: '/img/colors/000-029.png', hex: ['#ad7b06'] },

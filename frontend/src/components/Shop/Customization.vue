@@ -86,6 +86,19 @@ const selectColor = (shade: string) => {
   }
 }
 
+const getShadeStyle = (shade: string) => {
+  const color = colorData.find((entry) => entry.no === shade);
+
+  if (color?.img) {
+    return {
+      backgroundImage: `url(${color.img})`,
+      backgroundSize: 'cover',
+    };
+  }
+
+  return { backgroundColor: color?.hex[0] ?? 'transparent' };
+};
+
 const selectedColorName = computed(() =>
   colorData.find(c => c.no === colorSelected.value)?.name ?? ''
 )
@@ -172,7 +185,7 @@ watch(isOpen, (val) => {
               <div v-for="shade in itemSelected?.shade">
                 <span class="colorOption action-border" :class="colorSelected === shade ? 'action-border-outside' : ''"
                   @click="selectColor(shade)"
-                  :style="`background-image: url(${colorData.find(c => c.no === shade)?.img ?? ''}); background-size: cover;`"></span>
+                  :style="getShadeStyle(shade)"></span>
               </div>
             </div>
           </div>
