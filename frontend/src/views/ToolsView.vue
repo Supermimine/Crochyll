@@ -1,12 +1,14 @@
 <script setup type="ts">
     import Tools from '../components/Tools/Tools.vue';
+    import { useI18n } from 'vue-i18n'
+    const { t } = useI18n()
 </script>
 
 <template>
     <Suspense>
       <Tools/>
         <template #fallback>
-            <div style="padding: 40px; text-align: center;">Chargement...</div>
+            <div style="padding: 40px; text-align: center;">{{ t('loading') }}...</div>
         </template>
     </Suspense>
 </template>

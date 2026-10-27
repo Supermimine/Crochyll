@@ -385,6 +385,7 @@ const yarnNameList = computed<string[]>(() => {
     border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-right: 5px;
 }
 
 .swatch-item:hover {
